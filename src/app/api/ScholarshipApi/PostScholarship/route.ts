@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ScholarshipDb, Scholarship_Table, InsertScholarship } from '@/db/schema/scholarship/scholarshipData';
 import { sql } from "@vercel/postgres";
-import nodemailer from 'nodemailer';
+import { uploadFileToFirebase } from '@/lib/firebase/config'; // Import your Firebase upload utility
 
 export async function POST(req: NextRequest) {
   try {
+    
     console.log('API route hit');
 
     // Parse form data
@@ -48,17 +49,24 @@ export async function POST(req: NextRequest) {
     `;
     const nextApplicationNumber = result.rows[0].next_application_number;
 
-    // Validate and parse numeric fields
-    const income = parseInt(personalDetails.income, 10);
-    if (isNaN(income)) {
-      throw new Error('Invalid income value');
-    }
+    // Upload files to Firebase Storage and get URLs
+    console.log('Uploading files to Firebase Storage...');
+    const photoUrl = files.photo ? await uploadFileToFirebase(files.photo, 'photos') : null;
+    console.log('Photo uploaded, URL:', photoUrl);
 
-    const cgpa = parseFloat(educationalDetails.cgpa);
-    if (isNaN(cgpa)) {
-      throw new Error('Invalid CGPA value');
-    }
+    const chequeUrl = files.cheque ? await uploadFileToFirebase(files.cheque, 'cheques') : null;
+    console.log('Cheque uploaded, URL:', chequeUrl);
 
+    const aadharCardUrl = files.aadharCard ? await uploadFileToFirebase(files.aadharCard, 'aadharCards') : null;
+    console.log('Aadhar Card uploaded, URL:', aadharCardUrl);
+
+    const collegeIDUrl = files.collegeID ? await uploadFileToFirebase(files.collegeID, 'collegeIDs') : null;
+    console.log('College ID uploaded, URL:', collegeIDUrl);
+
+    const incomeCertificateUrl = files.incomeCertificate ? await uploadFileToFirebase(files.incomeCertificate, 'incomeCertificates') : null;
+    console.log('Income Certificate uploaded, URL:', incomeCertificateUrl);
+
+    // Prepare the data for insertion
     const scholarshipData: InsertScholarship = {
       applicationNumber: nextApplicationNumber,
       name: personalDetails.name,
@@ -66,7 +74,7 @@ export async function POST(req: NextRequest) {
       category: personalDetails.category,
       fatherName: personalDetails.fatherName,
       motherName: personalDetails.motherName,
-      income: income,
+      income: parseInt(personalDetails.income),
       phoneNumber: personalDetails.studentPhone,
       dateOfBirth: dateOfBirth,
       nationality: personalDetails.nationality,
@@ -85,13 +93,13 @@ export async function POST(req: NextRequest) {
       branch: educationalDetails.branch,
       semester: educationalDetails.semester,
       hostelResident: educationalDetails.hostelResident === 'Yes',
-      cgpa: cgpa,
+      cgpa: parseFloat(educationalDetails.cgpa),
       status: 'Pending',
-      photo: files.photo ? files.photo.name : null,
-      cheque: files.cheque ? files.cheque.name : null,
-      aadharCard: files.aadharCard ? files.aadharCard.name : null,
-      collegeID: files.collegeID ? files.collegeID.name : null,
-      incomeCertificate: files.incomeCertificate ? files.incomeCertificate.name : null,
+      photo: photoUrl,
+      cheque: chequeUrl,
+      aadharCard: aadharCardUrl,
+      collegeID: collegeIDUrl,
+      incomeCertificate: incomeCertificateUrl,
     };
 
     console.log('Prepared Scholarship Data:', scholarshipData);
@@ -101,33 +109,15 @@ export async function POST(req: NextRequest) {
 
     console.log('Database Insert Result:', insertResult);
 
-    // Set up Nodemailer transport
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user:"darsanapalkkad@gmail.com", // Update with environment variable
-        pass: "darsana@786", // Update with environment variable
-      },
-    });
-
-    // Send email to applicant
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: personalDetails.studentEmail,
-      subject: 'Scholarship Application Received',
-      text: `Dear ${personalDetails.name},\n\nYour scholarship application has been received successfully. Your application number is ${nextApplicationNumber}.\n\nThank you!`,
-    };
-
-    await transporter.sendMail(mailOptions);
-
     return NextResponse.json({ 
-      message: 'Scholarship data added successfully and email sent', 
+      message: 'Scholarship data added successfully', 
       result: insertResult,
       applicationNumber: nextApplicationNumber
     });
 
   } catch (error) {
-    console.error('Error posting scholarship data:', error);
+    console.error('Error posting scholarship data:', error.message);
+    console.error('Stack Trace:', error.stack);
     return NextResponse.json({ error: `Failed to post scholarship data: ${error.message}` }, { status: 500 });
   }
 }

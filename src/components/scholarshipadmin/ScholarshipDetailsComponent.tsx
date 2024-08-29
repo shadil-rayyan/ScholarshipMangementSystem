@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaEye } from 'react-icons/fa';
 
-// Define interfaces for the props
+// Define interfaces for the props and data
 export interface ScholarshipDetails {
     name: string;
     dob: string;
@@ -46,9 +46,15 @@ export interface ScholarshipDetails {
     accountHolder: string;
     status: string;
     remark: string;
-    documentationData: { id: number, name: string, size: string, file: string }[];
+    documentationData: DocumentationData[];
 }
 
+export interface DocumentationData {
+    id: number;
+    name: string;
+    size: string;
+    file: string;
+}
 
 export interface PersonalDetailsProps {
     scholarshipDetails: ScholarshipDetails;
@@ -128,46 +134,50 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
 };
 
 export interface DocumentationProps {
-    documentationData: { id: number, name: string, size: string, file: string }[];
+    documentationData?: DocumentationData[]; // Allow undefined
 }
 
-export const Documentation: React.FC<DocumentationProps> = ({ documentationData }) => {
-    
+export const Documentation: React.FC<DocumentationProps> = ({ documentationData = [] }) => {
+    // Render nothing if documentationData is empty
+    if (documentationData.length === 0) {
+        return null;
+    }
+
     return (
         <div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-                <tr>
-                    <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
-                    <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
-                    <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Size</th>
-                    <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
-                </tr>
-            </thead>
-            <tbody>
-                {documentationData.map((doc) => (
-                    <tr key={doc.id}>
-                        <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.id}</td>
-                        <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
-                        <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.size}</td>
-                        <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>
-                            <a href={doc.file} target="_blank" rel="noopener noreferrer">
-                                <FaEye />
-                            </a>
-                        </td>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                    <tr>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Size</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    {documentationData.map((doc) => (
+                        <tr key={doc.id}>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.id}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.size}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>
+                                <a href={doc.file} target="_blank" rel="noopener noreferrer">
+                                    <FaEye />
+                                </a>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 
 export interface VerificationProps {
     status: string;
     setStatus: (status: string) => void;
-    verificationTable: { label: string, value: string, admin: string }[];
-    setVerificationTable: (table: { label: string, value: string, admin: string }[]) => void;
+    verificationTable: { label: string; value: string; admin: string }[];
+    setVerificationTable: (table: { label: string; value: string; admin: string }[]) => void;
     scholarshipDetails: ScholarshipDetails;
     setScholarshipDetails: (details: ScholarshipDetails) => void;
 }
@@ -186,22 +196,22 @@ export const Verification: React.FC<VerificationProps> = ({
 
         let updatedTable = [...verificationTable];
 
-        if (selectedStatus === "Verify") {
-            updatedTable[0].value = "Yes";
-            updatedTable[1].value = " ";
-            updatedTable[2].value = "No";
-        } else if (selectedStatus === "Select") {
-            updatedTable[0].value = "Yes";
-            updatedTable[1].value = "Yes";
-            updatedTable[2].value = "No";
-        } else if (selectedStatus === "Reject") {
-            updatedTable[0].value = "No";
-            updatedTable[1].value = "NO";
-            updatedTable[2].value = "No";
-        } else if (selectedStatus === "Amount Proceed") {
-            updatedTable[0].value = "Yes";
-            updatedTable[1].value = "Yes";
-            updatedTable[2].value = "Yes";
+        if (selectedStatus === 'Verify') {
+            updatedTable[0].value = 'Yes';
+            updatedTable[1].value = ' ';
+            updatedTable[2].value = 'No';
+        } else if (selectedStatus === 'Select') {
+            updatedTable[0].value = 'Yes';
+            updatedTable[1].value = 'Yes';
+            updatedTable[2].value = 'No';
+        } else if (selectedStatus === 'Reject') {
+            updatedTable[0].value = 'No';
+            updatedTable[1].value = 'NO';
+            updatedTable[2].value = 'No';
+        } else if (selectedStatus === 'Amount Proceed') {
+            updatedTable[0].value = 'Yes';
+            updatedTable[1].value = 'Yes';
+            updatedTable[2].value = 'Yes';
         }
 
         setVerificationTable(updatedTable);
@@ -210,54 +220,53 @@ export const Verification: React.FC<VerificationProps> = ({
 
     return (
         <div>
-                        <div style={{ marginBottom: '20px' }}>
-                            <label>
-                                <strong>Verification Status:</strong>
-                                <select
-                                    value={status}
-                                    onChange={handleStatusChange}
-                                    style={{ marginLeft: '10px', padding: '5px',border: '1px solid #ccc', width: '200px' }}
-                                >
-                                    <option value="">Select Status</option>
-                                    <option value="Verify">Verify</option>
-                                    <option value="Select">Select</option>
-                                    <option value="Amount Proceed">Amount Proceed</option>
-                                    <option value="Reject">Reject</option>
-                                </select>
-                            </label>
-                        </div>
+            <div style={{ marginBottom: '20px' }}>
+                <label>
+                    <strong>Verification Status:</strong>
+                    <select
+                        value={status}
+                        onChange={handleStatusChange}
+                        style={{ marginLeft: '10px', padding: '5px', border: '1px solid #ccc', width: '200px' }}
+                    >
+                        <option value="">Select Status</option>
+                        <option value="Verify">Verify</option>
+                        <option value="Select">Select</option>
+                        <option value="Amount Proceed">Amount Proceed</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </label>
+            </div>
 
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ border: '1px solid #ddd', padding: '10px' }}>Verification Steps</th>
-                                    <th style={{ border: '1px solid #ddd', padding: '10px' }}>Status</th>
-                                    <th style={{ border: '1px solid #ddd', padding: '10px' }}>Admin</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {verificationTable.map((step, index) => (
-                                    <tr key={index}>
-                                        <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.label}</td>
-                                        <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.value}</td>
-                                        <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.admin}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+                <thead>
+                    <tr>
+                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Verification Steps</th>
+                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Status</th>
+                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {verificationTable.map((step, index) => (
+                        <tr key={index}>
+                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.label}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.value}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.admin}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
 
-                        <div style={{ marginBottom: '20px' }}>
-                            <label>
-                                <strong>Remark:</strong>
-                                <input
-                                    
-                                    type="text"
-                                    value={scholarshipDetails.remark}
-                                    onChange={(e) => setScholarshipDetails({ ...scholarshipDetails, remark: e.target.value })}
-                                    style={{  padding: '5px',border: '1px solid #ccc', width: '100%' }}
-                                />
-                            </label>
-                        </div>
-                    </div>
+            <div style={{ marginBottom: '20px' }}>
+                <label>
+                    <strong>Remark:</strong>
+                    <input
+                        type="text"
+                        value={scholarshipDetails.remark}
+                        onChange={(e) => setScholarshipDetails({ ...scholarshipDetails, remark: e.target.value })}
+                        style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
+                    />
+                </label>
+            </div>
+        </div>
     );
 };
