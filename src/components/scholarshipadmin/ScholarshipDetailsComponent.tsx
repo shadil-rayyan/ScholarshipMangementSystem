@@ -1,26 +1,29 @@
-import React from 'react';
+// src/components/scholarshipadmin/ScholarshipDetailsComponent.tsx
+
+"use client";
+import React, { useEffect } from 'react';
 import { FaEye } from 'react-icons/fa';
 
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
     name: string;
-    dob: string;
+    dateOfBirth: string;
     gender: string;
     nationality: string;
     category: string;
-    aadharNumber: string;
+    adharNumber: string;
     fatherName: string;
-    fatherPhone: string;
+    fatherNumber: string;
     motherName: string;
-    motherPhone: string;
+    motherNumber: string;
     income: string;
     fatherOccupation: string;
-    studentPhone: string;
+    studentNumber: string;
     motherOccupation: string;
     address: string;
     city: string;
     state: string;
-    postalCode: string;
+    pinCode: string;
     houseApartmentName: string;
     placeState: string;
     postOffice: string;
@@ -61,21 +64,26 @@ export interface PersonalDetailsProps {
 }
 
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDetails }) => {
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns the date in 'YYYY-MM-DD' format
+    };
+
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div><strong>Name:</strong> {scholarshipDetails.name}</div>
-            <div><strong>DOB:</strong> {scholarshipDetails.dob}</div>
+            <div><strong>DOB:</strong> {formatDate(scholarshipDetails.dateOfBirth)}</div>
             <div><strong>Gender:</strong> {scholarshipDetails.gender}</div>
             <div><strong>Nationality:</strong> {scholarshipDetails.nationality}</div>
             <div><strong>Category:</strong> {scholarshipDetails.category}</div>
-            <div><strong>Aadhar Number:</strong> {scholarshipDetails.aadharNumber}</div>
+            <div><strong>Aadhar Number:</strong> {scholarshipDetails.adharNumber}</div>
             <div><strong>Father Name:</strong> {scholarshipDetails.fatherName}</div>
-            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherPhone}</div>
+            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherNumber}</div>
             <div><strong>Mother Name:</strong> {scholarshipDetails.motherName}</div>
-            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherPhone}</div>
+            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherNumber}</div>
             <div><strong>Income:</strong> {scholarshipDetails.income}</div>
             <div><strong>Father Occupation:</strong> {scholarshipDetails.fatherOccupation}</div>
-            <div><strong>Student Phone:</strong> {scholarshipDetails.studentPhone}</div>
+            <div><strong>Student Phone:</strong> {scholarshipDetails.studentNumber}</div>
             <div><strong>Mother Occupation:</strong> {scholarshipDetails.motherOccupation}</div>
         </div>
     );
@@ -91,10 +99,10 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
             <div><strong>Address:</strong> {scholarshipDetails.address}</div>
             <div><strong>City:</strong> {scholarshipDetails.city}</div>
             <div><strong>State:</strong> {scholarshipDetails.state}</div>
-            <div><strong>Postal Code:</strong> {scholarshipDetails.postalCode}</div>
-            <div><strong>Student Phone:</strong> {scholarshipDetails.studentPhone}</div>
-            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherPhone}</div>
-            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherPhone}</div>
+            <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
+            <div><strong>Student Phone:</strong> {scholarshipDetails.studentNumber}</div>
+            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherNumber}</div>
+            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherNumber}</div>
             <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
             <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
             <div><strong>Post Office:</strong> {scholarshipDetails.postOffice}</div>
@@ -122,7 +130,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
             <div><strong>Name of the College:</strong> {scholarshipDetails.nameOfTheCollege}</div>
             <div><strong>Branch:</strong> {scholarshipDetails.branch}</div>
             <div><strong>Semester:</strong> {scholarshipDetails.semester}</div>
-            <div><strong>Hostel Resident:</strong> {scholarshipDetails.hostelResident}</div>
+            <div><strong>Hostel Resident:</strong> {(scholarshipDetails.hostelResident).toString()}</div>
             <div><strong>CGPA:</strong> {scholarshipDetails.cgpa}</div>
             <div><strong>Bank Name:</strong> {scholarshipDetails.bankName}</div>
             <div><strong>Account Number:</strong> {scholarshipDetails.accountNumber}</div>
@@ -190,31 +198,49 @@ export const Verification: React.FC<VerificationProps> = ({
     scholarshipDetails,
     setScholarshipDetails,
 }) => {
-    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedStatus = e.target.value;
-        setStatus(selectedStatus);
 
+    // Function to update the verification table based on the current status
+    const updateTableBasedOnStatus = (currentStatus: string) => {
         let updatedTable = [...verificationTable];
 
-        if (selectedStatus === 'Verify') {
+        if (currentStatus === 'Verify') {
             updatedTable[0].value = 'Yes';
             updatedTable[1].value = ' ';
             updatedTable[2].value = 'No';
-        } else if (selectedStatus === 'Select') {
+        } else if (currentStatus === 'Select') {
             updatedTable[0].value = 'Yes';
             updatedTable[1].value = 'Yes';
             updatedTable[2].value = 'No';
-        } else if (selectedStatus === 'Reject') {
+        } else if (currentStatus === 'Reject') {
             updatedTable[0].value = 'No';
             updatedTable[1].value = 'NO';
             updatedTable[2].value = 'No';
-        } else if (selectedStatus === 'Amount Proceed') {
+        } else if (currentStatus === 'Amount Proceed') {
             updatedTable[0].value = 'Yes';
             updatedTable[1].value = 'Yes';
             updatedTable[2].value = 'Yes';
         }
 
         setVerificationTable(updatedTable);
+    };
+
+    // UseEffect to handle initial status load
+    useEffect(() => {
+        if (scholarshipDetails.status) {
+            updateTableBasedOnStatus(scholarshipDetails.status);
+            setStatus(scholarshipDetails.status); // Sync dropdown with initial status
+        }
+    }, [scholarshipDetails.status]);
+
+    // Handle dropdown change
+    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatus = e.target.value;
+
+        // Update the status in the state
+        setStatus(selectedStatus);
+
+        // Update the table and scholarshipDetails state
+        updateTableBasedOnStatus(selectedStatus);
         setScholarshipDetails({ ...scholarshipDetails, status: selectedStatus });
     };
 
@@ -257,6 +283,16 @@ export const Verification: React.FC<VerificationProps> = ({
             </table>
 
             <div style={{ marginBottom: '20px' }}>
+                <label>
+                    <strong>Status:</strong>
+                    <input
+                        type="text"
+                        value={scholarshipDetails.status}
+                        onChange={(e) => setScholarshipDetails({ ...scholarshipDetails, status: e.target.value })}
+                        style={{ padding: '5px', border: '0px solid #ccc', width: '90%', textTransform: 'uppercase' }}
+                    />
+                </label>
+
                 <label>
                     <strong>Remark:</strong>
                     <input

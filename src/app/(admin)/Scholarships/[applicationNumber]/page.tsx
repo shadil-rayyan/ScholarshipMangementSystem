@@ -6,14 +6,14 @@ import {
     ContactDetails,
     EducationalAndBankDetails,
     Documentation,
-    Verification
-} from '@/components/scholarshipadmin/ScholarshipDetailsComponent'; // Adjust the import path if needed
+    Verification,
+    ScholarshipDetails
+} from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
 import { useParams } from 'next/navigation';
-import { SelectScholarship } from '@/db/schema/scholarship/scholarshipData';
 
 const ScholarshipDetailPage: React.FC = () => {
     const { applicationNumber } = useParams();
-    const [scholarshipDetails, setScholarshipDetails] = useState<SelectScholarship | null>(null);
+    const [scholarshipDetails, setScholarshipDetails] = useState<ScholarshipDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState('personal');
@@ -28,23 +28,58 @@ const ScholarshipDetailPage: React.FC = () => {
         fetchScholarshipDetail();
     }, [applicationNumber]);
 
-const fetchScholarshipDetail = async () => {
-    try {
-        const response = await fetch(`/api/ScholarshipApi/GetScholarshipDetail/${applicationNumber}`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to fetch scholarship details: ${errorText}`);
+    const fetchScholarshipDetail = async () => {
+        try {
+            const response = await fetch(`/api/ScholarshipApi/GetScholarshipDetail/${applicationNumber}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch scholarship details: ${await response.text()}`);
+            }
+            const data: ScholarshipDetails = await response.json();
+            setScholarshipDetails(data);
+        } catch (err) {
+            setError('Error fetching scholarship details. Please try again later.');
+        } finally {
+            setLoading(false);
         }
-        const data: ScholarshipDetails = await response.json();  // Ensure this type matches the expected structure
-        setScholarshipDetails(data);
-    } catch (err) {
-        setError('Error fetching scholarship details. Please try again later.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
+
+    // Save the form data
+    const handleSubmitClick = async () => {
+        setShowDraftSaved(true);
+        setTimeout(() => setShowDraftSaved(false), 3000);
+
+        try {
+            // Convert date strings to Date objects
+            const updatedScholarshipDetails = {
+                ...scholarshipDetails,
+                dateOfBirth: new Date(scholarshipDetails.dateOfBirth).toISOString(),
+                // Repeat for other date fields if necessary
+            };
+
+            const response = await fetch(`/api/ScholarshipApi/UpdateScholarship/${applicationNumber}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedScholarshipDetails),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update scholarship details.');
+            }
+
+            // Handle success response if necessary
+            const result = await response.json();
+            console.log('Update successful:', result);
+        } catch (error) {
+            console.error('Error updating scholarship:', error);
+        }
+    };
 
 
+
+    // Move to the next tab
     const handleNextClick = () => {
         setShowDraftSaved(true);
         setTimeout(() => setShowDraftSaved(false), 3000);
@@ -56,6 +91,7 @@ const fetchScholarshipDetail = async () => {
         }
     };
 
+    // Move to the previous tab
     const handlePreviousClick = () => {
         const tabs = ['personal', 'contact', 'educational', 'documentation', 'verification'];
         const currentIndex = tabs.indexOf(activeTab);
@@ -64,17 +100,17 @@ const fetchScholarshipDetail = async () => {
         }
     };
 
-    const handleSubmitClick = () => {
-        setShowDraftSaved(true);
-        setTimeout(() => setShowDraftSaved(false), 3000);
+    // Handle updates to the verification table
+    const handleVerificationUpdate = (index: number, value: string) => {
+        const updatedTable = [...verificationTable];
+        updatedTable[index].value = value;
+        setVerificationTable(updatedTable);
 
-        // if (activeTab === 'verification') {
-        //     generatePDF();  // Implement PDF generation logic here
-        // } else {
-        //     handleNextClick();
-        // }
+        // Sync the verificationTable with scholarshipDetails
+        setScholarshipDetails((prev) => prev ? { ...prev, verificationTable: updatedTable } : null);
     };
 
+    // Render content based on the active tab
     const renderTabContent = () => {
         if (!scholarshipDetails) return null;
 
@@ -90,7 +126,7 @@ const fetchScholarshipDetail = async () => {
             case 'verification':
                 return (
                     <Verification
-                        status={scholarshipDetails?.status || 'Verify'}
+                        status={scholarshipDetails.status || 'Verify'}
                         setStatus={(status) => setScholarshipDetails((prev) => prev ? { ...prev, status } : null)}
                         verificationTable={verificationTable}
                         setVerificationTable={setVerificationTable}
@@ -122,6 +158,7 @@ const fetchScholarshipDetail = async () => {
                 </div>
                 <div className="p-6">{renderTabContent()}</div>
             </div>
+
             <div className={`flex mt-6 ${activeTab === 'personal' ? 'justify-end' : 'justify-between'}`}>
                 {activeTab !== 'personal' && (
                     <button
@@ -147,6 +184,7 @@ const fetchScholarshipDetail = async () => {
                     </button>
                 )}
             </div>
+
             {showDraftSaved && <div className="mt-4 text-green-500">Draft saved!</div>}
         </div>
     );
