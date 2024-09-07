@@ -1,6 +1,9 @@
-'use client'
+// src/app/(client)/Scholarship/page.tsx
+
+'use client';
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Mail, Phone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import scholarship_hero from '@/assets/scholarship/scholarship_hero.jpeg';
@@ -10,6 +13,7 @@ const DarsanaScholarshipPage: React.FC = () => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [applicationId, setApplicationId] = useState<string>('');
   const [emailError, setEmailError] = useState<string>('');
+
 
   const validateEmail = (email: string): boolean => {
     // Basic email validation regex pattern
@@ -50,10 +54,13 @@ const DarsanaScholarshipPage: React.FC = () => {
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
+  const router = useRouter();
 
-  // const handleApplicationIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     setApplicationId(e.target.value);
-  // };
+  const handleTrackApplication = () => {
+    if (applicationId && !emailError) {
+      router.push(`/Scholarship/status/${encodeURIComponent(applicationId)}`);
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -149,12 +156,8 @@ const DarsanaScholarshipPage: React.FC = () => {
       case 'track':
         return (
           <div className="max-w-md mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              Track Your Application
-            </h2>
-            <p className="mb-4 text-gray-600 text-center">
-              Enter your Email ID to track the status of your application.
-            </p>
+            <h2 className="text-2xl font-bold mb-4 text-center">Track Your Application</h2>
+            <p className="mb-4 text-gray-600 text-center">Enter your Email ID to track the status of your application.</p>
             <div className="flex flex-col items-center">
               <input
                 type="email"
@@ -163,25 +166,19 @@ const DarsanaScholarshipPage: React.FC = () => {
                 placeholder="Enter Email ID"
                 className="border border-gray-300 rounded-lg p-2 w-full max-w-sm mb-2"
               />
-              {emailError && (
-                <p className="text-red-500 text-sm mb-2">{emailError}</p>
-              )}
-              <Link
-                href={`/Scholarship/status?applicationNumber=${applicationId}`}
+              {emailError && <p className="text-red-500 text-sm mb-2">{emailError}</p>}
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                disabled={emailError !== '' || applicationId === ''}
+                onClick={handleTrackApplication}
               >
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                  disabled={emailError !== '' || applicationId === ''}
-                >
-                  Track Application
-                </button>
-              </Link>
+                Track Application
+              </button>
             </div>
           </div>
         );
-      default:
-        return <div>Please select a tab</div>;
-    }
+    };
+
   };
 
   return (

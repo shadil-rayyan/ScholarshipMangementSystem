@@ -1,4 +1,6 @@
-import { pgTable, serial, integer, text, timestamp, boolean, decimal,jsonb } from 'drizzle-orm/pg-core';
+// src/db/schema/scholarship/scholarshipData.ts
+
+import { pgTable, serial, integer, text, timestamp, boolean, decimal, jsonb } from 'drizzle-orm/pg-core';
 import { drizzle } from 'drizzle-orm/vercel-postgres';
 import { sql } from "@vercel/postgres";
 
