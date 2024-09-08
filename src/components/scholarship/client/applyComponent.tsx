@@ -153,15 +153,31 @@ const ApplyForm: React.FC = () => {
 
     const handleSubmitClick = async () => {
         let errors: any = {};
+        const personalErrors = validatePersonalDetails(personalDetails);
+        const contactErrors = validateContactDetails(contactDetails);
+        const educationalErrors = validateEducationalDetails(educationalDetails);
+        const bankErrors = validateBankDetails(bankDetails);
+
         errors = {
-            ...validatePersonalDetails(personalDetails),
-            ...validateContactDetails(contactDetails),
-            ...validateEducationalDetails(educationalDetails),
-            ...validateBankDetails(bankDetails)
+            ...personalErrors,
+            ...contactErrors,
+            ...educationalErrors,
+            ...bankErrors
         };
 
         if (Object.keys(errors).length > 0) {
             setValidationErrors(errors);
+
+            // Find the first tab with validation errors and set it as the active tab
+            if (Object.keys(personalErrors).length > 0) {
+                setActiveTab('personal');
+            } else if (Object.keys(contactErrors).length > 0) {
+                setActiveTab('contact');
+            } else if (Object.keys(educationalErrors).length > 0 || Object.keys(bankErrors).length > 0) {
+                setActiveTab('educational');
+            }
+
+            alert('Please fill out all required fields correctly.');
             return;
         }
 
@@ -206,11 +222,24 @@ const ApplyForm: React.FC = () => {
                 return <ContactDetails contactDetails={contactDetails} setContactDetails={setContactDetails} errors={validationErrors} />;
             case 'educational':
                 return (
-                    <>
-                        <EducationalDetails educationalDetails={educationalDetails} setEducationalDetails={setEducationalDetails} errors={validationErrors} />
-                        <BankDetails bankDetails={bankDetails} setBankDetails={setBankDetails} errors={validationErrors} />
-                    </>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="col-span-1">
+                            <EducationalDetails
+                                educationalDetails={educationalDetails}
+                                setEducationalDetails={setEducationalDetails}
+                                errors={validationErrors}
+                            />
+                        </div>
+                        <div className="col-span-1">
+                            <BankDetails
+                                bankDetails={bankDetails}
+                                setBankDetails={setBankDetails}
+                                errors={validationErrors}
+                            />
+                        </div>
+                    </div>
                 );
+
             case 'documentation':
                 return <Documentation files={files} setFiles={setFiles} errors={validationErrors} />;
             default:
@@ -255,8 +284,8 @@ const ApplyForm: React.FC = () => {
                     {renderTabContent()}
                 </div>
             </div>
-            <div className="flex justify-between mt-6">
-                {showPreviousButton && (
+            <div className={`mt - 6 flex ${activeTab === 'personal' ? 'justify-end' : 'justify-between'}`}>
+                {activeTab !== 'personal' && (
                     <button
                         onClick={handlePreviousClick}
                         className="px-4 py-2 bg-blue-500 text-white rounded"
@@ -280,7 +309,7 @@ const ApplyForm: React.FC = () => {
                     </button>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

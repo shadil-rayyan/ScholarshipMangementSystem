@@ -3,6 +3,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from '@/lib/firebase/auth'; // Ensure this function is implemented
+import Sidebar from "@/components/admin/SideBar";
+
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -35,11 +37,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
 
   return (
+
     <div className="flex flex-col h-screen">
-      <div className="flex flex-1">
-              <main className="flex-1 p-4 overflow-auto">
-          {children}
-        </main>
+      <div className="flex">
+        <Sidebar />
+
+        <div className="flex flex-1">
+          <main className="flex-1 p-4 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

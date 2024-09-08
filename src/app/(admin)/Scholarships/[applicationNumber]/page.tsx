@@ -11,6 +11,8 @@ import {
 import { useParams } from 'next/navigation';
 import { SelectScholarship } from '@/db/schema/scholarship/scholarshipData';
 
+const [scholarshipDetails, setScholarshipDetails] = useState<ScholarshipDetails>({ ...initialData });
+
 const ScholarshipDetailPage: React.FC = () => {
     const { applicationNumber } = useParams();
     const [scholarshipDetails, setScholarshipDetails] = useState<SelectScholarship | null>(null);
@@ -28,21 +30,21 @@ const ScholarshipDetailPage: React.FC = () => {
         fetchScholarshipDetail();
     }, [applicationNumber]);
 
-const fetchScholarshipDetail = async () => {
-    try {
-        const response = await fetch(`/api/ScholarshipApi/GetScholarshipDetail/${applicationNumber}`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to fetch scholarship details: ${errorText}`);
+    const fetchScholarshipDetail = async () => {
+        try {
+            const response = await fetch(`/api/ScholarshipApi/GetScholarshipDetail/${applicationNumber}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to fetch scholarship details: ${errorText}`);
+            }
+            const data: ScholarshipDetails = await response.json();  // Ensure this type matches the expected structure
+            setScholarshipDetails(data);
+        } catch (err) {
+            setError('Error fetching scholarship details. Please try again later.');
+        } finally {
+            setLoading(false);
         }
-        const data: ScholarshipDetails = await response.json();  // Ensure this type matches the expected structure
-        setScholarshipDetails(data);
-    } catch (err) {
-        setError('Error fetching scholarship details. Please try again later.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
     const handleNextClick = () => {
@@ -75,6 +77,12 @@ const fetchScholarshipDetail = async () => {
         // }
     };
 
+
+
+    const updateScholarshipDetails = (details: ScholarshipDetails) => {
+        setScholarshipDetails(details);
+    };
+
     const renderTabContent = () => {
         if (!scholarshipDetails) return null;
 
@@ -89,14 +97,18 @@ const fetchScholarshipDetail = async () => {
                 return <Documentation documentationData={scholarshipDetails.documentationData} />;
             case 'verification':
                 return (
+
+
+                    // Pass this function to props
                     <Verification
-                        status={scholarshipDetails?.status || 'Verify'}
-                        setStatus={(status) => setScholarshipDetails((prev) => prev ? { ...prev, status } : null)}
+                        status={status}
+                        setStatus={setStatus}
                         verificationTable={verificationTable}
                         setVerificationTable={setVerificationTable}
                         scholarshipDetails={scholarshipDetails}
-                        setScholarshipDetails={setScholarshipDetails}
+                        setScholarshipDetails={updateScholarshipDetails}
                     />
+
                 );
             default:
                 return null;

@@ -25,7 +25,7 @@ interface PersonalDetailsProps {
     errors: Partial<Record<keyof PersonalDetailsType, string>>;
 }
 
-const categories = ['OBC', 'OEC', 'SC', 'ST', 'Others']; // Define the category options
+const categories = ['OBC', 'OEC', 'SC', 'ST']; // Define the category options
 
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
     personalDetails,
@@ -82,26 +82,15 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
                 onChange={(e) => handleChange('nationality', e.target.value)}
                 error={errors.nationality}
             />
-            <div className="col-span-2">
-                <DropdownField
-                    label="Category"
-                    value={personalDetails.category}
-                    options={categories}
-                    onChange={(value) => handleChange('category', value)}
-                    error={errors.category}
-                    allowCustom={true} // Allow custom entry
-                />
-                {/* Conditionally render custom input field */}
-                {personalDetails.category === 'Others' && (
-                    <InputField
-                        label="Custom Category"
-                        value={personalDetails.category}
-                        onChange={(e) => handleChange('category', e.target.value)}
-                        error={errors.category}
-                        className="mt-2" // Add margin to space out from the dropdown
-                    />
-                )}
-            </div>
+            <DropdownField
+                label="Category"
+                value={personalDetails.category}
+                options={categories}
+                onChange={(value) => handleChange('category', value)}
+                error={errors.category}
+                allowCustom={true} // Allow custom entry directly in the dropdown
+            />
+
             <InputField
                 label="Aadhar Number"
                 required
