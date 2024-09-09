@@ -1,123 +1,107 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ScholarshipDb, Scholarship_Table, InsertScholarship } from '@/db/schema/scholarship/scholarshipData';
-import { sql } from "@vercel/postgres";
-import { uploadFileToFirebase } from '@/lib/firebase/config'; // Import your Firebase upload utility
+import { NextResponse } from 'next/server';
+import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/scholarshipData';
+import { testConnection } from '@/db';
 
-export async function POST(req: NextRequest) {
-  try {
-    
-    console.log('API route hit');
+export async function POST(request: Request) {
+    try {
+        console.log('API route hit');
 
-    // Parse form data
-    const formData = await req.formData();
-    console.log('Raw form data:', formData);
+        // Test the database connection
+        const isConnected = await testConnection();
+        console.log('Database connection test result:', isConnected);
 
-    const fields: Record<string, string> = {};
-    const files: Record<string, File> = {};
+        if (!isConnected) {
+            throw new Error('Database connection failed');
+        }
 
-    formData.forEach((value, key) => {
-      if (typeof value === 'string') {
-        fields[key] = value;
-        console.log(`Field: ${key} -> ${value}`);
-      } else if (value instanceof File) {
-        files[key] = value;
-        console.log(`File: ${key} -> ${value.name}`);
-      }
-    });
+        // Parse the request body
+        const body = await request.json();
+        console.log('Received scholarship application data:', body);
 
-    console.log('Parsed Fields:', fields);
-    console.log('Parsed Files:', files);
+        // Validate required fields
+        const requiredFields = [
+            'name', 'dateOfBirth', 'gender', 'nationality', 'category', 
+            'adharNumber', 'fatherName', 'fatherNumber', 'income', 
+            'country', 'state', 'district', 'studentEmail', 
+            'nameOfTheCollege', 'branch', 'semester', 'cgpa', 
+            'bankName', 'accountNumber', 'ifscCode', 'branchName', 'accountHolder'
+        ];
 
-    // Parse and validate scholarship data
-    const {
-      personalDetails,
-      contactDetails,
-      educationalDetails,
-      bankDetails,
-    } = JSON.parse(fields.scholarshipData);
+        for (const field of requiredFields) {
+            if (!body[field]) {
+                return NextResponse.json({ error: `Field ${field} is required` }, { status: 400 });
+            }
+        }
 
-    const dateOfBirth = new Date(personalDetails.dob);
-    if (isNaN(dateOfBirth.getTime())) {
-      throw new Error('Invalid date format for dateOfBirth');
+        // Construct scholarship data as a plain object
+        const scholarshipData = {
+            name: body.name,
+            dateOfBirth: new Date(body.dateOfBirth),
+            gender: body.gender,
+            nationality: body.nationality,
+            category: body.category,
+            adharNumber: body.adharNumber,
+            fatherName: body.fatherName,
+            fatherNumber: body.fatherNumber,
+            motherName: body.motherName || null,
+            motherNumber: body.motherNumber || null,
+            income: body.income,
+            fatherOccupation: body.fatherOccupation || null,
+            motherOccupation: body.motherOccupation || null,
+            studentNumber: body.studentNumber || null,
+
+            // Contact Details
+            houseApartmentName: body.houseApartmentName || null,
+            placeState: body.placeState || null,
+            postOffice: body.postOffice || null,
+            country: body.country,
+            pinCode: body.pinCode || null,
+            state: body.state,
+            district: body.district,
+            whatsappNumber: body.whatsappNumber || null,
+            studentEmail: body.studentEmail,
+            alternativeNumber: body.alternativeNumber || null,
+
+            // Educational Details
+            nameOfTheCollege: body.nameOfTheCollege,
+            branch: body.branch,
+            semester: body.semester,
+            hostelResident: body.hostelResident || false,
+            cgpa: body.cgpa,
+
+            // Bank Details
+            bankName: body.bankName,
+            accountNumber: body.accountNumber,
+            ifscCode: body.ifscCode,
+            branchName: body.branchName,
+            accountHolder: body.accountHolder,
+
+            // Documentation Details
+            photoUrl: body.photoUrl || null,
+            checkUrl: body.checkUrl || null,
+            aadharCardUrl: body.aadharCardUrl || null,
+            collegeIdCardUrl: body.collegeIdCardUrl || null,
+            incomeUrl: body.incomeUrl || null,
+
+            // Application Meta Data
+            status: 'Pending', // Default status
+            remark: body.remark || null,
+            applicationDate: new Date(), // Current date
+            adminLog: [], // Default empty log
+        };
+
+        console.log('Attempting to insert scholarship data into the database');
+
+        // Insert the scholarship data into the database
+        const result = await ScholarshipDb.insert(Scholarship_Table).values(scholarshipData).returning();
+        console.log('New scholarship application added:', result);
+
+        return NextResponse.json(result[0], { status: 201 });
+    } catch (error) {
+        console.error('Error in processing scholarship application:', error);
+        return NextResponse.json({ 
+            error: 'Failed to process scholarship application', 
+            details: error instanceof Error ? error.message : 'Unknown error' 
+        }, { status: 500 });
     }
-
-    // Generate the next application number
-    const result = await sql`
-      SELECT COALESCE(MAX(application_number), 999999999) + 1 AS next_application_number
-      FROM scholarship
-      WHERE application_number >= 100000000
-    `;
-    const nextApplicationNumber = result.rows[0].next_application_number;
-
-    // Upload files to Firebase Storage and get URLs
-    console.log('Uploading files to Firebase Storage...');
-    const photoUrl = files.photo ? await uploadFileToFirebase(files.photo, 'photos') : null;
-    console.log('Photo uploaded, URL:', photoUrl);
-
-    const chequeUrl = files.cheque ? await uploadFileToFirebase(files.cheque, 'cheques') : null;
-    console.log('Cheque uploaded, URL:', chequeUrl);
-
-    const aadharCardUrl = files.aadharCard ? await uploadFileToFirebase(files.aadharCard, 'aadharCards') : null;
-    console.log('Aadhar Card uploaded, URL:', aadharCardUrl);
-
-    const collegeIDUrl = files.collegeID ? await uploadFileToFirebase(files.collegeID, 'collegeIDs') : null;
-    console.log('College ID uploaded, URL:', collegeIDUrl);
-
-    const incomeCertificateUrl = files.incomeCertificate ? await uploadFileToFirebase(files.incomeCertificate, 'incomeCertificates') : null;
-    console.log('Income Certificate uploaded, URL:', incomeCertificateUrl);
-
-    // Prepare the data for insertion
-    const scholarshipData: InsertScholarship = {
-      applicationNumber: nextApplicationNumber,
-      name: personalDetails.name,
-      gender: personalDetails.gender,
-      category: personalDetails.category,
-      fatherName: personalDetails.fatherName,
-      motherName: personalDetails.motherName,
-      income: parseInt(personalDetails.income),
-      phoneNumber: personalDetails.studentPhone,
-      dateOfBirth: dateOfBirth,
-      nationality: personalDetails.nationality,
-      adharNumber: personalDetails.aadhar,
-      fatherOccupation: personalDetails.fatherOccupation,
-      motherOccupation: personalDetails.motherOccupation,
-      houseNumber: contactDetails.house,
-      postOffice: contactDetails.postOffice,
-      pinCode: contactDetails.pincode,
-      bankIfscCode: bankDetails.ifsc,
-      bankName: bankDetails.bankName,
-      bankBranch: bankDetails.branchName,
-      bankAccountNumber: bankDetails.accountNumber,
-      bankAccountHolder: bankDetails.accountHolder,
-      collegeName: educationalDetails.college,
-      branch: educationalDetails.branch,
-      semester: educationalDetails.semester,
-      hostelResident: educationalDetails.hostelResident === 'Yes',
-      cgpa: parseFloat(educationalDetails.cgpa),
-      status: 'Pending',
-      photo: photoUrl,
-      cheque: chequeUrl,
-      aadharCard: aadharCardUrl,
-      collegeID: collegeIDUrl,
-      incomeCertificate: incomeCertificateUrl,
-    };
-
-    console.log('Prepared Scholarship Data:', scholarshipData);
-
-    // Insert data into the database
-    const insertResult = await ScholarshipDb.insert(Scholarship_Table).values(scholarshipData);
-
-    console.log('Database Insert Result:', insertResult);
-
-    return NextResponse.json({ 
-      message: 'Scholarship data added successfully', 
-      result: insertResult,
-      applicationNumber: nextApplicationNumber
-    });
-
-  } catch (error) {
-    console.error('Error posting scholarship data:', error.message);
-    console.error('Stack Trace:', error.stack);
-    return NextResponse.json({ error: `Failed to post scholarship data: ${error.message}` }, { status: 500 });
-  }
 }

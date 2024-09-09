@@ -8,7 +8,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faFacebookF, faMicrosoft, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
-import loginheroimage from '@/assets/loginheroimage.png'
+import darsanalogin from '@/assets/darsanalogin.jpg'
 
 const LoginPage = () => {
   const router = useRouter();
@@ -58,7 +58,7 @@ const LoginPage = () => {
                 <FontAwesomeIcon icon={faGoogle} className="w-5 h-5" />
                 <span>Continue with Google</span>
               </button>
-
+              {/*
               <button className="w-full flex items-center justify-center space-x-2 py-3 px-4 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition duration-300">
                 <FontAwesomeIcon icon={faFacebookF} className="w-5 h-5" />
                 <span>Continue with Facebook</span>
@@ -73,6 +73,7 @@ const LoginPage = () => {
                 <FontAwesomeIcon icon={faLinkedinIn} className="w-5 h-5" />
                 <span>Continue with LinkedIn</span>
               </button>
+              */}
             </div>
 
             <p className="mt-6 text-sm text-gray-500 text-center lg:text-left">
@@ -82,7 +83,7 @@ const LoginPage = () => {
 
           <div className="hidden lg:block lg:w-1/2 lg:pl-8">
             <Image
-              src={loginheroimage}
+              src={darsanalogin}
               alt="Loginimage"
               width={900}
               height={100}

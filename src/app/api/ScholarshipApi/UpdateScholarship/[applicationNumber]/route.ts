@@ -5,20 +5,24 @@ import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/schola
 
 export async function POST(req: Request, { params }: { params: { applicationNumber: string } }) {
     const { applicationNumber } = params;
-    const data = await req.json();
+    let data;
 
     try {
-        // Convert dateOfBirth to Date object if needed
-        const formattedDateOfBirth = new Date(data.dateOfBirth);
+        data = await req.json();
+        console.log('Received data:', data);
+
+        if (!data || typeof data !== 'object' || !('status' in data)) {
+            console.error('Invalid data format');
+            return NextResponse.json({ message: 'Invalid request data' }, { status: 400 });
+        }
 
         await ScholarshipDb
             .update(Scholarship_Table)
-            .set({
-                ...data,
-                dateOfBirth: formattedDateOfBirth,
-            })
+            .set(data)
             .where(eq(Scholarship_Table.applicationNumber, Number(applicationNumber)))
             .execute();
+
+        console.log('Scholarship updated successfully');
 
         return NextResponse.json({ message: 'Scholarship updated successfully' }, { status: 200 });
     } catch (error) {

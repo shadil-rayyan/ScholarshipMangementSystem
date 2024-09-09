@@ -1,5 +1,5 @@
 {
-  "id": "29088acb-e56f-4e04-8240-a065b4985f8a",
+  "id": "5a8ad4e0-4dee-4b55-9acd-6c44a365e25b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -72,13 +72,13 @@
           "name": "mother_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "mother_number": {
           "name": "mother_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "income": {
           "name": "income",
@@ -90,34 +90,40 @@
           "name": "father_occupation",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "mother_occupation": {
           "name": "mother_occupation",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "student_number": {
           "name": "student_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "address": {
-          "name": "address",
+        "house_apartment_name": {
+          "name": "house_apartment_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "city": {
-          "name": "city",
+        "place_state": {
+          "name": "place_state",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "state": {
-          "name": "state",
+        "post_office": {
+          "name": "post_office",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -126,34 +132,10 @@
           "name": "pin_code",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "house_apartment_name": {
-          "name": "house_apartment_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "place_state": {
-          "name": "place_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "post_office": {
-          "name": "post_office",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "country": {
-          "name": "country",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "pincode": {
-          "name": "pincode",
+        "state": {
+          "name": "state",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -168,7 +150,7 @@
           "name": "whatsapp_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "student_email": {
           "name": "student_email",
@@ -180,31 +162,7 @@
           "name": "alternative_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "high_school": {
-          "name": "high_school",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "high_school_percentage": {
-          "name": "high_school_percentage",
-          "type": "numeric(5, 2)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "intermediate": {
-          "name": "intermediate",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "intermediate_percentage": {
-          "name": "intermediate_percentage",
-          "type": "numeric(5, 2)",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "name_of_the_college": {
           "name": "name_of_the_college",
@@ -228,11 +186,12 @@
           "name": "hostel_resident",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": false
         },
         "cgpa": {
           "name": "cgpa",
-          "type": "numeric(4, 2)",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
@@ -266,17 +225,62 @@
           "primaryKey": false,
           "notNull": true
         },
+        "photo_url": {
+          "name": "photo_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "check_url": {
+          "name": "check_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aadhar_card_url": {
+          "name": "aadhar_card_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "college_id_card_url": {
+          "name": "college_id_card_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "income_url": {
+          "name": "income_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "status": {
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'Pending'"
         },
         "remark": {
           "name": "remark",
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "application_date": {
+          "name": "application_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "admin_log": {
+          "name": "admin_log",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'"
         }
       },
       "indexes": {},

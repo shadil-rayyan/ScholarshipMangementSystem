@@ -1,4 +1,4 @@
-
+// src/components/scholarshipadmin/ScholarshipDetailsComponent.tsx
 
 "use client";
 import React, { useState, useEffect } from 'react';
@@ -22,23 +22,19 @@ export interface ScholarshipDetails {
     fatherOccupation: string;
     studentNumber: string;
     motherOccupation: string;
-    address: string;
-    city: string;
+
     state: string;
     pinCode: string;
     houseApartmentName: string;
     placeState: string;
     postOffice: string;
     country: string;
-    pincode: string;
+
     district: string;
     whatsappNumber: string;
     studentEmail: string;
     alternativeNumber: string;
-    highSchool: string;
-    highSchoolPercentage: number;
-    intermediate: string;
-    intermediatePercentage: number;
+
     nameOfTheCollege: string;
     branch: string;
     semester: string;
@@ -95,18 +91,15 @@ export interface ContactDetailsProps {
 export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetails }) => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div><strong>Address:</strong> {scholarshipDetails.address}</div>
-            <div><strong>City:</strong> {scholarshipDetails.city}</div>
+
             <div><strong>State:</strong> {scholarshipDetails.state}</div>
             <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
-            <div><strong>Student Phone:</strong> {scholarshipDetails.studentNumber}</div>
-            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherNumber}</div>
-            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherNumber}</div>
+
             <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
             <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
             <div><strong>Post Office:</strong> {scholarshipDetails.postOffice}</div>
             <div><strong>Country:</strong> {scholarshipDetails.country}</div>
-            <div><strong>Pincode:</strong> {scholarshipDetails.pincode}</div>
+
             <div><strong>District:</strong> {scholarshipDetails.district}</div>
             <div><strong>Whatsapp Number:</strong> {scholarshipDetails.whatsappNumber}</div>
             <div><strong>Student Email:</strong> {scholarshipDetails.studentEmail}</div>
@@ -122,10 +115,7 @@ export interface EducationalAndBankDetailsProps {
 export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps> = ({ scholarshipDetails }) => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div><strong>High School:</strong> {scholarshipDetails.highSchool}</div>
-            <div><strong>High School Percentage:</strong> {scholarshipDetails.highSchoolPercentage}%</div>
-            <div><strong>Intermediate:</strong> {scholarshipDetails.intermediate}</div>
-            <div><strong>Intermediate Percentage:</strong> {scholarshipDetails.intermediatePercentage}%</div>
+
             <div><strong>Name of the College:</strong> {scholarshipDetails.nameOfTheCollege}</div>
             <div><strong>Branch:</strong> {scholarshipDetails.branch}</div>
             <div><strong>Semester:</strong> {scholarshipDetails.semester}</div>
@@ -184,7 +174,6 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                     <tr>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Size</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
                     </tr>
                 </thead>
@@ -193,25 +182,13 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                         <tr key={doc.url}>
                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{index + 1}</td>
                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
-                            {/* <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.size}</td> */}
                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
                                 {doc.url ? (
-                                    <Dialog>
-                                        <DialogTrigger>
-                                            <button
-                                                onClick={() => setSelectedDocument(doc.url)}
-                                                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center"
-                                            >
-                                                <FaEye />
-                                            </button>
-                                        </DialogTrigger>
-                                        <DialogContent className="w-full max-w-4xl">
-                                            <div className="p-4">
-                                                <h2 className="text-xl font-bold mb-4">{doc.name}</h2>
-                                                {renderDocument(doc.url)}
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
+                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                        <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center">
+                                            <FaEye />
+                                        </button>
+                                    </a>
                                 ) : (
                                     'Not Available'
                                 )}

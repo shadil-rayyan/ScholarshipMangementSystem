@@ -30,7 +30,8 @@ export default async function middleware(request: NextRequest) {
   // Check user role if session is present
   if (sessionToken) {
     try {
-      const user = await auth.verifyIdToken(sessionToken); // Verify token
+      // Verify the session token
+      const user = await auth.verifyIdToken(sessionToken);
       const userEmail = user.email;
       
       if (userEmail) {
