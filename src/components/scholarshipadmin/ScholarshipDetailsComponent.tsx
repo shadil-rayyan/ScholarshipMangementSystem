@@ -7,15 +7,6 @@ import { User } from 'firebase/auth'; // Import User and auth from Firebase
 import {auth} from '@/lib/firebase/config'; // Import the auth module from Firebase
 // import Values from '@/components/homepage/values';
 
-
-
-export interface VerificationStep {
-    step: number;
-    label: string;
-    value: string;
-    admin: string;
-}
-
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
     name: string;
@@ -63,14 +54,10 @@ export interface ScholarshipDetails {
     collegeIdCardUrl: string;
     incomeUrl: string;
 
-    verifyadmin: string;
     selectadmin: string;
     amountadmin: string;
     rejectadmin: string;
     renewaladmin: string;
-
-    verificationTable?: VerificationStep[];
-
 }
 
 export interface PersonalDetailsProps {
@@ -224,6 +211,8 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
 
 
+
+
 export interface VerificationProps {
   status: string;
   setStatus: (status: string) => void;
@@ -268,13 +257,9 @@ export const Verification: React.FC<VerificationProps> = ({
       updatedTable[0].value = 'Yes';
       updatedTable[0].admin = adminName;
       updatedTable[1].value = '';
-      updatedTable[1].admin = '';
       updatedTable[2].value = '';
-      updatedTable[2].admin = '';
       updatedTable[3].value = '';
-      updatedTable[3].admin = '';
       updatedTable[4].value = '';
-      updatedTable[4].admin = '';
     } else if (currentStatus === 'Select') {
       updatedTable[1].value = 'Yes';
       updatedTable[1].admin = adminName;
@@ -288,7 +273,6 @@ export const Verification: React.FC<VerificationProps> = ({
       updatedTable[3].value = 'Yes';
       updatedTable[3].admin = adminName;
       updatedTable[4].value = '';
-      updatedTable[4].admin = '';
     } else if (currentStatus === 'Renewal') {
       updatedTable[4].value = 'Yes';
       updatedTable[4].admin = adminName;
@@ -315,9 +299,9 @@ export const Verification: React.FC<VerificationProps> = ({
   }, [scholarshipDetails?.status]);
 
   // Check the conditions to disable certain statuses
-  const isVerifySelected = status === 'Verify' || verificationTable[0].value === 'Yes';
-  const isSelectSelected = status === 'Select' || verificationTable[1].value === 'Yes';
-  const isAmountProceedSelected = status === 'Amount Proceed' || verificationTable[2].value === 'Yes';
+  const isVerifySelected = status === 'Verify' || (verificationTable[0]?.value === 'Yes');
+  const isSelectSelected = status === 'Select' || (verificationTable[1]?.value === 'Yes');
+  const isAmountProceedSelected = status === 'Amount Proceed' || (verificationTable[2]?.value === 'Yes');
 
   return (
     <div>
@@ -332,15 +316,16 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
+            <option value="Renewal">
+              Renewal
+            </option>
             <option value="Select" disabled={!isVerifySelected}>
               Select
             </option>
             <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
               Amount Proceed
             </option>
-            <option value="Renewal" disabled={!isAmountProceedSelected}>
-              Renewal
-            </option>
+            
           </select>
         </label>
       </div>

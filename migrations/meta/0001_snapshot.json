@@ -1,6 +1,6 @@
 {
-  "id": "d0d3de41-8109-4ed9-95eb-aa6bca504874",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b6cbd60f-e40e-4ec0-abfe-be16f469399b",
+  "prevId": "d0d3de41-8109-4ed9-95eb-aa6bca504874",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -282,8 +282,8 @@
           "notNull": false,
           "default": "'null'"
         },
-        "selecting admin": {
-          "name": "selecting admin",
+        "select admin": {
+          "name": "select admin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

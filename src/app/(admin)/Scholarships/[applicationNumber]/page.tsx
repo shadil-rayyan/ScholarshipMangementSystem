@@ -1,7 +1,7 @@
+'use client'
 import React, { useState, useEffect } from 'react';
-import { PersonalDetails, ContactDetails, EducationalAndBankDetails, Documentation, Verification, ScholarshipDetails, VerificationStep } from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
+import { PersonalDetails, ContactDetails, EducationalAndBankDetails, Documentation, Verification, ScholarshipDetails } from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
 import { useParams } from 'next/navigation';
-import { AdminLogEntry } from '@/util/adminLogEntry'; // Adjust the import path as needed
 
 const ScholarshipDetailPage: React.FC = () => {
     const { applicationNumber } = useParams();
@@ -10,13 +10,9 @@ const ScholarshipDetailPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState("personal");
     const [showDraftSaved, setShowDraftSaved] = useState(false);
-    const [verificationTable, setVerificationTable] = useState<VerificationStep[]>([
-        { step: 0, label: "Verified by Admin", value: "", admin: "" },
-        { step: 1, label: "Selected for Scholarship", value: "", admin: "" },
-        { step: 2, label: "Amount processed", value: "", admin: "" },
-        { step: 3, label: 'Rejected', value: '', admin: '' },
-        { step: 4, label: 'Renewal', value: '', admin: '' },
-    ]);
+    
+    // Dummy verificationTable and setVerificationTable state
+    const [verificationTable, setVerificationTable] = useState<any[]>([]);
 
     useEffect(() => {
         fetchScholarshipDetail();
@@ -30,9 +26,6 @@ const ScholarshipDetailPage: React.FC = () => {
             }
             const data: ScholarshipDetails = await response.json();
             setScholarshipDetails(data);
-            if (data.verificationTable) {
-                setVerificationTable(data.verificationTable);
-            }
         } catch (err) {
             setError("Error fetching scholarship details. Please try again later.");
         } finally {
@@ -40,71 +33,72 @@ const ScholarshipDetailPage: React.FC = () => {
         }
     };
 
-    const handleSubmitClick = async () => {
-        setShowDraftSaved(true);
-        setTimeout(() => setShowDraftSaved(false), 3000);
+const handleSubmitClick = async () => {
+    setShowDraftSaved(true);
+    setTimeout(() => setShowDraftSaved(false), 3000);
 
-        try {
-            if (!scholarshipDetails) {
-                throw new Error("No scholarship details to update");
-            }
+    try {
+        if (!scholarshipDetails) {
+            throw new Error("No scholarship details to update");
+        }
 
-            const updatedScholarshipDetails = {
-                status: scholarshipDetails.status,
-                verifyadmin: verificationTable[0].admin,
-                selectadmin: verificationTable[1].admin,
-                amountadmin: verificationTable[2].admin,
-                rejectadmin: verificationTable[3].admin,
-                renewaladmin: verificationTable[4].admin,
-            };
+        const updatedScholarshipDetails = {
+            status: scholarshipDetails.status,
+            verifyadmin: verificationTable[0]?.admin || '', // Adjust these fields
+            selectadmin: verificationTable[1]?.admin || '',
+            amountadmin: verificationTable[2]?.admin || '',
+            rejectadmin: verificationTable[3]?.admin || '',
+            renewaladmin: verificationTable[4]?.admin || ''
+        };
 
-            console.log("Updating with:", updatedScholarshipDetails);
+        console.log("Updating with:", updatedScholarshipDetails);
 
-            const response = await fetch(`/api/ScholarshipApi/UpdateScholarship/${applicationNumber}`, {
+        const response = await fetch(`/api/ScholarshipApi/UpdateScholarship/${applicationNumber}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedScholarshipDetails),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to update scholarship. Error: ${errorData.message}`);
+        }
+
+        console.log("Response Body:", await response.text());
+        console.log("Scholarship updated successfully.");
+
+        const previousStatus = scholarshipDetails.status;
+        const newStatus = updatedScholarshipDetails.status;
+
+        if (previousStatus !== newStatus) {
+            const remark = `Status updated to ${newStatus}`;
+
+            const emailResponse = await fetch(`/api/SendMail/sendEmail`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(updatedScholarshipDetails),
+                body: JSON.stringify({
+                    applicationNumber,
+                    status: newStatus,
+                    remark,
+                }),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to update scholarship. Error: ${errorData.message}`);
+            if (!emailResponse.ok) {
+                const errorData = await emailResponse.json();
+                throw new Error(`Failed to send email. Error: ${errorData.message}`);
             }
 
-            console.log("Response Body:", await response.text());
-            console.log("Scholarship updated successfully.");
-
-            const previousStatus = scholarshipDetails.status;
-            const newStatus = updatedScholarshipDetails.status;
-
-            // if (previousStatus !== newStatus) {
-            //     const remark = `Status updated to ${newStatus}`;
-
-            //     const emailResponse = await fetch(`/api/SendMail/sendEmail`, {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify({
-            //             applicationNumber,
-            //             status: newStatus,
-            //             remark,
-            //         }),
-            //     });
-
-            //     if (!emailResponse.ok) {
-            //         const errorData = await emailResponse.json();
-            //         throw new Error(`Failed to send email. Error: ${errorData.message}`);
-            //     }
-
-            //     console.log("Email notification sent.");
-            // }
-        } catch (error) {
-            console.error("Error updating scholarship or sending email:", error);
+            console.log("Email notification sent.");
         }
-    };
+    } catch (error) {
+        console.error("Error updating scholarship or sending email:", error);
+    }
+};
+
 
     const handleNextClick = () => {
         setShowDraftSaved(true);
@@ -144,8 +138,8 @@ const ScholarshipDetailPage: React.FC = () => {
                         setStatus={(status) =>
                             setScholarshipDetails((prev) => (prev ? { ...prev, status } : null))
                         }
-                        verificationTable={verificationTable}
-                        setVerificationTable={setVerificationTable}
+                        verificationTable={verificationTable} // Pass the verificationTable
+                        setVerificationTable={setVerificationTable} // Pass the setVerificationTable
                         scholarshipDetails={scholarshipDetails}
                         setScholarshipDetails={setScholarshipDetails}
                     />

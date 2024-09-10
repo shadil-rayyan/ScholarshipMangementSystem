@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "scholarship" (
 	"name" text NOT NULL,
 	"date_of_birth" timestamp NOT NULL,
 	"gender" text NOT NULL,
-	"nationality" text NOT NULL,
+	"Type" text NOT NULL,
 	"category" text NOT NULL,
 	"adhar_number" text NOT NULL,
 	"father_name" text NOT NULL,
@@ -43,6 +43,12 @@ CREATE TABLE IF NOT EXISTS "scholarship" (
 	"status" text DEFAULT 'Pending',
 	"remark" text,
 	"application_date" timestamp DEFAULT now(),
-	"admin_log" jsonb DEFAULT '[]',
-	CONSTRAINT "scholarship_application_number_unique" UNIQUE("application_number")
+	"verifying_admin" text DEFAULT 'null',
+	"selecting admin" text DEFAULT 'null',
+	"amount_admin" text DEFAULT 'null',
+	"admin_reject" text DEFAULT 'null',
+	"admin_renewal" text DEFAULT 'null',
+	CONSTRAINT "scholarship_application_number_unique" UNIQUE("application_number"),
+	CONSTRAINT "scholarship_adhar_number_unique" UNIQUE("adhar_number"),
+	CONSTRAINT "scholarship_student_email_unique" UNIQUE("student_email")
 );
