@@ -51,10 +51,11 @@ export async function POST(request: Request) {
 
         // Construct the initial scholarship data object
         const scholarshipData = {
+            applicationType: 'Scholarship', // Add the applicationType property
             name: personalDetails.name,
             dateOfBirth: new Date(personalDetails.dob),
             gender: personalDetails.gender,
-            nationality: personalDetails.nationality,
+            applicationtype: personalDetails.applicationtype,
             category: personalDetails.category,
             adharNumber: personalDetails.aadhar,
             fatherName: personalDetails.fatherName,

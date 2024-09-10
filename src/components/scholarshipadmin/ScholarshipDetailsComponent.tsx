@@ -1,5 +1,4 @@
 // src/components/scholarshipadmin/ScholarshipDetailsComponent.tsx
-
 "use client";
 import React, { useState, useEffect } from 'react';
 import { FaEye } from 'react-icons/fa';
@@ -8,12 +7,21 @@ import { User } from 'firebase/auth'; // Import User and auth from Firebase
 import {auth} from '@/lib/firebase/config'; // Import the auth module from Firebase
 // import Values from '@/components/homepage/values';
 
+
+
+export interface VerificationStep {
+    step: number;
+    label: string;
+    value: string;
+    admin: string;
+}
+
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
     name: string;
     dateOfBirth: string;
     gender: string;
-    nationality: string;
+    applicationtype: string;
     category: string;
     adharNumber: string;
     fatherName: string;
@@ -54,6 +62,15 @@ export interface ScholarshipDetails {
     aadharCardUrl: string;
     collegeIdCardUrl: string;
     incomeUrl: string;
+
+    verifyadmin: string;
+    selectadmin: string;
+    amountadmin: string;
+    rejectadmin: string;
+    renewaladmin: string;
+
+    verificationTable?: VerificationStep[];
+
 }
 
 export interface PersonalDetailsProps {
@@ -71,7 +88,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
             <div><strong>Name:</strong> {scholarshipDetails.name}</div>
             <div><strong>DOB:</strong> {formatDate(scholarshipDetails.dateOfBirth)}</div>
             <div><strong>Gender:</strong> {scholarshipDetails.gender}</div>
-            <div><strong>Nationality:</strong> {scholarshipDetails.nationality}</div>
+            <div><strong>applicationtype:</strong> {scholarshipDetails.applicationtype}</div>
             <div><strong>Category:</strong> {scholarshipDetails.category}</div>
             <div><strong>Aadhar Number:</strong> {scholarshipDetails.adharNumber}</div>
             <div><strong>Father Name:</strong> {scholarshipDetails.fatherName}</div>
@@ -232,34 +249,49 @@ export const Verification: React.FC<VerificationProps> = ({
     const adminName = user?.displayName || 'Unknown Admin';
 
     // Ensure the table has the required number of steps
-    if (updatedTable.length < 3) {
+    if (updatedTable.length < 5) {
       // If not enough elements, initialize them with defaults
-      while (updatedTable.length < 3) {
+      while (updatedTable.length < 5) {
         updatedTable.push({ label: '', value: '', admin: '' });
       }
     }
 
     // Update labels based on the current status
-    updatedTable[0].label = 'Step 1: Verify';
-    updatedTable[1].label = 'Step 2: Select';
-    updatedTable[2].label = 'Step 3: Amount Proceed';
+    updatedTable[0].label = 'Verified by Admin';
+    updatedTable[1].label = 'Selected for Scholarship';
+    updatedTable[2].label = 'Amount Processed';
+    updatedTable[3].label = 'Rejected';
+    updatedTable[4].label = 'Renewal';
 
+    // Update the verification table based on the status
     if (currentStatus === 'Verify') {
       updatedTable[0].value = 'Yes';
       updatedTable[0].admin = adminName;
-      updatedTable[1].value = ''; // Reset next steps if Verify is selected
+      updatedTable[1].value = '';
+      updatedTable[1].admin = '';
       updatedTable[2].value = '';
+      updatedTable[2].admin = '';
+      updatedTable[3].value = '';
+      updatedTable[3].admin = '';
+      updatedTable[4].value = '';
+      updatedTable[4].admin = '';
     } else if (currentStatus === 'Select') {
       updatedTable[1].value = 'Yes';
       updatedTable[1].admin = adminName;
+    } else if (currentStatus === 'Amount Proceed') {
+      updatedTable[2].value = 'Yes';
+      updatedTable[2].admin = adminName;
     } else if (currentStatus === 'Reject') {
       updatedTable[0].value = 'No';
       updatedTable[1].value = 'No';
       updatedTable[2].value = 'No';
-      // You may handle this step if needed
-    } else if (currentStatus === 'Amount Proceed') {
-      updatedTable[2].value = 'Yes';
-      updatedTable[2].admin = adminName;
+      updatedTable[3].value = 'Yes';
+      updatedTable[3].admin = adminName;
+      updatedTable[4].value = '';
+      updatedTable[4].admin = '';
+    } else if (currentStatus === 'Renewal') {
+      updatedTable[4].value = 'Yes';
+      updatedTable[4].admin = adminName;
     }
 
     setVerificationTable(updatedTable);
@@ -285,6 +317,7 @@ export const Verification: React.FC<VerificationProps> = ({
   // Check the conditions to disable certain statuses
   const isVerifySelected = status === 'Verify' || verificationTable[0].value === 'Yes';
   const isSelectSelected = status === 'Select' || verificationTable[1].value === 'Yes';
+  const isAmountProceedSelected = status === 'Amount Proceed' || verificationTable[2].value === 'Yes';
 
   return (
     <div>
@@ -299,13 +332,14 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            {/* Disable 'Select' option unless 'Verify' is selected */}
             <option value="Select" disabled={!isVerifySelected}>
               Select
             </option>
-            {/* Disable 'Amount Proceed' unless both 'Verify' and 'Select' are selected */}
             <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
               Amount Proceed
+            </option>
+            <option value="Renewal" disabled={!isAmountProceedSelected}>
+              Renewal
             </option>
           </select>
         </label>

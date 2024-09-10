@@ -58,7 +58,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
                         <tr key={index}>
                             <td className="border p-2">{index + 1}</td>
                             <td className="border p-2">{doc}</td>
-                            <td className="border p-2">Max Size: 100kb</td>
+                            <td className="border p-2">Max Size: {index === 0 ? '5MB' : '1MB'}</td>
                             <td className="border p-2">
                                 {files[index] ? (
                                     <span>{files[index]?.name}</span>

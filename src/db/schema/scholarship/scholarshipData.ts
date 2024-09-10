@@ -11,9 +11,9 @@ export const Scholarship_Table = pgTable('scholarship', {
   name: text('name').notNull(),
   dateOfBirth: timestamp('date_of_birth').notNull(),
   gender: text('gender').notNull(),
-  nationality: text('nationality').notNull(),
+  applicationtype:text('Type').notNull(),
   category: text('category').notNull(),
-  adharNumber: text('adhar_number').notNull(),
+  adharNumber: text('adhar_number').unique().notNull(),
   fatherName: text('father_name').notNull(),
   fatherNumber: text('father_number').notNull(),
   motherName: text('mother_name'),
@@ -32,7 +32,7 @@ export const Scholarship_Table = pgTable('scholarship', {
   state: text('state').notNull(),
   district: text('district').notNull(),
   whatsappNumber: text('whatsapp_number'),
-  studentEmail: text('student_email').notNull(),
+  studentEmail: text('student_email').unique().notNull(),
   alternativeNumber: text('alternative_number'),
 
   // Educational Details
@@ -60,7 +60,14 @@ export const Scholarship_Table = pgTable('scholarship', {
   status: text('status').default('Pending'),
   remark: text('remark'),
   applicationDate: timestamp('application_date').defaultNow(), // Application submission date
-  adminLog: jsonb('admin_log').default([]), // Ensure this is defined as `jsonb`
+  // adminLog: jsonb('admin_log').default([]), // Ensure this is defined as `jsonb`
+  verifyadmin:text('verifying_admin').default('null'),
+  selectadmin:text('selecting admin').default('null'),
+  amountadmin:text('amount_admin').default('null'),
+  rejectadmin:text('admin_reject').default('null'),
+  renewaladmin:text('admin_renewal').default('null'),
+
+
 });
 
 export type InsertScholarship = typeof Scholarship_Table.$inferInsert;

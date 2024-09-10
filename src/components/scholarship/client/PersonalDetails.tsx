@@ -6,7 +6,7 @@ export interface PersonalDetailsType {
     name: string;
     dob: string;
     gender: string;
-    nationality: string;
+    applicationtype: string;
     category: string;
     aadhar: string;
     fatherName: string;
@@ -75,13 +75,24 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
                     ))}
                 </div>
             </div>
-            <InputField
-                label="Nationality"
-                required
-                value={personalDetails.nationality}
-                onChange={(e) => handleChange('nationality', e.target.value)}
-                error={errors.nationality}
-            />
+            <div className="col-span-1 flex items-center">
+                <div className="flex items-center space-x-4">
+                    <span className="text-gray-700">Application type:</span>
+                    {['Fresh', 'Renewal'].map((applicationtype) => (
+                        <label key={applicationtype} className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                name="applicationtype"
+                                value={applicationtype.toLowerCase()}
+                                className="form-radio"
+                                checked={personalDetails.applicationtype === applicationtype.toLowerCase()}
+                                onChange={(e) => handleChange('applicationtype', e.target.value)}
+                            />
+                            <span className="ml-2">{applicationtype}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
             <DropdownField
                 label="Category"
                 value={personalDetails.category}

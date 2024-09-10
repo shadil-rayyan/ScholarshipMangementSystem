@@ -1,22 +1,19 @@
-// src/app/api/ScholarshipApi/trackApplication/[email]/route.ts
-
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/scholarshipData';
-import { sendMail } from '@/util/mailer';
 
 export async function GET(req: Request, { params }: { params: { email: string } }) {
     const { email } = params;
 
     try {
         console.log(`Fetching scholarship for email: ${email}`);
-        
-        const scholarship = await ScholarshipDb
-    .select()
-    .from(Scholarship_Table)
-    .where(eq(Scholarship_Table.studentEmail, email)) // Use studentEmail
-    .execute();
 
+        // Fetch scholarship data from the database
+        const scholarship = await ScholarshipDb
+            .select()
+            .from(Scholarship_Table)
+            .where(eq(Scholarship_Table.studentEmail, email))
+            .execute();
 
         if (scholarship.length === 0) {
             console.error('Scholarship not found');
@@ -26,40 +23,19 @@ export async function GET(req: Request, { params }: { params: { email: string } 
         const scholarshipData = scholarship[0];
         console.log('Scholarship fetched:', scholarshipData);
 
-        // Assuming you want to check for status change
-        const previousStatus = scholarshipData.status;
+        // Default verification table structure
+        const verificationSteps = [
+            { label: 'Step 1: Verify', value: scholarshipData.verifyadmin || '', admin: scholarshipData.verifyadmin ? 'Admin' : null },
+            { label: 'Step 2: Select', value: scholarshipData.selectadmin || '', admin: scholarshipData.selectadmin ? 'Admin' : null },
+            { label: 'Step 3: Amount Proceed', value: scholarshipData.amountadmin || '', admin: scholarshipData.amountadmin ? 'Admin' : null },
+            { label: 'Step 4: Reject', value: scholarshipData.rejectadmin || '', admin: scholarshipData.rejectadmin ? 'Admin' : null },
+            { label: 'Step 5: Renewal', value: scholarshipData.renewaladmin || '', admin: scholarshipData.renewaladmin ? 'Admin' : null },
+        ];
 
-        if (previousStatus !== scholarshipData.status) {
-            console.log('Status has changed, sending email...');
-            await sendStatusChangeEmail(scholarshipData);
-        }
-
-        console.log('Scholarship details fetched successfully');
-        return NextResponse.json(scholarshipData, { status: 200 });
+        console.log('Scholarship details with verification table fetched successfully');
+        return NextResponse.json({ ...scholarshipData, verificationTable: verificationSteps }, { status: 200 });
     } catch (error) {
         console.error('Error fetching scholarship detail:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-    }
-}
-
-async function sendStatusChangeEmail(scholarshipData: any) {
-    const email = scholarshipData.email;
-    const subject = 'Scholarship Status Update';
-    const remarks = scholarshipData.remarks || 'No remarks provided';
-    const text = `Dear ${scholarshipData.name},
-
-Your scholarship application status has changed to: ${scholarshipData.status}
-
-Remarks: ${remarks}
-
-Thank you,
-Scholarship Committee`;
-
-    try {
-        console.log(`Attempting to send email to ${email}`);
-        const emailResponse = await sendMail(email, subject, text);
-        console.log('Status change email sent successfully:', emailResponse);
-    } catch (error) {
-        console.error('Error sending status change email:', error);
     }
 }
