@@ -29,7 +29,7 @@ const Sidebar: React.FC = () => {
             {/* Top Section */}
             <div className="p-6">
                 {/* Logo with object-fit and specific size */}
-                <div className="flex items-center justify-center w-20 h-20 overflow-hidden mb-6">
+                <div className="flex items-center justify-center w-25 h-20 overflow-hidden mb-6">
                     <div className="relative w-full h-full">
                         <Image
                             src={logo} // Path to logo image
@@ -39,6 +39,9 @@ const Sidebar: React.FC = () => {
                         />
                     </div>
                 </div>
+                <div className='text-centre text-black'>
+                        Admin DashBoard
+                    </div>
 
 
                 {/* Space for other menu items */}

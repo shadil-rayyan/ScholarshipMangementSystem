@@ -1,10 +1,7 @@
-// actions/auth-actions.ts
-
 'use server';
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
 import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from '@/lib/firebase/constants';
 
 export async function createSession(uid: string) {
@@ -20,6 +17,5 @@ export async function createSession(uid: string) {
 
 export async function removeSession() {
   cookies().delete(SESSION_COOKIE_NAME);
-
   redirect(ROOT_ROUTE);
 }

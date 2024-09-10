@@ -114,6 +114,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             />
             <InputField
                 label="Mother Name"
+                required
                 value={personalDetails.motherName || ''}
                 onChange={(e) => handleChange('motherName', e.target.value)}
                 error={errors.motherName}
@@ -133,6 +134,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             />
             <InputField
                 label="Father Occupation"
+                required
                 value={personalDetails.fatherOccupation || ''}
                 onChange={(e) => handleChange('fatherOccupation', e.target.value)}
                 error={errors.fatherOccupation}
@@ -147,6 +149,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <InputField
                 label="Mother Occupation"
                 value={personalDetails.motherOccupation || ''}
+                required
                 onChange={(e) => handleChange('motherOccupation', e.target.value)}
                 error={errors.motherOccupation}
             />

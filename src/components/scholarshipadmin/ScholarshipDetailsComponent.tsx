@@ -4,7 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Dialog, DialogContent, DialogTrigger } from '@radix-ui/react-dialog';
-
+import { User } from 'firebase/auth'; // Import User and auth from Firebase
+import {auth} from '@/lib/firebase/config'; // Import the auth module from Firebase
+// import Values from '@/components/homepage/values';
 
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
@@ -203,128 +205,152 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
 
 
+
+
 export interface VerificationProps {
-    status: string;
-    setStatus: (status: string) => void;
-    verificationTable: { label: string; value: string; admin: string }[];
-    setVerificationTable: (table: { label: string; value: string; admin: string }[]) => void;
-    scholarshipDetails: ScholarshipDetails;
-    setScholarshipDetails: (details: ScholarshipDetails) => void;
+  status: string;
+  setStatus: (status: string) => void;
+  verificationTable: any[];
+  setVerificationTable: React.Dispatch<React.SetStateAction<any[]>>;
+  scholarshipDetails: ScholarshipDetails | null;
+  setScholarshipDetails: React.Dispatch<React.SetStateAction<ScholarshipDetails | null>>;
 }
 
 export const Verification: React.FC<VerificationProps> = ({
-    status,
-    setStatus,
-    verificationTable,
-    setVerificationTable,
-    scholarshipDetails,
-    setScholarshipDetails,
+  status,
+  setStatus,
+  verificationTable,
+  setVerificationTable,
+  scholarshipDetails,
+  setScholarshipDetails,
 }) => {
+  // Hook to get the current user from Firebase Auth
+  const user: User | null = auth.currentUser;
 
-    // Function to update the verification table based on the current status
-    const updateTableBasedOnStatus = (currentStatus: string) => {
-        let updatedTable = [...verificationTable];
+  const updateTableBasedOnStatus = (currentStatus: string) => {
+    const updatedTable = [...verificationTable];
+    const adminName = user?.displayName || 'Unknown Admin';
 
-        if (currentStatus === 'Verify') {
-            updatedTable[0].value = 'Yes';
-            updatedTable[1].value = ' ';
-            updatedTable[2].value = 'No';
-        } else if (currentStatus === 'Select') {
-            updatedTable[0].value = 'Yes';
-            updatedTable[1].value = 'Yes';
-            updatedTable[2].value = 'No';
-        } else if (currentStatus === 'Reject') {
-            updatedTable[0].value = 'No';
-            updatedTable[1].value = 'NO';
-            updatedTable[2].value = 'No';
-        } else if (currentStatus === 'Amount Proceed') {
-            updatedTable[0].value = 'Yes';
-            updatedTable[1].value = 'Yes';
-            updatedTable[2].value = 'Yes';
-        }
+    // Ensure the table has the required number of steps
+    if (updatedTable.length < 3) {
+      // If not enough elements, initialize them with defaults
+      while (updatedTable.length < 3) {
+        updatedTable.push({ label: '', value: '', admin: '' });
+      }
+    }
 
-        setVerificationTable(updatedTable);
-    };
+    // Update labels based on the current status
+    updatedTable[0].label = 'Step 1: Verify';
+    updatedTable[1].label = 'Step 2: Select';
+    updatedTable[2].label = 'Step 3: Amount Proceed';
 
-    // UseEffect to handle initial status load
-    useEffect(() => {
-        if (scholarshipDetails.status) {
-            updateTableBasedOnStatus(scholarshipDetails.status);
-            setStatus(scholarshipDetails.status); // Sync dropdown with initial status
-        }
-    }, [scholarshipDetails.status]);
+    if (currentStatus === 'Verify') {
+      updatedTable[0].value = 'Yes';
+      updatedTable[0].admin = adminName;
+      updatedTable[1].value = ''; // Reset next steps if Verify is selected
+      updatedTable[2].value = '';
+    } else if (currentStatus === 'Select') {
+      updatedTable[1].value = 'Yes';
+      updatedTable[1].admin = adminName;
+    } else if (currentStatus === 'Reject') {
+      updatedTable[0].value = 'No';
+      updatedTable[1].value = 'No';
+      updatedTable[2].value = 'No';
+      // You may handle this step if needed
+    } else if (currentStatus === 'Amount Proceed') {
+      updatedTable[2].value = 'Yes';
+      updatedTable[2].admin = adminName;
+    }
 
-    // Handle dropdown change
-    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedStatus = e.target.value;
+    setVerificationTable(updatedTable);
+  };
 
-        // Update the status in the state
-        setStatus(selectedStatus);
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedStatus = e.target.value;
+    setStatus(selectedStatus);
 
-        // Update the table and scholarshipDetails state
-        updateTableBasedOnStatus(selectedStatus);
-        setScholarshipDetails({ ...scholarshipDetails, status: selectedStatus });
-    };
+    // Update the verification table and sync the status with scholarship details
+    updateTableBasedOnStatus(selectedStatus);
+    setScholarshipDetails((prev) => ({ ...prev, status: selectedStatus }));
+  };
 
-    return (
-        <div>
-            <div style={{ marginBottom: '20px' }}>
-                <label>
-                    <strong>Verification Status:</strong>
-                    <select
-                        value={status}
-                        onChange={handleStatusChange}
-                        style={{ marginLeft: '10px', padding: '5px', border: '1px solid #ccc', width: '200px' }}
-                    >
-                        <option value="">Select Status</option>
-                        <option value="Verify">Verify</option>
-                        <option value="Select">Select</option>
-                        <option value="Amount Proceed">Amount Proceed</option>
-                        <option value="Reject">Reject</option>
-                    </select>
-                </label>
-            </div>
+  // Initialize status on first load
+  useEffect(() => {
+    if (scholarshipDetails?.status) {
+      setStatus(scholarshipDetails.status); // Sync the dropdown with initial status
+      updateTableBasedOnStatus(scholarshipDetails.status);
+    }
+  }, [scholarshipDetails?.status]);
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-                <thead>
-                    <tr>
-                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Verification Steps</th>
-                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Status</th>
-                        <th style={{ border: '1px solid #ddd', padding: '10px' }}>Admin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {verificationTable.map((step, index) => (
-                        <tr key={index}>
-                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.label}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.value}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.admin}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+  // Check the conditions to disable certain statuses
+  const isVerifySelected = status === 'Verify' || verificationTable[0].value === 'Yes';
+  const isSelectSelected = status === 'Select' || verificationTable[1].value === 'Yes';
 
-            <div style={{ marginBottom: '20px' }}>
-                <label>
-                    <strong>Status:</strong>
-                    <input
-                        type="text"
-                        value={scholarshipDetails.status}
-                        onChange={(e) => setScholarshipDetails({ ...scholarshipDetails, status: e.target.value })}
-                        style={{ padding: '5px', border: '0px solid #ccc', width: '90%', textTransform: 'uppercase' }}
-                    />
-                </label>
+  return (
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          <strong>Verification Status:</strong>
+          <select
+            value={status}
+            onChange={handleStatusChange}
+            style={{ marginLeft: '10px', padding: '5px', border: '1px solid #ccc', width: '200px' }}
+          >
+            <option value="">Select Status</option>
+            <option value="Verify">Verify</option>
+            <option value="Reject">Reject</option>
+            {/* Disable 'Select' option unless 'Verify' is selected */}
+            <option value="Select" disabled={!isVerifySelected}>
+              Select
+            </option>
+            {/* Disable 'Amount Proceed' unless both 'Verify' and 'Select' are selected */}
+            <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
+              Amount Proceed
+            </option>
+          </select>
+        </label>
+      </div>
 
-                <label>
-                    <strong>Remark:</strong>
-                    <input
-                        type="text"
-                        value={scholarshipDetails.remark}
-                        onChange={(e) => setScholarshipDetails({ ...scholarshipDetails, remark: e.target.value })}
-                        style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
-                    />
-                </label>
-            </div>
-        </div>
-    );
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ddd', padding: '10px' }}>Verification Steps</th>
+            <th style={{ border: '1px solid #ddd', padding: '10px' }}>Status</th>
+            <th style={{ border: '1px solid #ddd', padding: '10px' }}>Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {verificationTable.map((step, index) => (
+            <tr key={index}>
+              <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.label}</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.value}</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px' }}>{step.admin}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          <strong>Status:</strong>
+          <input
+            type="text"
+            value={scholarshipDetails?.status || ''}
+            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, status: e.target.value }))}
+            style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
+          />
+        </label>
+
+        <label>
+          <strong>Remark:</strong>
+          <input
+            type="text"
+            value={scholarshipDetails?.remark || ''}
+            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, remark: e.target.value }))}
+            style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
+          />
+        </label>
+      </div>
+    </div>
+  );
 };

@@ -1,13 +1,13 @@
 import React from 'react';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
-// Define and export the FilesType
+// Store file objects, not URLs
 export type FilesType = { [key: number]: File | null };
 
 interface DocumentationProps {
     files: FilesType;
     setFiles: React.Dispatch<React.SetStateAction<FilesType>>;
-    errors: Partial<Record<number, string>>; // Add errors prop
+    errors: Partial<Record<number, string>>;
 }
 
 export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, errors }) => {
@@ -28,6 +28,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
             }
             return newFiles;
         });
+
         const fileInput: HTMLInputElement | null = document.querySelector(`#file-input-${index}`);
         if (fileInput) {
             fileInput.value = '';
@@ -67,6 +68,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
                                         id={`file-input-${index}`}
                                         className="w-full"
                                         onChange={(e) => handleFileChange(index, e.target.files?.[0] ?? null)}
+                                        required
                                     />
                                 )}
                             </td>
@@ -74,6 +76,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
                                 <button
                                     className="px-2 py-1 bg-blue-500 text-white rounded"
                                     onClick={() => handleViewClick(files[index])}
+                                    disabled={!files[index]}
                                 >
                                     <FaEye />
                                 </button>
@@ -85,6 +88,9 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
                                 >
                                     <FaTrash />
                                 </button>
+                            </td>
+                            <td className="border p-2 text-red-500">
+                                {errors[index] && <span>{errors[index]}</span>}
                             </td>
                         </tr>
                     ))}

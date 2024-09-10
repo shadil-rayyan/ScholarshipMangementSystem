@@ -60,7 +60,7 @@ export const Scholarship_Table = pgTable('scholarship', {
   status: text('status').default('Pending'),
   remark: text('remark'),
   applicationDate: timestamp('application_date').defaultNow(), // Application submission date
-  adminLog: jsonb('admin_log').default('[]'), // Array to store admin logs for verification
+  adminLog: jsonb('admin_log').default([]), // Ensure this is defined as `jsonb`
 });
 
 export type InsertScholarship = typeof Scholarship_Table.$inferInsert;

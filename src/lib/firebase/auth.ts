@@ -1,6 +1,6 @@
 import { signInWithPopup, GoogleAuthProvider, User, UserCredential } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, firestore } from './config'; // Adjust import path as needed
+import { auth, firestore } from './config';
 
 export function onAuthStateChanged(callback: (authUser: User | null) => void) {
   return auth.onAuthStateChanged(callback);
@@ -17,13 +17,10 @@ export async function signInWithGoogle(): Promise<{ isAdmin: boolean }> {
       throw new Error('Google sign in failed');
     }
 
-    // Check if the user is an admin
     const userDocRef = doc(firestore, 'adminemail', user.email);
     const userDoc = await getDoc(userDocRef);
 
-    const isAdmin = userDoc.exists() && userDoc.data()?.role === 'admin';
-    
-    return { isAdmin };
+    return { isAdmin: userDoc.exists() && userDoc.data()?.role === 'admin' };
   } catch (error) {
     console.error('Error signing in with Google', error);
     throw error;

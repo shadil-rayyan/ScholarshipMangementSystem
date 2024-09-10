@@ -65,7 +65,7 @@ const ApplyForm: React.FC = () => {
         name: '',
         dob: '',
         gender: '',
-        nationality: '',
+        nationality: 'indian',
         category: '',
         aadhar: '',
         fatherName: '',
@@ -82,9 +82,9 @@ const ApplyForm: React.FC = () => {
         house: '',
         place: '',
         postOffice: '',
-        country: '',
+        country: 'indian',
         pincode: '',
-        state: '',
+        state: 'kerala',
         district: '',
         whatsappNumber: '',
         studentEmail: '',
@@ -96,7 +96,7 @@ const ApplyForm: React.FC = () => {
         branch: '',
         semester: '',
         hostelResident: true,
-        cgpa: '',
+        cgpa: '6.5',
     });
 
     const [bankDetails, setBankDetails] = useState<BankDetailsType>({

@@ -1,4 +1,3 @@
-// src/util/mailer.ts
 import nodemailer from 'nodemailer';
 
 export async function sendMail(to: string, subject: string, text: string) {
@@ -6,16 +5,16 @@ export async function sendMail(to: string, subject: string, text: string) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL_USER, // your Gmail email
-            pass: process.env.EMAIL_PASS, // your Gmail password or app password
+            user: process.env.EMAIL_USER, // Your Gmail email
+            pass: process.env.EMAIL_PASS, // Your Gmail password or app password
         },
     });
 
     const mailOptions = {
-        from: process.env.EMAIL_USER, // sender address
-        to: to, // list of receivers
+        from: process.env.EMAIL_USER, // Sender address
+        to: to, // List of receivers
         subject: subject, // Subject line
-        text: text, // plain text body
+        text: text, // Plain text body
     };
 
     try {
