@@ -1,0 +1,54 @@
+/* components/Filter.css */
+
+.custom-datepicker .react-datepicker__header {
+  background-color: #007bff; /* Blue background for header */
+  border-bottom: 1px solid #0056b3; /* Slightly darker border for contrast */
+  border-radius: 10px 10px 0 0; /* Rounded top corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.custom-datepicker .react-datepicker__current-month {
+  color: #ffffff; /* White text for the current month */
+  font-weight: 600; /* Bold text */
+}
+
+.custom-datepicker .react-datepicker__day-names {
+  color: #ffffff; /* White text for day names */
+  font-weight: 500; /* Slightly lighter font weight */
+}
+
+.custom-datepicker .react-datepicker__day {
+  color: #007bff; /* Blue color for days */
+  font-weight: 500; /* Slightly lighter font weight */
+}
+
+.custom-datepicker .react-datepicker__day:hover {
+  background-color: #cce5ff; /* Light blue background on hover */
+  border-radius: 50%; /* Round hover effect */
+  color: #0056b3; /* Darker text color on hover */
+}
+
+.custom-datepicker .react-datepicker__triangle {
+  display: none; /* Hide the triangle */
+}
+
+.custom-datepicker .react-datepicker__month-year-picker {
+  color: #007bff; /* Blue color for month and year picker */
+  font-weight: 600; /* Bold text */
+}
+
+.custom-datepicker .react-datepicker__day--selected {
+  background-color: #0056b3; /* Darker blue for selected day */
+  color: #ffffff; /* White text for selected day */
+  border-radius: 50%; /* Round selected day */
+}
+
+.custom-datepicker .react-datepicker__day--keyboard-selected {
+  background-color: #0056b3; /* Darker blue for keyboard selected day */
+  color: #ffffff; /* White text for keyboard selected day */
+}
+
+.custom-datepicker .react-datepicker__month-text,
+.custom-datepicker .react-datepicker__year-text {
+  font-size: 1.1rem; /* Slightly larger font size */
+}
