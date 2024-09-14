@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase/firebaseadmin'; // Update import path
+import { adminAuth } from '@/lib/firebase/firebaseadmin'; // Ensure this import path is correct
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { firebaseApp } from '@/lib/firebase/config'; // Ensure correct import
 import { SESSION_COOKIE_NAME } from '@/lib/firebase/constants';
@@ -10,9 +10,8 @@ const firestore = getFirestore(firebaseApp);
 // Define admin-protected routes
 const adminProtectedRoutes = [
   '/admin',
-  '/(admin)',
-  '/(admin)/Scholarships',
-  // Add more specific admin routes if necessary
+  '/admin/:path*', // Protect all paths under '/admin'
+  '/Scholarships',  // Protect '/Scholarships' route
 ];
 
 export default async function middleware(request: NextRequest) {
@@ -22,12 +21,12 @@ export default async function middleware(request: NextRequest) {
   // Check if the route requires admin privileges
   const isAdminRoute = adminProtectedRoutes.some(route => pathname.startsWith(route));
 
-  // Redirect to login if session is not set and user is trying to access an admin route
+  // If session is not set and trying to access an admin route
   if (!sessionToken && isAdminRoute) {
     return NextResponse.redirect(new URL('/auth/Login', request.nextUrl.origin));
   }
 
-  // If session is present, check the user role
+  // If session is present, validate the user role
   if (sessionToken) {
     try {
       // Verify the session token with Firebase Admin SDK
@@ -35,42 +34,36 @@ export default async function middleware(request: NextRequest) {
       const userEmail = user.email;
 
       if (userEmail) {
-        // Get the user's role from Firestore
+        // Retrieve the user's role from Firestore
         const userDocRef = doc(firestore, 'adminemail', userEmail);
         const userDoc = await getDoc(userDocRef);
 
+        // Check if the user has an admin role
         const isAdmin = userDoc.exists() && userDoc.data()?.role === 'admin';
 
-        // If the user is admin and accessing non-admin routes, restrict access
-        if (isAdmin) {
-          if (!isAdminRoute) {
-            // Clear session and redirect if user is accessing non-admin route
-            const response = NextResponse.redirect(new URL('/auth/Login', request.nextUrl.origin));
-            response.cookies.delete(SESSION_COOKIE_NAME);
-            return response;
-          }
-        } else {
-          // If user is not admin and trying to access admin route, redirect to home
-          if (isAdminRoute) {
-            return NextResponse.redirect(new URL('/', request.nextUrl.origin));
-          }
+        if (isAdmin && !isAdminRoute) {
+          // If the user is an admin and accessing a non-admin route, redirect to an appropriate page
+          return NextResponse.redirect(new URL('/admin', request.nextUrl.origin));
+        } else if (!isAdmin && isAdminRoute) {
+          // If the user is not an admin and tries to access an admin route, redirect to home
+          return NextResponse.redirect(new URL('/', request.nextUrl.origin));
         }
       } else {
         // If no email is found, redirect to login
         return NextResponse.redirect(new URL('/auth/Login', request.nextUrl.origin));
       }
     } catch (error) {
-      // Handle errors, such as token verification failure
       console.error('Error verifying session token:', error);
+      // Redirect to login on token verification failure
       return NextResponse.redirect(new URL('/auth/Login', request.nextUrl.origin));
     }
   }
 
-  // If everything checks out, proceed to the requested page
+  // Allow non-admin users to proceed to non-admin routes
   return NextResponse.next();
 }
 
-// Apply middleware to all routes under `/admin` and `/Scholarships`
+// Apply middleware to admin-protected routes
 export const config = {
-  matcher: ['/admin/:path*', '/Scholarships', '/(admin)/:path*'],
+  matcher: ['/admin/:path*', '/Scholarships'], // Protect '/admin/*' and '/Scholarships'
 };
