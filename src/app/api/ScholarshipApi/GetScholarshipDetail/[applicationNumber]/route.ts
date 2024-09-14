@@ -1,5 +1,3 @@
-// src\app\api\ScholarshipApi\GetScholarshipDetail\[applicationNumber]\route.ts
-
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/scholarshipData';

@@ -1,24 +1,45 @@
-// ScholarshipBox.tsx
 import React from 'react';
-
+import { useRouter } from 'next/navigation';
 interface ScholarshipBoxProps {
     name: string;
-    Number: string;
-    collegeName: string;
+    applicationNumber: string;
+    email: string;
+    imageUrl?: string; // Optional prop for image URL
 }
 
-const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, Number, collegeName }) => {
+const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, applicationNumber, email, imageUrl }) => {
+    const router = useRouter();
+    const handleEditClick = () => {
+        // Navigate to the edit page with the application number
+        router.push(`/Scholarships/edit/${applicationNumber}`);
+    };
+
     return (
-        <div className="p-4 border rounded shadow-md bg-white max-w-sm">
-            <div className="mb-2 ">
-                {name}
+        <div className="flex items-center p-4 border rounded bg-white w-full max-w-2xl">
+            <div className="flex-shrink-0 w-24 h-24 bg-gray-200 border border-gray-300 rounded overflow-hidden">
+                {imageUrl ? (
+                    <img src={imageUrl} alt="Scholarship" className="w-full h-full object-cover" />
+                ) : (
+                    <div className="flex items-center justify-center w-full h-full text-gray-400">No Image</div>
+                )}
             </div>
-            <div className="mb-2 font-light text-gray-500">
-                <span >Number:</span> {Number}
+            <div className="ml-4 flex-grow">
+                <div className="text-lg font-semibold">
+                    {name}
+                </div>
+                <div className="font-light text-gray-500">
+                    <span>Application ID:</span> {applicationNumber}
+                </div>
+                <div className="font-light text-gray-500">
+                    <span>Email:</span> {email}
+                </div>
             </div>
-            <div className="mb-2 font-light text-gray-500">
-                <span >College Name:</span> {collegeName}
-            </div>
+            <button
+                onClick={handleEditClick}
+                className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+                Edit
+            </button>
         </div>
     );
 };

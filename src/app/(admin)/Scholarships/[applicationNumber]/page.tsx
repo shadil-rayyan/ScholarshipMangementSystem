@@ -20,10 +20,7 @@ const ScholarshipDetailPage: React.FC = () => {
 
 
 
-    const handleEditClick = () => {
-        // Navigate to the edit page with the application number
-        router.push(`/Scholarships/edit/${applicationNumber}`);
-    };
+
 
     useEffect(() => {
         fetchScholarshipDetail();
@@ -168,19 +165,18 @@ const ScholarshipDetailPage: React.FC = () => {
     return (
         <div className="max-w-5xl mx-auto p-6">
             <div className="flex justify-center items-center mb-4">
-                {scholarshipDetails && (
+                {scholarshipDetails ? (
                     <ScholarshipBox
                         name={scholarshipDetails.name}
-                        Number={scholarshipDetails.studentNumber}
-                        collegeName={scholarshipDetails.nameOfTheCollege}
+                        applicationNumber={scholarshipDetails.applicationNumber}
+                        email={scholarshipDetails.studentEmail}
+                        imageUrl={scholarshipDetails.photoUrl}
                     />
+                ) : (
+                    <p>No scholarship details available.</p>
                 )}
             </div>
-            <div className="flex justify-end mb-4">
-                <button onClick={handleEditClick} className="px-4 py-2 bg-yellow-500 text-white rounded">
-                    Edit
-                </button>
-            </div>
+
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="flex border-b">
                     {["personal", "contact", "educational", "documentation", "verification"].map((tab) => (

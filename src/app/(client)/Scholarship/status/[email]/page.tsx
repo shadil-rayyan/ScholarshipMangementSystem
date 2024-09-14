@@ -2,15 +2,11 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ScholarshipDetails } from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
-import logo from "@/assets/logo.png";
 
 const ScholarshipStatusPage: React.FC = () => {
   const { email } = useParams(); // Use useParams to get the email from the URL
-  const router = useRouter(); // Use useRouter for navigation
   const [data, setData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state for missing email
+  const router = useRouter(); // Initialize the router
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,17 +14,9 @@ const ScholarshipStatusPage: React.FC = () => {
         try {
           const response = await fetch(`/api/ScholarshipApi/trackApplication/${email}`);
           const result = await response.json();
-
-          if (response.ok && result) {
-            setData(result);
-          } else {
-            setError("This email is not registered.");
-          }
+          setData(result);
         } catch (error) {
           console.error("Failed to fetch data", error);
-          setError("An error occurred while fetching the data.");
-        } finally {
-          setIsLoading(false); // Stop loading when the request is completed
         }
       }
     };
@@ -47,23 +35,12 @@ const ScholarshipStatusPage: React.FC = () => {
 
   const table = data?.verificationTable || getDefaultVerificationTable();
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <img src={logo.src} alt="Loading..." className="w-min h-max" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
-          <strong className="font-bold">{error}</strong>
-        </div>
-      </div>
-    );
-  }
+  // Handler for routing to the full profile page
+  const handleViewFullProfile = () => {
+    if (data && data.applicationNumber) {
+      router.push(`/Scholarship/${data.applicationNumber}`);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -90,8 +67,8 @@ const ScholarshipStatusPage: React.FC = () => {
           <thead>
             <tr>
               <th className="border px-4 py-2">Verification Steps</th>
-              <th className="border px-4 py-2">Admin</th>
               <th className="border px-4 py-2">Status</th>
+              <th className="border px-4 py-2">Admin</th>
             </tr>
           </thead>
           <tbody>
@@ -110,15 +87,7 @@ const ScholarshipStatusPage: React.FC = () => {
             <input
               type="text"
               value={data?.status || ''}
-              style={{
-                padding: '5px',
-                border: '0px solid #ccc',
-                width: '100%',
-                textTransform: 'uppercase',
-                fontWeight: 'bold',
-                fontSize: '18px',
-                color: 'blue' // Increase the font size here
-              }}
+              style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
               readOnly
             />
           </label>
@@ -128,30 +97,15 @@ const ScholarshipStatusPage: React.FC = () => {
             <input
               type="text"
               value={data?.remark || ''}
-              style={{
-                padding: '5px',
-                border: '0px solid #ccc',
-                width: '95%',
-                fontWeight: 'bold',
-                fontSize: '18px',
-                color: 'blue' // Increase the font size here
-              }}
+              style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
               readOnly
             />
           </label>
         </div>
-
-        <div className="mt-6 flex justify-end">
+        <div className="mt-4">
           <button
-            onClick={() => {
-              const applicationNumber = data?.applicationNumber; // Make sure applicationNumber is available
-              if (applicationNumber) {
-                router.push(`/Scholarship/${applicationNumber}`);
-              } else {
-                alert("Application number not found.");
-              }
-            }}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleViewFullProfile}
           >
             View Full Profile
           </button>

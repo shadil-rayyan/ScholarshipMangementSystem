@@ -10,6 +10,7 @@ import { auth } from '@/lib/firebase/config'; // Import the auth module from Fir
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
   name: string;
+  applicationNumber: string;
   dateOfBirth: string;
   gender: string;
   applicationtype: string;
@@ -250,7 +251,7 @@ export const Verification: React.FC<VerificationProps> = ({
     updatedTable[1].label = 'Selected for Scholarship';
     updatedTable[2].label = 'Amount Processed';
     updatedTable[3].label = 'Rejected';
-    updatedTable[4].label = 'Reverted';
+    updatedTable[4].label = 'Renewal';
 
     // Update the verification table based on the status
     if (currentStatus === 'Verify') {
@@ -273,7 +274,7 @@ export const Verification: React.FC<VerificationProps> = ({
       updatedTable[3].value = 'Yes';
       updatedTable[3].admin = adminName;
       updatedTable[4].value = '';
-    } else if (currentStatus === 'Reverted') {
+    } else if (currentStatus === 'Renewal') {
       updatedTable[4].value = 'Yes';
       updatedTable[4].admin = adminName;
     }
@@ -316,8 +317,8 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Reverted">
-              Reverted
+            <option value="Renewal">
+              Renewal
             </option>
             <option value="Select" disabled={!isVerifySelected}>
               Select

@@ -4,22 +4,14 @@ import './Filter.css';
 
 interface FilterProps {
   onFilterChange: (filters: { applicationId: string; status: string; year: string; priority: string }) => void;
+  onResetFilters: () => void; // Add this prop for reset functionality
 }
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
+const Filter: React.FC<FilterProps> = ({ onFilterChange, onResetFilters }) => {
   const [applicationId, setApplicationId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [year, setYear] = useState<string>('');
   const [priority, setPriority] = useState<string>('');
-
-  // Reset all filter criteria
-  const handleReset = () => {
-    setApplicationId('');
-    setStatus('');
-    setYear('');
-    setPriority('');
-    onFilterChange({ applicationId: '', status: '', year: '', priority: '' });
-  };
 
   // Update filter criteria
   const handleChange = () => {
@@ -100,7 +92,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
 
         {/* Reset Filter Button */}
         <button
-          onClick={handleReset}
+          onClick={onResetFilters} // Call the reset function passed from parent
           className="flex items-center px-4 py-2 text-red-500 rounded-lg hover:text-red-700 focus:outline-none"
         >
           <FaRedo className="mr-2" />

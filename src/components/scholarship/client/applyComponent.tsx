@@ -227,35 +227,35 @@ const ApplyForm: React.FC = () => {
         let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
         const formData = new FormData();
         console.log(scholarshipData);
-        
+
         // Append scholarship data as a JSON string
         formData.append('scholarshipData', JSON.stringify(scholarshipData));
-        
+
         // Append files if they exist
         if (files[0]) formData.append('photo', files[0]);
         if (files[1]) formData.append('cheque', files[1]);
         if (files[2]) formData.append('aadharCard', files[2]);
         if (files[3]) formData.append('collegeID', files[3]);  // corrected index
         if (files[4]) formData.append('incomeCertificate', files[4]);
-        
+
         try {
             const response = await fetch('/api/ScholarshipApi/PostScholarship', {
                 method: 'POST',
                 body: formData
             });
-    
+
             // Check if the response is successful
             if (!response.ok) {
                 const errorDetails = await response.json();
                 throw new Error(errorDetails.error || 'Unknown error occurred');
             }
-    
+
             const result = await response.json();
             console.log('Scholarship application submitted successfully:', result);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
         }
-    
+
     };
 
     const renderTabContent = () => {

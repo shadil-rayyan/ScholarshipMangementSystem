@@ -1,5 +1,3 @@
-// src/app/(client)/Scholarship/apply/page.tsx
-
 import ApplyForm from '@/components/scholarship/client/applyComponent';
 import React from 'react';
 
