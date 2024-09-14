@@ -70,11 +70,11 @@ const validateDocumentation = (files: FilesType) => {
     const errors: Partial<Record<string, string>> = {};
 
     const fileLimits = {
-        0: { maxSize: 1 * 1024 * 1024 },
-        1: { maxSize: 1 * 1024 * 1024 }, // 5 MB for Document 1
-        2: { maxSize: 1 * 1024 * 1024 }, // 1 MB for Documents 2-5
-        3: { maxSize: 1 * 1024 * 1024 },
-        4: { maxSize: 1 * 1024 * 1024 },
+        0: { maxSize: 1 * 1024 * 1024 }, // 1 MB
+        1: { maxSize: 1 * 1024 * 1024 }, // 1 MB
+        2: { maxSize: 1 * 1024 * 1024 }, // 1 MB
+        3: { maxSize: 1 * 1024 * 1024 }, // 1 MB
+        4: { maxSize: 1 * 1024 * 1024 }, // 1 MB
     };
 
     for (const key in fileLimits) {
@@ -119,9 +119,9 @@ const ApplyForm: React.FC = () => {
         house: '',
         place: '',
         postOffice: '',
-        country: 'indian',
+        country: '',
         pincode: '',
-        state: 'kerala',
+        state: '',
         district: '',
         whatsappNumber: '',
         studentEmail: '',
@@ -132,8 +132,8 @@ const ApplyForm: React.FC = () => {
         college: '',
         branch: '',
         semester: '',
-        hostelResident: true,
-        cgpa: '6.5',
+        hostelResident: false, // Assuming default value for hostel resident is false
+        cgpa: '',
     });
 
     const [bankDetails, setBankDetails] = useState<BankDetailsType>({
@@ -143,6 +143,9 @@ const ApplyForm: React.FC = () => {
         accountNumber: '',
         accountHolder: '',
     });
+
+
+
 
     const [files, setFiles] = useState<FilesType>({});
     const [validationErrors, setValidationErrors] = useState<any>({});
@@ -191,39 +194,29 @@ const ApplyForm: React.FC = () => {
         setActiveTab(getPreviousTab());
     };
 
-    const handleSubmitClick = async () => {
-        let errors: any = {};
-        const personalErrors = validatePersonalDetails(personalDetails);
-        const contactErrors = validateContactDetails(contactDetails);
-        const educationalErrors = validateEducationalDetails(educationalDetails);
-        const bankErrors = validateBankDetails(bankDetails);
+const handleSubmitClick = async () => {
+    let errors: any = {};
+    const personalErrors = validatePersonalDetails(personalDetails);
+    const contactErrors = validateContactDetails(contactDetails);
+    const educationalErrors = validateEducationalDetails(educationalDetails);
+    const bankErrors = validateBankDetails(bankDetails);
+    const documentationErrors = validateDocumentation(files);
 
-        errors = {
-            ...personalErrors,
-            ...contactErrors,
-            ...educationalErrors,
-            ...bankErrors,
-            ...validateDocumentation(files),
-        };
+    errors = {
+        ...personalErrors,
+        ...contactErrors,
+        ...educationalErrors,
+        ...bankErrors,
+        ...documentationErrors,
+    };
 
-        // if (Object.keys(errors).length > 0) {
-        //     setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        // Optionally set active tab based on errors
+        return;
+    }
 
-        //     if (Object.keys(personalErrors).length > 0) {
-        //         setActiveTab('personal');
-        //     } else if (Object.keys(contactErrors).length > 0) {
-        //         setActiveTab('contact');
-        //     } else if (Object.keys(educationalErrors).length > 0 || Object.keys(bankErrors).length > 0) {
-        //         setActiveTab('educational');
-        //     } else if (Object.keys(validateDocumentation(files)).length > 0) {
-        //         setActiveTab('documentation');
-        //     }
-
-        //     alert('Please fill out all required fields correctly.');
-        //     return;
-        // }
-
-        setValidationErrors({});
+    setValidationErrors({});
         // Submit the form data...
         let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
         const formData = new FormData();

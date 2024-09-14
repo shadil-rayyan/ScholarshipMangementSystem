@@ -11,12 +11,12 @@ export interface PersonalDetailsType {
     aadhar: string;
     fatherName: string;
     fatherPhone: string;
-    motherName?: string;
-    motherPhone?: string;
+    motherName: string;
+    motherPhone: string;
     income: string;
-    fatherOccupation?: string;
+    fatherOccupation: string;
     studentPhone: string;
-    motherOccupation?: string;
+    motherOccupation: string;
 }
 
 interface PersonalDetailsProps {
@@ -132,13 +132,13 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <InputField
                 label="Mother Name"
                 required
-                value={personalDetails.motherName || ''}
+                value={personalDetails.motherName }
                 onChange={(e) => handleChange('motherName', e.target.value)}
                 error={errors.motherName}
             />
             <InputField
                 label="Mother Phone"
-                value={personalDetails.motherPhone || ''}
+                value={personalDetails.motherPhone}
                 onChange={(e) => handleChange('motherPhone', e.target.value)}
                 error={errors.motherPhone}
             />
@@ -152,7 +152,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <InputField
                 label="Father Occupation"
                 required
-                value={personalDetails.fatherOccupation || ''}
+                value={personalDetails.fatherOccupation }
                 onChange={(e) => handleChange('fatherOccupation', e.target.value)}
                 error={errors.fatherOccupation}
             />
@@ -165,7 +165,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             />
             <InputField
                 label="Mother Occupation"
-                value={personalDetails.motherOccupation || ''}
+                value={personalDetails.motherOccupation }
                 required
                 onChange={(e) => handleChange('motherOccupation', e.target.value)}
                 error={errors.motherOccupation}
