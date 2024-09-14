@@ -22,7 +22,7 @@ const branches = [
     'Chemical Engineering (CHE)',
     'Information Technology (IT)',
     'Aeronautical Engineering',
-    'Others' // Include Others for custom entry
+    // Include Others for custom entry
 ];
 
 const semesters = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];

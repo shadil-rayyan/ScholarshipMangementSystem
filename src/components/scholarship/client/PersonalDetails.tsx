@@ -26,6 +26,7 @@ interface PersonalDetailsProps {
 }
 
 const categories = ['OBC', 'OEC', 'SC', 'ST']; // Define the category options
+const categories = ['OBC', 'OEC', 'SC', 'ST']; // Define the category options
 
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
     personalDetails,
