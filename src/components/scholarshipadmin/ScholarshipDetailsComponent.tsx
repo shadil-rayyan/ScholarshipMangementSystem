@@ -4,207 +4,208 @@ import React, { useState, useEffect } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Dialog, DialogContent, DialogTrigger } from '@radix-ui/react-dialog';
 import { User } from 'firebase/auth'; // Import User and auth from Firebase
-import {auth} from '@/lib/firebase/config'; // Import the auth module from Firebase
+import { auth } from '@/lib/firebase/config'; // Import the auth module from Firebase
 // import Values from '@/components/homepage/values';
 
 // Define interfaces for the props and data
 export interface ScholarshipDetails {
-    name: string;
-    dateOfBirth: string;
-    gender: string;
-    applicationtype: string;
-    category: string;
-    adharNumber: string;
-    fatherName: string;
-    fatherNumber: string;
-    motherName: string;
-    motherNumber: string;
-    income: string;
-    fatherOccupation: string;
-    studentNumber: string;
-    motherOccupation: string;
+  name: string;
+  applicationNumber: string;
+  dateOfBirth: string;
+  gender: string;
+  applicationtype: string;
+  category: string;
+  adharNumber: string;
+  fatherName: string;
+  fatherNumber: string;
+  motherName: string;
+  motherNumber: string;
+  income: string;
+  fatherOccupation: string;
+  studentNumber: string;
+  motherOccupation: string;
 
-    state: string;
-    pinCode: string;
-    houseApartmentName: string;
-    placeState: string;
-    postOffice: string;
-    country: string;
+  state: string;
+  pinCode: string;
+  houseApartmentName: string;
+  placeState: string;
+  postOffice: string;
+  country: string;
 
-    district: string;
-    whatsappNumber: string;
-    studentEmail: string;
-    alternativeNumber: string;
+  district: string;
+  whatsappNumber: string;
+  studentEmail: string;
+  alternativeNumber: string;
 
-    nameOfTheCollege: string;
-    branch: string;
-    semester: string;
-    hostelResident: string;
-    cgpa: number;
-    bankName: string;
-    accountNumber: string;
-    ifscCode: string;
-    branchName: string;
-    accountHolder: string;
-    status: string;
-    remark: string;
-    photoUrl: string;
-    checkUrl: string;
-    aadharCardUrl: string;
-    collegeIdCardUrl: string;
-    incomeUrl: string;
+  nameOfTheCollege: string;
+  branch: string;
+  semester: string;
+  hostelResident: string;
+  cgpa: number;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  branchName: string;
+  accountHolder: string;
+  status: string;
+  remark: string;
+  photoUrl: string;
+  checkUrl: string;
+  aadharCardUrl: string;
+  collegeIdCardUrl: string;
+  incomeUrl: string;
 
-    selectadmin: string;
-    amountadmin: string;
-    rejectadmin: string;
-    renewaladmin: string;
+  selectadmin: string;
+  amountadmin: string;
+  rejectadmin: string;
+  renewaladmin: string;
 }
 
 export interface PersonalDetailsProps {
-    scholarshipDetails: ScholarshipDetails;
+  scholarshipDetails: ScholarshipDetails;
 }
 
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDetails }) => {
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toISOString().split('T')[0]; // Returns the date in 'YYYY-MM-DD' format
-    };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Returns the date in 'YYYY-MM-DD' format
+  };
 
-    return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div><strong>Name:</strong> {scholarshipDetails.name}</div>
-            <div><strong>DOB:</strong> {formatDate(scholarshipDetails.dateOfBirth)}</div>
-            <div><strong>Gender:</strong> {scholarshipDetails.gender}</div>
-            <div><strong>applicationtype:</strong> {scholarshipDetails.applicationtype}</div>
-            <div><strong>Category:</strong> {scholarshipDetails.category}</div>
-            <div><strong>Aadhar Number:</strong> {scholarshipDetails.adharNumber}</div>
-            <div><strong>Father Name:</strong> {scholarshipDetails.fatherName}</div>
-            <div><strong>Father Phone:</strong> {scholarshipDetails.fatherNumber}</div>
-            <div><strong>Mother Name:</strong> {scholarshipDetails.motherName}</div>
-            <div><strong>Mother Phone:</strong> {scholarshipDetails.motherNumber}</div>
-            <div><strong>Income:</strong> {scholarshipDetails.income}</div>
-            <div><strong>Father Occupation:</strong> {scholarshipDetails.fatherOccupation}</div>
-            <div><strong>Student Phone:</strong> {scholarshipDetails.studentNumber}</div>
-            <div><strong>Mother Occupation:</strong> {scholarshipDetails.motherOccupation}</div>
-        </div>
-    );
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div><strong>Name:</strong> {scholarshipDetails.name}</div>
+      <div><strong>DOB:</strong> {formatDate(scholarshipDetails.dateOfBirth)}</div>
+      <div><strong>Gender:</strong> {scholarshipDetails.gender}</div>
+      <div><strong>applicationtype:</strong> {scholarshipDetails.applicationtype}</div>
+      <div><strong>Category:</strong> {scholarshipDetails.category}</div>
+      <div><strong>Aadhar Number:</strong> {scholarshipDetails.adharNumber}</div>
+      <div><strong>Father Name:</strong> {scholarshipDetails.fatherName}</div>
+      <div><strong>Father Phone:</strong> {scholarshipDetails.fatherNumber}</div>
+      <div><strong>Mother Name:</strong> {scholarshipDetails.motherName}</div>
+      <div><strong>Mother Phone:</strong> {scholarshipDetails.motherNumber}</div>
+      <div><strong>Income:</strong> {scholarshipDetails.income}</div>
+      <div><strong>Father Occupation:</strong> {scholarshipDetails.fatherOccupation}</div>
+      <div><strong>Student Phone:</strong> {scholarshipDetails.studentNumber}</div>
+      <div><strong>Mother Occupation:</strong> {scholarshipDetails.motherOccupation}</div>
+    </div>
+  );
 };
 
 export interface ContactDetailsProps {
-    scholarshipDetails: ScholarshipDetails;
+  scholarshipDetails: ScholarshipDetails;
 }
 
 export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetails }) => {
-    return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
-            <div><strong>State:</strong> {scholarshipDetails.state}</div>
-            <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
+      <div><strong>State:</strong> {scholarshipDetails.state}</div>
+      <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
 
-            <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
-            <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
-            <div><strong>Post Office:</strong> {scholarshipDetails.postOffice}</div>
-            <div><strong>Country:</strong> {scholarshipDetails.country}</div>
+      <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
+      <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
+      <div><strong>Post Office:</strong> {scholarshipDetails.postOffice}</div>
+      <div><strong>Country:</strong> {scholarshipDetails.country}</div>
 
-            <div><strong>District:</strong> {scholarshipDetails.district}</div>
-            <div><strong>Whatsapp Number:</strong> {scholarshipDetails.whatsappNumber}</div>
-            <div><strong>Student Email:</strong> {scholarshipDetails.studentEmail}</div>
-            <div><strong>Alternative Number:</strong> {scholarshipDetails.alternativeNumber}</div>
-        </div>
-    );
+      <div><strong>District:</strong> {scholarshipDetails.district}</div>
+      <div><strong>Whatsapp Number:</strong> {scholarshipDetails.whatsappNumber}</div>
+      <div><strong>Student Email:</strong> {scholarshipDetails.studentEmail}</div>
+      <div><strong>Alternative Number:</strong> {scholarshipDetails.alternativeNumber}</div>
+    </div>
+  );
 };
 
 export interface EducationalAndBankDetailsProps {
-    scholarshipDetails: ScholarshipDetails;
+  scholarshipDetails: ScholarshipDetails;
 }
 
 export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps> = ({ scholarshipDetails }) => {
-    return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
-            <div><strong>Name of the College:</strong> {scholarshipDetails.nameOfTheCollege}</div>
-            <div><strong>Branch:</strong> {scholarshipDetails.branch}</div>
-            <div><strong>Semester:</strong> {scholarshipDetails.semester}</div>
-            <div><strong>Hostel Resident:</strong> {scholarshipDetails.hostelResident.toString()}</div>
-            <div><strong>CGPA:</strong> {scholarshipDetails.cgpa}</div>
-            <div><strong>Bank Name:</strong> {scholarshipDetails.bankName}</div>
-            <div><strong>Account Number:</strong> {scholarshipDetails.accountNumber}</div>
-            <div><strong>IFSC Code:</strong> {scholarshipDetails.ifscCode}</div>
-            <div><strong>Branch Name:</strong> {scholarshipDetails.branchName}</div>
-            <div><strong>Account Holder Name:</strong> {scholarshipDetails.accountHolder}</div>
-        </div>
-    );
+      <div><strong>Name of the College:</strong> {scholarshipDetails.nameOfTheCollege}</div>
+      <div><strong>Branch:</strong> {scholarshipDetails.branch}</div>
+      <div><strong>Semester:</strong> {scholarshipDetails.semester}</div>
+      <div><strong>Hostel Resident:</strong> {scholarshipDetails.hostelResident.toString()}</div>
+      <div><strong>CGPA:</strong> {scholarshipDetails.cgpa}</div>
+      <div><strong>Bank Name:</strong> {scholarshipDetails.bankName}</div>
+      <div><strong>Account Number:</strong> {scholarshipDetails.accountNumber}</div>
+      <div><strong>IFSC Code:</strong> {scholarshipDetails.ifscCode}</div>
+      <div><strong>Branch Name:</strong> {scholarshipDetails.branchName}</div>
+      <div><strong>Account Holder Name:</strong> {scholarshipDetails.accountHolder}</div>
+    </div>
+  );
 };
 
 // Documentation
 
 
 export interface DocumentationProps {
-    scholarshipDetails: ScholarshipDetails;
+  scholarshipDetails: ScholarshipDetails;
 }
 
 export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails }) => {
-    const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
 
-    const documentFields = [
-        { name: 'Photo', url: scholarshipDetails.photoUrl },
-        { name: 'Check', url: scholarshipDetails.checkUrl },
-        { name: 'Aadhar Card', url: scholarshipDetails.aadharCardUrl },
-        { name: 'College ID Card', url: scholarshipDetails.collegeIdCardUrl },
-        { name: 'Income Certificate', url: scholarshipDetails.incomeUrl },
-    ];
+  const documentFields = [
+    { name: 'Photo', url: scholarshipDetails.photoUrl },
+    { name: 'Check', url: scholarshipDetails.checkUrl },
+    { name: 'Aadhar Card', url: scholarshipDetails.aadharCardUrl },
+    { name: 'College ID Card', url: scholarshipDetails.collegeIdCardUrl },
+    { name: 'Income Certificate', url: scholarshipDetails.incomeUrl },
+  ];
 
-    const renderDocument = (url: string) => {
-        if (url.toLowerCase().endsWith('.pdf')) {
-            return (
-                <iframe
-                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`}
-                    width="100%"
-                    height="500px"
-                    style={{ border: 'none' }}
-                />
-            );
-        } else {
-            return (
-                <a href={url} target="_blank" rel="noopener noreferrer">
-                    <img src={url} alt="Document" style={{ maxWidth: '100%', maxHeight: '500px' }} />
-                </a>
-            );
-        }
-    };
+  const renderDocument = (url: string) => {
+    if (url.toLowerCase().endsWith('.pdf')) {
+      return (
+        <iframe
+          src={`https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`}
+          width="100%"
+          height="500px"
+          style={{ border: 'none' }}
+        />
+      );
+    } else {
+      return (
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <img src={url} alt="Document" style={{ maxWidth: '100%', maxHeight: '500px' }} />
+        </a>
+      );
+    }
+  };
 
-    return (
-        <div className="p-4">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                    <tr>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {documentFields.map((doc, index) => (
-                        <tr key={doc.url}>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{index + 1}</td>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
-                                {doc.url ? (
-                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                                        <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center">
-                                            <FaEye />
-                                        </button>
-                                    </a>
-                                ) : (
-                                    'Not Available'
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+  return (
+    <div className="p-4">
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
+            <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
+            <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documentFields.map((doc, index) => (
+            <tr key={doc.url}>
+              <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{index + 1}</td>
+              <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
+              <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
+                {doc.url ? (
+                  <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                    <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center">
+                      <FaEye />
+                    </button>
+                  </a>
+                ) : (
+                  'Not Available'
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 
@@ -325,7 +326,7 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
               Amount Proceed
             </option>
-            
+
           </select>
         </label>
       </div>

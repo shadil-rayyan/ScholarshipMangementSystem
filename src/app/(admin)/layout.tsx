@@ -15,25 +15,25 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    // Function to check user authentication status
-    const checkAuth = async () => {
-      const unsubscribe = onAuthStateChanged(async (authUser) => {
-        if (authUser) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          router.push('/auth/Login'); // Redirect to login if not authenticated
-        }
-        setLoading(false);
-      });
+  // useEffect(() => {
+  //   // Function to check user authentication status
+  //   const checkAuth = async () => {
+  //     const unsubscribe = onAuthStateChanged(async (authUser) => {
+  //       if (authUser) {
+  //         setIsAuthenticated(true);
+  //       } else {
+  //         setIsAuthenticated(false);
+  //         router.push('/auth/Login'); // Redirect to login if not authenticated
+  //       }
+  //       setLoading(false);
+  //     });
 
-      // Cleanup subscription on unmount
-      return () => unsubscribe();
-    };
+  //     // Cleanup subscription on unmount
+  //     return () => unsubscribe();
+  //   };
 
-    checkAuth();
-  }, [router]);
+  //   checkAuth();
+  // }, [router]);
 
 
   return (

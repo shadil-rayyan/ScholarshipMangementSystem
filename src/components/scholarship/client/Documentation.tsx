@@ -16,6 +16,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
             alert('No file chosen');
         } else {
             const fileURL = URL.createObjectURL(file);
+            console.log(`Opening file URL: ${fileURL}`);
             window.open(fileURL);
         }
     };
@@ -24,6 +25,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
         setFiles((prevFiles) => {
             const newFiles = { ...prevFiles };
             if (newFiles[index]) {
+                console.log(`Deleting file: ${newFiles[index]?.name}`);
                 delete newFiles[index];
             }
             return newFiles;
@@ -37,6 +39,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
     };
 
     const handleFileChange = (index: number, file: File | null) => {
+        console.log(`File selected for index ${index}: ${file?.name}`);
         setFiles((prevFiles) => ({ ...prevFiles, [index]: file }));
     };
 

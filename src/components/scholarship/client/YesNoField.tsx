@@ -33,6 +33,7 @@ export const YesNoField: React.FC<YesNoFieldProps> = ({
                         checked={value === true}
                         onChange={() => onChange(true)}
                         className="form-radio"
+                        required
                     />
                     <span className="ml-2">Yes</span>
                 </label>
@@ -45,6 +46,7 @@ export const YesNoField: React.FC<YesNoFieldProps> = ({
                         checked={value === false}
                         onChange={() => onChange(false)}
                         className="form-radio"
+                        required
                     />
                     <span className="ml-2">No</span>
                 </label>

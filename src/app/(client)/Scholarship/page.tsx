@@ -76,6 +76,7 @@ const DarsanaScholarshipPage: React.FC = () => {
     }
   };
 
+
   const handleApplyClick = () => {
     if (!isAuthenticated) {
       setShowLoginMessage(true);

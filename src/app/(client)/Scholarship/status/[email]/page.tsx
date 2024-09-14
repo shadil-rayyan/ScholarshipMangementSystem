@@ -1,35 +1,29 @@
-'use client'
-import React, { useEffect, useState } from 'react';
+"use client";
+
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { ScholarshipDetails } from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
 
-interface ScholarshipStatusPageProps {
-  verificationTable?: {
-    label: string;
-    value: string;
-    admin: string | null;
-  }[];
-  scholarshipDetails: ScholarshipDetails | null;
-}
-
-const ScholarshipStatusPage: React.FC<ScholarshipStatusPageProps> = ({
-  verificationTable = [],
-  scholarshipDetails,
-}) => {
+const ScholarshipStatusPage: React.FC = () => {
+  const { email } = useParams(); // Use useParams to get the email from the URL
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`/api/ScholarshipApi/trackApplication/${scholarshipDetails?.studentEmail}`);
-      const result = await response.json();
-      setData(result);
+      if (email) {
+        try {
+          const response = await fetch(`/api/ScholarshipApi/trackApplication/${email}`);
+          const result = await response.json();
+          setData(result);
+        } catch (error) {
+          console.error("Failed to fetch data", error);
+        }
+      }
     };
 
-    if (scholarshipDetails?.studentEmail) {
-      fetchData();
-    }
-  }, [scholarshipDetails?.studentEmail]);
+    fetchData();
+  }, [email]);
 
-  // Function to get default verification table
   const getDefaultVerificationTable = () => {
     return [
       { label: 'Step 1: Verify', value: '', admin: null },
@@ -39,7 +33,6 @@ const ScholarshipStatusPage: React.FC<ScholarshipStatusPageProps> = ({
     ];
   };
 
-  // Use default table if verificationTable is empty or not provided
   const table = data?.verificationTable || getDefaultVerificationTable();
 
   return (
@@ -81,25 +74,27 @@ const ScholarshipStatusPage: React.FC<ScholarshipStatusPageProps> = ({
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: '30px' ,marginBottom: '20px' }}>
-        <label>
-          <strong>Status:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.status || ''}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
-          />
-        </label>
+        <div style={{ marginTop: '30px', marginBottom: '20px' }}>
+          <label>
+            <strong>Status:</strong>
+            <input
+              type="text"
+              value={data?.status || ''}
+              style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
+              readOnly
+            />
+          </label>
 
-        <label>
-          <strong>Remark:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.remark || ''}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
-          />
-        </label>
-      </div>
+          <label>
+            <strong>Remark:</strong>
+            <input
+              type="text"
+              value={data?.remark || ''}
+              style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
+              readOnly
+            />
+          </label>
+        </div>
       </div>
     </div>
   );

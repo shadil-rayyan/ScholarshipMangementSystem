@@ -6,6 +6,8 @@ import { ContactDetails, ContactDetailsType } from './ContactDetails';
 import { EducationalDetails, EducationalDetailsType } from './EducationalDetails';
 import { BankDetails, BankDetailsType } from './BankDetails';
 import { Documentation, FilesType } from './Documentation';
+import { uploadFileToFirebase } from '@/lib/firebase/config';
+
 
 // Validation functions
 
@@ -13,8 +15,8 @@ const validatePersonalDetails = (details: PersonalDetailsType) => {
     const errors: Partial<Record<keyof PersonalDetailsType, string>> = {};
     if (!details.name.trim()) errors.name = 'Name is required';
     if (!details.dob) errors.dob = 'Date of Birth is required';
-    if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required';
-    if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'application type is required';
+     if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required'; // Gender validation
+    if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'Application type is required'; // Application type validation
     if (!details.category.trim()) errors.category = 'Category is required';
     if (!details.fatherName?.trim()) errors.fatherName = 'father Name  is required';
     if (!details.motherName?.trim()) errors.motherName = 'mother Name  is required';
@@ -204,26 +206,59 @@ const ApplyForm: React.FC = () => {
             ...validateDocumentation(files),
         };
 
-        if (Object.keys(errors).length > 0) {
-            setValidationErrors(errors);
+        // if (Object.keys(errors).length > 0) {
+        //     setValidationErrors(errors);
 
-            if (Object.keys(personalErrors).length > 0) {
-                setActiveTab('personal');
-            } else if (Object.keys(contactErrors).length > 0) {
-                setActiveTab('contact');
-            } else if (Object.keys(educationalErrors).length > 0 || Object.keys(bankErrors).length > 0) {
-                setActiveTab('educational');
-            } else if (Object.keys(validateDocumentation(files)).length > 0) {
-                setActiveTab('documentation');
-            }
+        //     if (Object.keys(personalErrors).length > 0) {
+        //         setActiveTab('personal');
+        //     } else if (Object.keys(contactErrors).length > 0) {
+        //         setActiveTab('contact');
+        //     } else if (Object.keys(educationalErrors).length > 0 || Object.keys(bankErrors).length > 0) {
+        //         setActiveTab('educational');
+        //     } else if (Object.keys(validateDocumentation(files)).length > 0) {
+        //         setActiveTab('documentation');
+        //     }
 
-            alert('Please fill out all required fields correctly.');
-            return;
-        }
+        //     alert('Please fill out all required fields correctly.');
+        //     return;
+        // }
 
         setValidationErrors({});
         // Submit the form data...
+        let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
+        const formData = new FormData();
+        console.log(scholarshipData);
+        
+        // Append scholarship data as a JSON string
+        formData.append('scholarshipData', JSON.stringify(scholarshipData));
+        
+        // Append files if they exist
+        if (files[0]) formData.append('photo', files[0]);
+        if (files[1]) formData.append('cheque', files[1]);
+        if (files[2]) formData.append('aadharCard', files[2]);
+        if (files[3]) formData.append('collegeID', files[3]);  // corrected index
+        if (files[4]) formData.append('incomeCertificate', files[4]);
+        
+        try {
+            const response = await fetch('/api/ScholarshipApi/PostScholarship', {
+                method: 'POST',
+                body: formData
+            });
+    
+            // Check if the response is successful
+            if (!response.ok) {
+                const errorDetails = await response.json();
+                throw new Error(errorDetails.error || 'Unknown error occurred');
+            }
+    
+            const result = await response.json();
+            console.log('Scholarship application submitted successfully:', result);
+        } catch (error) {
+            console.error('Failed to submit scholarship application:', error.message);
+        }
+    
     };
+
 
     const renderTabContent = () => {
         switch (activeTab) {
