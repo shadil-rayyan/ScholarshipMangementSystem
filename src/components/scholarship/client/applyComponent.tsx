@@ -8,6 +8,10 @@ import { BankDetails, BankDetailsType } from './BankDetails';
 import { Documentation, FilesType } from './Documentation';
 import { uploadFileToFirebase } from '@/lib/firebase/config';
 
+import { useRouter } from 'next/navigation';
+
+
+
 // Validation functions
 
 const validatePersonalDetails = (details: PersonalDetailsType) => {
@@ -96,7 +100,9 @@ const validateDocumentation = (files: FilesType) => {
 
 const ApplyForm: React.FC = () => {
     const [activeTab, setActiveTab] = useState('personal');
-
+    const router = useRouter();
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [personalDetails, setPersonalDetails] = useState<PersonalDetailsType>({
         name: '',
         dob: '',
@@ -191,6 +197,8 @@ const ApplyForm: React.FC = () => {
     };
 
     const handleSubmitClick = async () => {
+        // ... your existing validation code ...
+        setIsSubmitting(true);
         let errors: any = {};
         const personalErrors = validatePersonalDetails(personalDetails);
         const contactErrors = validateContactDetails(contactDetails);
@@ -205,25 +213,7 @@ const ApplyForm: React.FC = () => {
             ...validateDocumentation(files),
         };
 
-        // if (Object.keys(errors).length > 0) {
-        //     setValidationErrors(errors);
-
-        //     if (Object.keys(personalErrors).length > 0) {
-        //         setActiveTab('personal');
-        //     } else if (Object.keys(contactErrors).length > 0) {
-        //         setActiveTab('contact');
-        //     } else if (Object.keys(educationalErrors).length > 0 || Object.keys(bankErrors).length > 0) {
-        //         setActiveTab('educational');
-        //     } else if (Object.keys(validateDocumentation(files)).length > 0) {
-        //         setActiveTab('documentation');
-        //     }
-
-        //     alert('Please fill out all required fields correctly.');
-        //     return;
-        // }
-
         setValidationErrors({});
-        // Submit the form data...
         let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
         const formData = new FormData();
         console.log(scholarshipData);
@@ -235,7 +225,7 @@ const ApplyForm: React.FC = () => {
         if (files[0]) formData.append('photo', files[0]);
         if (files[1]) formData.append('cheque', files[1]);
         if (files[2]) formData.append('aadharCard', files[2]);
-        if (files[3]) formData.append('collegeID', files[3]);  // corrected index
+        if (files[3]) formData.append('collegeID', files[3]);
         if (files[4]) formData.append('incomeCertificate', files[4]);
 
         try {
@@ -244,7 +234,6 @@ const ApplyForm: React.FC = () => {
                 body: formData
             });
 
-            // Check if the response is successful
             if (!response.ok) {
                 const errorDetails = await response.json();
                 throw new Error(errorDetails.error || 'Unknown error occurred');
@@ -252,10 +241,20 @@ const ApplyForm: React.FC = () => {
 
             const result = await response.json();
             console.log('Scholarship application submitted successfully:', result);
+
+            // Set success message
+            setSuccessMessage('Scholarship application submitted successfully!');
+
+            // Redirect to home page after 3 seconds
+            setTimeout(() => {
+                router.push('/');  // Adjust this path to your home page route
+            }, 3000);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
+            setSuccessMessage('Failed to submit application. Please try again.');
+        } finally {
+            setIsSubmitting(false);  // Reset submitting state whether submission succeeds or fails
         }
-
     };
 
     const renderTabContent = () => {
@@ -321,6 +320,12 @@ const ApplyForm: React.FC = () => {
 
     return (
         <div className="max-w-5xl mx-auto p-6">
+            {successMessage && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong className="font-bold">Success!</strong>
+                    <span className="block sm:inline"> {successMessage}</span>
+                </div>
+            )}
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="p-6">
@@ -331,7 +336,7 @@ const ApplyForm: React.FC = () => {
                 {showPreviousButton && (
                     <button
                         onClick={handlePreviousClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                         Previous
                     </button>
@@ -339,16 +344,18 @@ const ApplyForm: React.FC = () => {
                 {showNextButton ? (
                     <button
                         onClick={handleNextClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                         Next
                     </button>
                 ) : (
                     <button
                         onClick={handleSubmitClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className={`px-4 py-2 text-white rounded ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                            }`}
+                        disabled={isSubmitting}
                     >
-                        Submit
+                        {isSubmitting ? 'Sending...' : 'Submit'}
                     </button>
                 )}
             </div>
