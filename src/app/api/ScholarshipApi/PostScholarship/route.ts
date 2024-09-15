@@ -81,19 +81,25 @@ export async function POST(request: Request) {
             fatherName: personalDetails.fatherName,
             fatherNumber: personalDetails.fatherPhone,
             income: personalDetails.income,
-            mother_name: personalDetails.motherName,
-            mother_number: personalDetails.motherPhone,
-            father_occupation: personalDetails.fatherOccupation,
-            mother_occupation: personalDetails.motherOccupation,
-            student_number: personalDetails.studentPhone,
-            house_apartment: contactDetails.house,
-            pin_code: contactDetails.pincode,
-            post_office: contactDetails.postOffice,
+            motherName: personalDetails.motherName,
+            motherNumber: personalDetails.motherPhone,
+            fatherOccupation: personalDetails.fatherOccupation,
+            motherOccupation: personalDetails.motherOccupation,
+            studentNumber: personalDetails.studentPhone,
+
+
+            houseApartmentName: contactDetails.house,
+            pinCode: contactDetails.pincode,
+            postOffice: contactDetails.postOffice,
             country: contactDetails.country,
             state: contactDetails.state,
             district: contactDetails.district,
-            alternatie_number: contactDetails.alternativePhone,
+            alternativeNumber: contactDetails.alternativeNumber,
             studentEmail: contactDetails.studentEmail,
+            placeState: contactDetails.place,
+            whatsappNumber: contactDetails.whatsappNumber,
+
+
             nameOfTheCollege: educationalDetails.college,
             branch: educationalDetails.branch,
             semester: educationalDetails.semester,
@@ -103,6 +109,8 @@ export async function POST(request: Request) {
             ifscCode: bankDetails.ifsc,
             branchName: bankDetails.branchName,
             accountHolder: bankDetails.accountHolder,
+
+            
             remark: formData.get('remark') as string || null,
             applicationDate: new Date(),
             status: 'Pending',
