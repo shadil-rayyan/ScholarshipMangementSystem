@@ -13,15 +13,23 @@ const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const handleLoginWithGoogle = async () => {
-    try {
-      const result = await signInWithGoogle();
-      router.push(result.isAdmin ? '/Scholarships' : '/');
-    } catch (err) {
-      console.error('Failed to log in with Google:', err);
-      setError('Failed to log in with Google');
+const handleLoginWithGoogle = async () => {
+  try {
+    const result = await signInWithGoogle();
+    
+    if (result.isAdmin) {
+      // If the user is an admin, redirect to the admin route
+      router.push('/Scholarships');
+    } else {
+      // Non-admin users are redirected to the home page
+      router.push('/');
     }
-  };
+  } catch (err) {
+    console.error('Failed to log in with Google:', err);
+    setError('Failed to log in with Google');
+  }
+};
+
 
   return (
     <>

@@ -261,6 +261,7 @@ const handleSubmitClick = async () => {
                 return <ContactDetails contactDetails={contactDetails} setContactDetails={setContactDetails} errors={validationErrors} />;
             case 'educational':
                 return (
+                    <div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
                             <EducationalDetails
@@ -277,7 +278,25 @@ const handleSubmitClick = async () => {
                             />
                         </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="col-span-1">
+                            <EducationalDetails
+                                educationalDetails={educationalDetails}
+                                setEducationalDetails={setEducationalDetails}
+                                errors={validationErrors}
+                            />
+                        </div>
+                        <div className="col-span-1">
+                            <BankDetails
+                                bankDetails={bankDetails}
+                                setBankDetails={setBankDetails}
+                                errors={validationErrors}
+                            />
+                        </div>
+                    </div>
+                    </div>
                 );
+
             case 'documentation':
                 return <Documentation files={files} setFiles={setFiles} errors={validationErrors} />;
             default:
@@ -347,7 +366,7 @@ const handleSubmitClick = async () => {
                     </button>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 
