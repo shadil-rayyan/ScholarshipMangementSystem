@@ -104,49 +104,49 @@ const ApplyForm: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [personalDetails, setPersonalDetails] = useState<PersonalDetailsType>({
-        name: 'sha',
+        name: '',
         dob: '',
-        gender: 'male',
-        applicationtype: 'fresh',
-        category: 'obc',
-        aadhar: '234352528798',
-        fatherName: 'abdul',
-        fatherPhone: '9995695010',
-        motherName: 'asma',
-        motherPhone: '9995695010',
-        income: '60000',
-        fatherOccupation: 'coolie',
-        studentPhone: '9995695010',
-        motherOccupation: 'coolie',
+        gender: '',
+        applicationtype: '',
+        category: '',
+        aadhar: '',
+        fatherName: '',
+        fatherPhone: '',
+        motherName: '',
+        motherPhone: '',
+        income: '',
+        fatherOccupation: '',
+        studentPhone: '',
+        motherOccupation: '',
     });
 
     const [contactDetails, setContactDetails] = useState<ContactDetailsType>({
-        house: 'tayyan',
-        place: 'kattilapedika',
-        postOffice: 'vengalam',
-        country: 'indian',
-        pincode: '673303',
-        state: 'kerala',
-        district: 'kozhikode',
-        whatsappNumber: '9995695010',
-        studentEmail: 'shadilrayyan10@gmail.com',
-        alternativeNumber: '9995695010',
+        house: '',
+        place: '',
+        postOffice: '',
+        country: '',
+        pincode: '',
+        state: '',
+        district: '',
+        whatsappNumber: '',
+        studentEmail: '',
+        alternativeNumber: '',
     });
 
     const [educationalDetails, setEducationalDetails] = useState<EducationalDetailsType>({
-        college: 'gec pallkad',
-        branch: 'Computer Science and Enginerring',
-        semester: 'S5',
+        college: '',
+        branch: '',
+        semester: '',
         hostelResident: true,
-        cgpa: '6.5',
+        cgpa: '',
     });
 
     const [bankDetails, setBankDetails] = useState<BankDetailsType>({
-        ifsc: 'CNRB0006065',
-        bankName: 'canara',
-        branchName: 'kozhikode',
-        accountNumber: '60651200004657',
-        accountHolder: 'shaidl am ',
+        ifsc: '',
+        bankName: '',
+        branchName: '',
+        accountNumber: '',
+        accountHolder: ' ',
     });
 
     const [files, setFiles] = useState<FilesType>({});
