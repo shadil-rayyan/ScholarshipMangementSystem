@@ -58,7 +58,7 @@ export interface ScholarshipDetails {
   selectadmin: string;
   amountadmin: string;
   rejectadmin: string;
-  renewaladmin: string;
+  revertedadmin: string;
 }
 
 export interface PersonalDetailsProps {
@@ -251,7 +251,7 @@ export const Verification: React.FC<VerificationProps> = ({
     updatedTable[1].label = 'Selected for Scholarship';
     updatedTable[2].label = 'Amount Processed';
     updatedTable[3].label = 'Rejected';
-    updatedTable[4].label = 'Renewal';
+    updatedTable[4].label = 'reverted';
 
     // Update the verification table based on the status
     if (currentStatus === 'Verify') {
@@ -274,7 +274,7 @@ export const Verification: React.FC<VerificationProps> = ({
       updatedTable[3].value = 'Yes';
       updatedTable[3].admin = adminName;
       updatedTable[4].value = '';
-    } else if (currentStatus === 'Renewal') {
+    } else if (currentStatus === 'Reverted') {
       updatedTable[4].value = 'Yes';
       updatedTable[4].admin = adminName;
     }
@@ -317,8 +317,8 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Renewal">
-              Renewal
+            <option value="Reverted">
+              Reverted
             </option>
             <option value="Select" disabled={!isVerifySelected}>
               Select

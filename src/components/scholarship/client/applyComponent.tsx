@@ -8,6 +8,9 @@ import { BankDetails, BankDetailsType } from './BankDetails';
 import { Documentation, FilesType } from './Documentation';
 import { uploadFileToFirebase } from '@/lib/firebase/config';
 
+import { useRouter } from 'next/navigation';
+
+
 
 // Validation functions
 
@@ -15,8 +18,8 @@ const validatePersonalDetails = (details: PersonalDetailsType) => {
     const errors: Partial<Record<keyof PersonalDetailsType, string>> = {};
     if (!details.name.trim()) errors.name = 'Name is required';
     if (!details.dob) errors.dob = 'Date of Birth is required';
-     if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required'; // Gender validation
-    if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'Application type is required'; // Application type validation
+    if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required';
+    if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'application type is required';
     if (!details.category.trim()) errors.category = 'Category is required';
     if (!details.fatherName?.trim()) errors.fatherName = 'father Name  is required';
     if (!details.motherName?.trim()) errors.motherName = 'mother Name  is required';
@@ -70,11 +73,11 @@ const validateDocumentation = (files: FilesType) => {
     const errors: Partial<Record<string, string>> = {};
 
     const fileLimits = {
-        0: { maxSize: 1 * 1024 * 1024 }, // 1 MB
-        1: { maxSize: 1 * 1024 * 1024 }, // 1 MB
-        2: { maxSize: 1 * 1024 * 1024 }, // 1 MB
-        3: { maxSize: 1 * 1024 * 1024 }, // 1 MB
-        4: { maxSize: 1 * 1024 * 1024 }, // 1 MB
+        0: { maxSize: 1 * 1024 * 1024 },
+        1: { maxSize: 1 * 1024 * 1024 }, // 5 MB for Document 1
+        2: { maxSize: 1 * 1024 * 1024 }, // 1 MB for Documents 2-5
+        3: { maxSize: 1 * 1024 * 1024 },
+        4: { maxSize: 1 * 1024 * 1024 },
     };
 
     for (const key in fileLimits) {
@@ -97,7 +100,9 @@ const validateDocumentation = (files: FilesType) => {
 
 const ApplyForm: React.FC = () => {
     const [activeTab, setActiveTab] = useState('personal');
-
+    const router = useRouter();
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [personalDetails, setPersonalDetails] = useState<PersonalDetailsType>({
         name: '',
         dob: '',
@@ -119,9 +124,9 @@ const ApplyForm: React.FC = () => {
         house: '',
         place: '',
         postOffice: '',
-        country: '',
+        country: 'indian',
         pincode: '',
-        state: '',
+        state: 'kerala',
         district: '',
         whatsappNumber: '',
         studentEmail: '',
@@ -132,8 +137,8 @@ const ApplyForm: React.FC = () => {
         college: '',
         branch: '',
         semester: '',
-        hostelResident: false, // Assuming default value for hostel resident is false
-        cgpa: '',
+        hostelResident: true,
+        cgpa: '6.5',
     });
 
     const [bankDetails, setBankDetails] = useState<BankDetailsType>({
@@ -143,9 +148,6 @@ const ApplyForm: React.FC = () => {
         accountNumber: '',
         accountHolder: '',
     });
-
-
-
 
     const [files, setFiles] = useState<FilesType>({});
     const [validationErrors, setValidationErrors] = useState<any>({});
@@ -194,64 +196,66 @@ const ApplyForm: React.FC = () => {
         setActiveTab(getPreviousTab());
     };
 
-const handleSubmitClick = async () => {
-    let errors: any = {};
-    const personalErrors = validatePersonalDetails(personalDetails);
-    const contactErrors = validateContactDetails(contactDetails);
-    const educationalErrors = validateEducationalDetails(educationalDetails);
-    const bankErrors = validateBankDetails(bankDetails);
-    const documentationErrors = validateDocumentation(files);
+    const handleSubmitClick = async () => {
+        // ... your existing validation code ...
+        setIsSubmitting(true);
+        let errors: any = {};
+        const personalErrors = validatePersonalDetails(personalDetails);
+        const contactErrors = validateContactDetails(contactDetails);
+        const educationalErrors = validateEducationalDetails(educationalDetails);
+        const bankErrors = validateBankDetails(bankDetails);
 
-    errors = {
-        ...personalErrors,
-        ...contactErrors,
-        ...educationalErrors,
-        ...bankErrors,
-        ...documentationErrors,
-    };
+        errors = {
+            ...personalErrors,
+            ...contactErrors,
+            ...educationalErrors,
+            ...bankErrors,
+            ...validateDocumentation(files),
+        };
 
-    if (Object.keys(errors).length > 0) {
-        setValidationErrors(errors);
-        // Optionally set active tab based on errors
-        return;
-    }
-
-    setValidationErrors({});
-        // Submit the form data...
+        setValidationErrors({});
         let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
         const formData = new FormData();
         console.log(scholarshipData);
-        
+
         // Append scholarship data as a JSON string
         formData.append('scholarshipData', JSON.stringify(scholarshipData));
-        
+
         // Append files if they exist
         if (files[0]) formData.append('photo', files[0]);
         if (files[1]) formData.append('cheque', files[1]);
         if (files[2]) formData.append('aadharCard', files[2]);
-        if (files[3]) formData.append('collegeID', files[3]);  // corrected index
+        if (files[3]) formData.append('collegeID', files[3]);
         if (files[4]) formData.append('incomeCertificate', files[4]);
-        
+
         try {
             const response = await fetch('/api/ScholarshipApi/PostScholarship', {
                 method: 'POST',
                 body: formData
             });
-    
-            // Check if the response is successful
+
             if (!response.ok) {
                 const errorDetails = await response.json();
                 throw new Error(errorDetails.error || 'Unknown error occurred');
             }
-    
+
             const result = await response.json();
             console.log('Scholarship application submitted successfully:', result);
+
+            // Set success message
+            setSuccessMessage('Scholarship application submitted successfully!');
+
+            // Redirect to home page after 3 seconds
+            setTimeout(() => {
+                router.push('/');  // Adjust this path to your home page route
+            }, 3000);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
+            setSuccessMessage('Failed to submit application. Please try again.');
+        } finally {
+            setIsSubmitting(false);  // Reset submitting state whether submission succeeds or fails
         }
-    
     };
-
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -261,7 +265,6 @@ const handleSubmitClick = async () => {
                 return <ContactDetails contactDetails={contactDetails} setContactDetails={setContactDetails} errors={validationErrors} />;
             case 'educational':
                 return (
-                    <div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
                             <EducationalDetails
@@ -277,26 +280,8 @@ const handleSubmitClick = async () => {
                                 errors={validationErrors}
                             />
                         </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="col-span-1">
-                            <EducationalDetails
-                                educationalDetails={educationalDetails}
-                                setEducationalDetails={setEducationalDetails}
-                                errors={validationErrors}
-                            />
-                        </div>
-                        <div className="col-span-1">
-                            <BankDetails
-                                bankDetails={bankDetails}
-                                setBankDetails={setBankDetails}
-                                errors={validationErrors}
-                            />
-                        </div>
-                    </div>
                     </div>
                 );
-
             case 'documentation':
                 return <Documentation files={files} setFiles={setFiles} errors={validationErrors} />;
             default:
@@ -335,6 +320,12 @@ const handleSubmitClick = async () => {
 
     return (
         <div className="max-w-5xl mx-auto p-6">
+            {successMessage && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong className="font-bold">Success!</strong>
+                    <span className="block sm:inline"> {successMessage}</span>
+                </div>
+            )}
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="p-6">
@@ -345,7 +336,7 @@ const handleSubmitClick = async () => {
                 {showPreviousButton && (
                     <button
                         onClick={handlePreviousClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                         Previous
                     </button>
@@ -353,20 +344,22 @@ const handleSubmitClick = async () => {
                 {showNextButton ? (
                     <button
                         onClick={handleNextClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                         Next
                     </button>
                 ) : (
                     <button
                         onClick={handleSubmitClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className={`px-4 py-2 text-white rounded ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                            }`}
+                        disabled={isSubmitting}
                     >
-                        Submit
+                        {isSubmitting ? 'Sending...' : 'Submit'}
                     </button>
                 )}
             </div>
-        </div >
+        </div>
     );
 };
 

@@ -10,7 +10,7 @@ type UpdateScholarshipData = {
     selectadmin?: string;
     amountadmin?: string;
     rejectadmin?: string;
-    renewaladmin?: string;
+    revertedadmin?: string;
 };
 
 export async function POST(req: Request, { params }: { params: { applicationNumber: string } }) {
@@ -28,7 +28,7 @@ export async function POST(req: Request, { params }: { params: { applicationNumb
             typeof data.selectadmin !== 'string' ||
             typeof data.amountadmin !== 'string' ||
             typeof data.rejectadmin !== 'string' ||
-            typeof data.renewaladmin !== 'string'
+            typeof data.revertedadmin !== 'string'
         ) {
             console.error('Invalid data format', data);
             return NextResponse.json({ message: 'Invalid request data' }, { status: 400 });
@@ -55,7 +55,7 @@ export async function POST(req: Request, { params }: { params: { applicationNumb
             selectadmin: data.selectadmin,
             amountadmin: data.amountadmin,
             rejectadmin: data.rejectadmin,
-            renewaladmin: data.renewaladmin,
+            revertedadmin: data.revertedadmin,
         };
 
         // Initialize changes flag

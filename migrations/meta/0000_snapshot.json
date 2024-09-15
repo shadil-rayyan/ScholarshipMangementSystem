@@ -1,5 +1,5 @@
 {
-  "id": "d0d3de41-8109-4ed9-95eb-aa6bca504874",
+  "id": "5804060a-09dd-49b9-b97a-4ba4173f7fe2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -38,8 +38,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "Type": {
-          "name": "Type",
+        "applicationtype": {
+          "name": "applicationtype",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -275,36 +275,36 @@
           "notNull": false,
           "default": "now()"
         },
-        "verifying_admin": {
-          "name": "verifying_admin",
+        "verifyadmin": {
+          "name": "verifyadmin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "default": "'null'"
         },
-        "selecting admin": {
-          "name": "selecting admin",
+        "selectadmin": {
+          "name": "selectadmin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "default": "'null'"
         },
-        "amount_admin": {
-          "name": "amount_admin",
+        "amountadmin": {
+          "name": "amountadmin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "default": "'null'"
         },
-        "admin_reject": {
-          "name": "admin_reject",
+        "rejectadmin": {
+          "name": "rejectadmin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "default": "'null'"
         },
-        "admin_renewal": {
-          "name": "admin_renewal",
+        "revertedadmin": {
+          "name": "revertedadmin",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
