@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SelectScholarship } from '@/db/schema/scholarship/scholarshipData';
-import Filter from '@/components/filter/filter';
+import Filter from '@/components/filter/Filter';
 import DashboardStats from '@/components/scholarshipadmin/Dashboardstats';
 
 const ScholarshipPage: React.FC = () => {
