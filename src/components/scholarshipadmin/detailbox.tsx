@@ -36,12 +36,12 @@ const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, applicationNumber
                     <span>Email:</span> {email}
                 </div>
             </div>
-            {/* <button
+            <button
                 onClick={handleEditClick}
                 className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
                 Edit
-            </button> */}
+            </button>
         </div>
     );
 };

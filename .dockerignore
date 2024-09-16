@@ -5,3 +5,10 @@ Dockerfile
 .git
 .gitignore
 *.md
+
+.next
+node_modules
+
+*.log
+build
+dist
