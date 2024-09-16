@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation'; // Make sure you're using the right router
 
 interface ScholarshipBoxProps {
     name: string;
@@ -8,9 +9,11 @@ interface ScholarshipBoxProps {
 }
 
 const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, applicationNumber, email, imageUrl }) => {
+    const router = useRouter(); // Call useRouter inside the component
+
     const handleEditClick = () => {
-        // Handle the edit action, e.g., open an edit form or navigate to an edit page
-        console.log('Edit button clicked');
+        // Handle the edit action, e.g., navigate to an edit page
+        router.push(`/Scholarships/edit/${applicationNumber}`);
     };
 
     return (
@@ -33,12 +36,12 @@ const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, applicationNumber
                     <span>Email:</span> {email}
                 </div>
             </div>
-            <button
+            {/* <button
                 onClick={handleEditClick}
                 className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
                 Edit
-            </button>
+            </button> */}
         </div>
     );
 };
