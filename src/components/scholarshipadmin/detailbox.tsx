@@ -11,7 +11,7 @@ const ScholarshipBox: React.FC<ScholarshipBoxProps> = ({ name, applicationNumber
     const router = useRouter();
     const handleEditClick = () => {
         // Navigate to the edit page with the application number
-        router.push(`/Scholarships/edit/${applicationNumber}`);
+        router.push(`/Scholarship/edit/${applicationNumber}`);
     };
 
     return (

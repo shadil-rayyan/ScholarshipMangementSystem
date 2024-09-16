@@ -57,7 +57,7 @@ const ScholarshipDetailPage: React.FC = () => {
                 selectadmin: verificationTable[1]?.admin || '',
                 amountadmin: verificationTable[2]?.admin || '',
                 rejectadmin: verificationTable[3]?.admin || '',
-                renewaladmin: verificationTable[4]?.admin || ''
+                revertedadmin: verificationTable[4]?.admin || ''
             };
 
             console.log("Updating with:", updatedScholarshipDetails);

@@ -10,8 +10,8 @@ export interface ContactDetailsType {
     state: string;
     district: string;
     whatsappNumber: string;
-    studentEmail?: string;
-    alternativeNumber?: string;
+    studentEmail: string;
+    alternativeNumber: string;
 }
 
 interface ContactDetailsProps {

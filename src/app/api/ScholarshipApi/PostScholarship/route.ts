@@ -1,5 +1,3 @@
-// app/api/ScholarshipApi/PostScholarship/route.ts
-
 import { NextResponse } from 'next/server';
 import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/scholarshipData';
 import { testConnection } from '@/db';
@@ -81,30 +79,27 @@ export async function POST(request: Request) {
             category: personalDetails.category,
             adharNumber: personalDetails.aadhar,
             fatherName: personalDetails.fatherName,
-
-
-            mother_name: personalDetails.motherName,
-            motherNumber: personalDetails.motherPhone,
             fatherNumber: personalDetails.fatherPhone,
-            father_occupation: personalDetails.fatherOccupation,
-            mother_occupation: personalDetails.motherOccupation,
-            student_number: personalDetails.studentPhone,
-            house_apartment_name: contactDetails.houseApartmentName,
-            place_state: contactDetails.placeState,
-            post_office: contactDetails.postOffice,
-            pin_code: contactDetails.pincode,
-            alternative_number: contactDetails.alternativeNumber,
-
-
-
-
-
-
             income: personalDetails.income,
+            motherName: personalDetails.motherName,
+            motherNumber: personalDetails.motherPhone,
+            fatherOccupation: personalDetails.fatherOccupation,
+            motherOccupation: personalDetails.motherOccupation,
+            studentNumber: personalDetails.studentPhone,
+
+
+            houseApartmentName: contactDetails.house,
+            pinCode: contactDetails.pincode,
+            postOffice: contactDetails.postOffice,
             country: contactDetails.country,
             state: contactDetails.state,
             district: contactDetails.district,
+            alternativeNumber: contactDetails.alternativeNumber,
             studentEmail: contactDetails.studentEmail,
+            placeState: contactDetails.place,
+            whatsappNumber: contactDetails.whatsappNumber,
+
+
             nameOfTheCollege: educationalDetails.college,
             branch: educationalDetails.branch,
             semester: educationalDetails.semester,
@@ -114,6 +109,8 @@ export async function POST(request: Request) {
             ifscCode: bankDetails.ifsc,
             branchName: bankDetails.branchName,
             accountHolder: bankDetails.accountHolder,
+
+            
             remark: formData.get('remark') as string || null,
             applicationDate: new Date(),
             status: 'Pending',

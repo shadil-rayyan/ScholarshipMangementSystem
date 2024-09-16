@@ -11,12 +11,12 @@ export interface PersonalDetailsType {
     aadhar: string;
     fatherName: string;
     fatherPhone: string;
-    motherName?: string;
-    motherPhone?: string;
+    motherName: string;
+    motherPhone: string;
     income: string;
-    fatherOccupation?: string;
+    fatherOccupation: string;
     studentPhone: string;
-    motherOccupation?: string;
+    motherOccupation: string;
 }
 
 interface PersonalDetailsProps {
@@ -58,41 +58,47 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
                 error={errors.dob}
             />
             <div className="col-span-1 flex items-center">
-                <div className="flex items-center space-x-4">
-                    <span className="text-gray-700">Gender:</span>
-                    {['Male', 'Female', 'Other'].map((gender) => (
-                        <label key={gender} className="inline-flex items-center">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value={gender.toLowerCase()}
-                                className="form-radio"
-                                checked={personalDetails.gender === gender.toLowerCase()}
-                                onChange={(e) => handleChange('gender', e.target.value)}
-                            />
-                            <span className="ml-2">{gender}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
-            <div className="col-span-1 flex items-center">
-                <div className="flex items-center space-x-4">
-                    <span className="text-gray-700">Application type:</span>
-                    {['Fresh', 'Renewal'].map((applicationtype) => (
-                        <label key={applicationtype} className="inline-flex items-center">
-                            <input
-                                type="radio"
-                                name="applicationtype"
-                                value={applicationtype.toLowerCase()}
-                                className="form-radio"
-                                checked={personalDetails.applicationtype === applicationtype.toLowerCase()}
-                                onChange={(e) => handleChange('applicationtype', e.target.value)}
-                            />
-                            <span className="ml-2">{applicationtype}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
+    <div className="flex items-center space-x-4">
+        <span className="text-gray-700">Gender:</span>
+        {['Male', 'Female', 'Other'].map((gender) => (
+            <label key={gender} className="inline-flex items-center">
+                <input
+                    type="radio"
+                    name="gender"
+                    value={gender.toLowerCase()}
+                    className="form-radio"
+                    checked={personalDetails.gender === gender.toLowerCase()}
+                    onChange={(e) => handleChange('gender', e.target.value)}
+                    required
+                />
+                <span className="ml-2">{gender}</span>
+            </label>
+        ))}
+    </div>
+    {errors.gender && <p className="text-red-600 text-sm">{errors.gender}</p>} {/* Display Gender error */}
+</div>
+
+<div className="col-span-1 flex items-center">
+    <div className="flex items-center space-x-4">
+        <span className="text-gray-700">Application type:</span>
+        {['Fresh', 'Renewal'].map((applicationtype) => (
+            <label key={applicationtype} className="inline-flex items-center">
+                <input
+                    type="radio"
+                    name="applicationtype"
+                    value={applicationtype.toLowerCase()}
+                    className="form-radio"
+                    checked={personalDetails.applicationtype === applicationtype.toLowerCase()}
+                    onChange={(e) => handleChange('applicationtype', e.target.value)}
+                    required
+                />
+                <span className="ml-2">{applicationtype}</span>
+            </label>
+        ))}
+    </div>
+    {errors.applicationtype && <p className="text-red-600 text-sm">{errors.applicationtype}</p>} {/* Display Application type error */}
+</div>
+
             <DropdownField
                 label="Category"
                 value={personalDetails.category}
@@ -126,13 +132,13 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <InputField
                 label="Mother Name"
                 required
-                value={personalDetails.motherName || ''}
+                value={personalDetails.motherName }
                 onChange={(e) => handleChange('motherName', e.target.value)}
                 error={errors.motherName}
             />
             <InputField
                 label="Mother Phone"
-                value={personalDetails.motherPhone || ''}
+                value={personalDetails.motherPhone}
                 onChange={(e) => handleChange('motherPhone', e.target.value)}
                 error={errors.motherPhone}
             />
@@ -146,7 +152,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <InputField
                 label="Father Occupation"
                 required
-                value={personalDetails.fatherOccupation || ''}
+                value={personalDetails.fatherOccupation }
                 onChange={(e) => handleChange('fatherOccupation', e.target.value)}
                 error={errors.fatherOccupation}
             />
@@ -159,7 +165,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             />
             <InputField
                 label="Mother Occupation"
-                value={personalDetails.motherOccupation || ''}
+                value={personalDetails.motherOccupation }
                 required
                 onChange={(e) => handleChange('motherOccupation', e.target.value)}
                 error={errors.motherOccupation}

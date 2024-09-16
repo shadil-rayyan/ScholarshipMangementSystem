@@ -99,10 +99,16 @@ const Navbar = () => {
 
 
 
-  const handleSignOut = async () => {
-    await signOutWithGoogle();
-    await removeSession();
-  };
+const handleSignOut = async () => {
+  try {
+    await signOutWithGoogle(); // First, sign out of Google.
+    await removeSession(); // Then, remove the session cookie.
+    router.push('/'); // Finally, redirect to the home page after sign-out is complete.
+  } catch (err) {
+    console.error('Failed to sign out:', err);
+  }
+};
+
 
   const handleSignIn = () => {
     router.push("/auth/Login");
