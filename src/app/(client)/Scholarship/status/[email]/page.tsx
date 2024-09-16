@@ -1,7 +1,8 @@
 "use client";
-
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+
 
 const ScholarshipStatusPage: React.FC = () => {
   const { email } = useParams(); // Use useParams to get the email from the URL

@@ -200,6 +200,7 @@ const DarsanaScholarshipPage: React.FC = () => {
                 alt="Scholarship Banner"
                 className="w-full h-full"
                 style={{ objectFit: 'contain', objectPosition: 'center' }}
+                priority
               />
             </div>
           </div>

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SelectScholarship } from '@/db/schema/scholarship/scholarshipData';
-import Filter from '@/components/filter/Filter';
-// import DashboardStats from '@/components/scholarshipadmin/Dashboardstats';
+import Filter from '@/components/filter/filter';
+import DashboardStats from '@/components/scholarshipadmin/Dashboardstats';
 
 const ScholarshipPage: React.FC = () => {
     const [scholarships, setScholarships] = useState<SelectScholarship[]>([]);
@@ -18,10 +18,12 @@ const ScholarshipPage: React.FC = () => {
     });
     const [stats, setStats] = useState({
         totalApplications: 0,
+        verify: 0,
         selected: 0,
         amountProcessed: 0,
         pending: 0,
         rejected: 0,
+        reverted: 0,
     });
 
     useEffect(() => {
@@ -59,12 +61,13 @@ const ScholarshipPage: React.FC = () => {
     };
 
     const resetFilters = () => {
-        setFilters({
+        const reset = {
             applicationId: '',
             status: '',
             year: '',
             priority: '',
-        });
+        };
+        setFilters(reset);
         fetchScholarships();
     };
 
@@ -123,6 +126,8 @@ const ScholarshipPage: React.FC = () => {
         const amountProcessed = scholarships.filter(s => s.status.toLowerCase() === 'amount proceed').length;
         const pending = scholarships.filter(s => s.status.toLowerCase() === 'pending').length;
         const rejected = scholarships.filter(s => s.status.toLowerCase() === 'reject').length;
+        const verify = scholarships.filter(s => s.status.toLowerCase() === 'verify').length;
+        const reverted = scholarships.filter(s => s.status.toLowerCase() === 'reverted').length;
 
         setStats({
             totalApplications,
@@ -130,6 +135,8 @@ const ScholarshipPage: React.FC = () => {
             amountProcessed,
             pending,
             rejected,
+            verify,
+            reverted,
         });
     };
 
@@ -140,12 +147,12 @@ const ScholarshipPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 pt-0">
-            <h1 className="text-2xl font-bold mb-4">Scholarships</h1>
+            
             <div>
-                <h1 className="text-xl font-light">Overview</h1>
-                {/* <DashboardStats stats={stats} /> */}
+                <h1 className="text-xl pl-4 font-light">Overview</h1>
+                <DashboardStats stats={stats} />
             </div>
-            <Filter onFilterChange={handleFilterChange} onResetFilters={resetFilters} />
+            <Filter filters={filters} onFilterChange={handleFilterChange} onResetFilters={resetFilters} />
             <table className="min-w-full bg-white border border-gray-300 mt-4">
                 <thead>
                     <tr className="bg-gray-100">

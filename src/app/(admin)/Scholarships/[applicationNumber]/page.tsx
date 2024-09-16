@@ -179,11 +179,6 @@ const ScholarshipDetailPage: React.FC = () => {
                     <p>No scholarship details available.</p>
                 )}
             </div>
-            <div className="flex justify-end mb-4">
-                <button onClick={handleEditClick} className="px-4 py-2 bg-yellow-500 text-white rounded">
-                    Edit
-                </button>
-            </div>
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="flex border-b">
                     {["personal", "contact", "educational", "documentation", "verification"].map((tab) => (

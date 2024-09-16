@@ -149,7 +149,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
   const documentFields = [
     { name: 'Photo', url: scholarshipDetails.photoUrl },
-    { name: 'Check', url: scholarshipDetails.checkUrl },
+    { name: 'cheque or bank passbook', url: scholarshipDetails.checkUrl },
     { name: 'Aadhar Card', url: scholarshipDetails.aadharCardUrl },
     { name: 'College ID Card', url: scholarshipDetails.collegeIdCardUrl },
     { name: 'Income Certificate', url: scholarshipDetails.incomeUrl },
@@ -212,8 +212,6 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
 
 
-
-
 export interface VerificationProps {
   status: string;
   setStatus: (status: string) => void;
@@ -251,7 +249,7 @@ export const Verification: React.FC<VerificationProps> = ({
     updatedTable[1].label = 'Selected for Scholarship';
     updatedTable[2].label = 'Amount Processed';
     updatedTable[3].label = 'Rejected';
-    updatedTable[4].label = 'reverted';
+    updatedTable[4].label = 'Reverted';
 
     // Update the verification table based on the status
     if (currentStatus === 'Verify') {
@@ -280,6 +278,8 @@ export const Verification: React.FC<VerificationProps> = ({
     }
 
     setVerificationTable(updatedTable);
+    // Save the updated table to localStorage
+    localStorage.setItem('verificationTable', JSON.stringify(updatedTable));
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -289,10 +289,24 @@ export const Verification: React.FC<VerificationProps> = ({
     // Update the verification table and sync the status with scholarship details
     updateTableBasedOnStatus(selectedStatus);
     setScholarshipDetails((prev) => ({ ...prev, status: selectedStatus }));
+    // Save status to localStorage
+    localStorage.setItem('status', selectedStatus);
   };
 
-  // Initialize status on first load
+  // Load initial values from localStorage on first load
   useEffect(() => {
+    const savedStatus = localStorage.getItem('status');
+    const savedTable = localStorage.getItem('verificationTable');
+
+    if (savedStatus) {
+      setStatus(savedStatus);
+      setScholarshipDetails((prev) => ({ ...prev, status: savedStatus }));
+    }
+
+    if (savedTable) {
+      setVerificationTable(JSON.parse(savedTable));
+    }
+
     if (scholarshipDetails?.status) {
       setStatus(scholarshipDetails.status); // Sync the dropdown with initial status
       updateTableBasedOnStatus(scholarshipDetails.status);
@@ -317,16 +331,9 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Reverted">
-              Reverted
-            </option>
-            <option value="Select" disabled={!isVerifySelected}>
-              Select
-            </option>
-            <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
-              Amount Proceed
-            </option>
-
+            <option value="Reverted">Reverted</option>
+            <option value="Select" disabled={!isVerifySelected}>Select</option>
+            <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>Amount Proceed</option>
           </select>
         </label>
       </div>

@@ -57,7 +57,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ files, setFiles, e
                     </tr>
                 </thead>
                 <tbody>
-                    {['Photo', 'Check', 'Aadhar Card', 'College ID Card', 'Income'].map((doc, index) => (
+                    {['Photo', 'Cheque or bank passbook', 'Aadhar Card', 'College ID Card', 'Income'].map((doc, index) => (
                         <tr key={index}>
                             <td className="border p-2">{index + 1}</td>
                             <td className="border p-2">{doc}</td>

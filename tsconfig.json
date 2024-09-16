@@ -21,13 +21,14 @@
         "src/*"
       ]
     },
-    "strict": false,  // Disable strict type-checking options
-    "forceConsistentCasingInFileNames": false,  // Allow inconsistent casing
+    "strict": false, // Disable strict type-checking options
+    "forceConsistentCasingInFileNames": false, // Allow inconsistent casing
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
