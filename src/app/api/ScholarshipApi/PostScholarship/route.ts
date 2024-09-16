@@ -8,13 +8,9 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const uploadFileToFirebase = async (file: File | null, path: string): Promise<string | null> => {
     if (!file) return null;
     try {
-        console.log(`Uploading file to path: ${path}`);
         const storageRef = ref(storage, `darsana/${path}/${file.name}`);
         const snapshot = await uploadBytes(storageRef, file);
-        console.log(`Upload completed with metadata: ${JSON.stringify(snapshot.metadata)}`);
-        const downloadURL = await getDownloadURL(storageRef);
-        console.log(`Download URL: ${downloadURL}`);
-        return downloadURL;
+        return await getDownloadURL(storageRef);
     } catch (error) {
         console.error(`Failed to upload file at path ${path}:`, error);
         return null;
@@ -39,37 +35,19 @@ const validateScholarshipData = (data: any) => {
 
 export async function POST(request: Request) {
     try {
-        console.log('API route hit');
-
-        // Test database connection
-        const isConnected = await testConnection();
-        console.log('Database connection result:', isConnected);
-
-        if (!isConnected) {
-            throw new Error('Database connection failed');
-        }
-
         // Parse form data from the request
         const formData = await request.formData();
-        console.log('Received form data');
-
-        // Extract the scholarship data from formData
         const scholarshipDataJson = formData.get('scholarshipData') as string;
-        if (!scholarshipDataJson) {
-            console.error('scholarshipData is missing');
-            throw new Error('scholarshipData is missing');
-        }
+        if (!scholarshipDataJson) throw new Error('scholarshipData is missing');
 
         const scholarshipDataParsed = JSON.parse(scholarshipDataJson);
         const validationErrors = validateScholarshipData(scholarshipDataParsed);
         if (validationErrors.length > 0) {
-            console.error('Validation errors:', validationErrors);
-            throw new Error(`Validation failed: ${validationErrors.join(', ')}`);
+            return NextResponse.json({ error: `Validation failed: ${validationErrors.join(', ')}` }, { status: 400 });
         }
 
-        const { personalDetails, contactDetails, educationalDetails, bankDetails } = scholarshipDataParsed;
-
         // Construct the initial scholarship data object
+        const { personalDetails, contactDetails, educationalDetails, bankDetails } = scholarshipDataParsed;
         const scholarshipData = {
             applicationType: 'Scholarship',
             name: personalDetails.name,
@@ -86,8 +64,6 @@ export async function POST(request: Request) {
             fatherOccupation: personalDetails.fatherOccupation,
             motherOccupation: personalDetails.motherOccupation,
             studentNumber: personalDetails.studentPhone,
-
-
             houseApartmentName: contactDetails.house,
             pinCode: contactDetails.pincode,
             postOffice: contactDetails.postOffice,
@@ -98,8 +74,6 @@ export async function POST(request: Request) {
             studentEmail: contactDetails.studentEmail,
             placeState: contactDetails.place,
             whatsappNumber: contactDetails.whatsappNumber,
-
-
             nameOfTheCollege: educationalDetails.college,
             branch: educationalDetails.branch,
             semester: educationalDetails.semester,
@@ -109,8 +83,6 @@ export async function POST(request: Request) {
             ifscCode: bankDetails.ifsc,
             branchName: bankDetails.branchName,
             accountHolder: bankDetails.accountHolder,
-
-            
             remark: formData.get('remark') as string || null,
             applicationDate: new Date(),
             status: 'Pending',
@@ -131,22 +103,16 @@ export async function POST(request: Request) {
             incomeCertificate: formData.get('incomeCertificate') as File | null,
         };
 
-        // Upload files to Firebase Storage and get URLs
-        console.log('Uploading files to Firebase Storage...');
-        const photoUrl = files.photo ? await uploadFileToFirebase(files.photo, 'photos') : null;
-        console.log('Photo URL:', photoUrl);
+        // Upload files to Firebase Storage in parallel and get URLs
+        const uploadPromises = [
+            files.photo ? uploadFileToFirebase(files.photo, 'photos') : Promise.resolve(null),
+            files.cheque ? uploadFileToFirebase(files.cheque, 'cheques') : Promise.resolve(null),
+            files.aadharCard ? uploadFileToFirebase(files.aadharCard, 'aadharCards') : Promise.resolve(null),
+            files.collegeID ? uploadFileToFirebase(files.collegeID, 'collegeIDs') : Promise.resolve(null),
+            files.incomeCertificate ? uploadFileToFirebase(files.incomeCertificate, 'incomeCertificates') : Promise.resolve(null),
+        ];
 
-        const chequeUrl = files.cheque ? await uploadFileToFirebase(files.cheque, 'cheques') : null;
-        console.log('Cheque URL:', chequeUrl);
-
-        const aadharCardUrl = files.aadharCard ? await uploadFileToFirebase(files.aadharCard, 'aadharCards') : null;
-        console.log('Aadhar Card URL:', aadharCardUrl);
-
-        const collegeIDUrl = files.collegeID ? await uploadFileToFirebase(files.collegeID, 'collegeIDs') : null;
-        console.log('College ID URL:', collegeIDUrl);
-
-        const incomeCertificateUrl = files.incomeCertificate ? await uploadFileToFirebase(files.incomeCertificate, 'incomeCertificates') : null;
-        console.log('Income Certificate URL:', incomeCertificateUrl);
+        const [photoUrl, chequeUrl, aadharCardUrl, collegeIDUrl, incomeCertificateUrl] = await Promise.all(uploadPromises);
 
         // Add file URLs to scholarship data
         scholarshipData.photoUrl = photoUrl;
@@ -156,18 +122,11 @@ export async function POST(request: Request) {
         scholarshipData.incomeUrl = incomeCertificateUrl;
 
         // Insert the scholarship data into the database
-        console.log('Inserting scholarship data into the database');
         const result = await ScholarshipDb.insert(Scholarship_Table).values(scholarshipData).returning();
-        console.log('New scholarship application added:', result);
 
         // Return the inserted scholarship data as the response
         return NextResponse.json(result[0], { status: 201 });
     } catch (error) {
-        // Log the error and send a 500 response with error details
-        console.error('Error processing scholarship application:', {
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : 'No stack trace'
-        });
         return NextResponse.json({
             error: 'Failed to process scholarship application',
             details: error instanceof Error ? error.message : 'Unknown error',
