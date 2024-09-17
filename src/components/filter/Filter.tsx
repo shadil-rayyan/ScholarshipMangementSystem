@@ -54,7 +54,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onResetFilters
             <option value="">Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Renewal">Reverted</option>
+            <option value="Reverted">Reverted</option>
             <option value="Select">Select</option>
             <option value="Amount Proceed">Amount Proceed</option>
           </select>

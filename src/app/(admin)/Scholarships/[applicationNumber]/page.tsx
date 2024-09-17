@@ -84,28 +84,31 @@ const ScholarshipDetailPage: React.FC = () => {
             const previousStatus = scholarshipDetails.status;
             const newStatus = updatedScholarshipDetails.status;
 
-            if (previousStatus !== newStatus) {
-                const remark = `Status updated to ${newStatus}`;
+            // if (previousStatus !== newStatus) {
+            //     const remark = `Status updated to ${newStatus}`;
 
-                const emailResponse = await fetch(`/api/SendMail/sendEmail`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        applicationNumber,
-                        status: newStatus,
-                        remark: scholarshipDetails.remark || '', // Send the remark in the email notification
-                    }),
-                });
+            //     const emailResponse = await fetch(`/api/SendMail/sendEmail`, {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify({
+            //             applicationNumber,
+            //             status: newStatus,
+            //             remark: scholarshipDetails.remark || '', // Send the remark in the email notification
+            //         }),
+            //     });
 
-                if (!emailResponse.ok) {
-                    const errorData = await emailResponse.json();
-                    throw new Error(`Failed to send email. Error: ${errorData.message}`);
-                }
+            //     if (!emailResponse.ok) {
+            //         const errorData = await emailResponse.json();
+            //         throw new Error(`Failed to send email. Error: ${errorData.message}`);
+            //     }
 
-                console.log("Email notification sent.");
-            }
+            //     console.log("Email notification sent.");
+            // }
+
+            router.push('/Scholarships');  // Adjust this path to your home page route
+           
         } catch (error) {
             console.error("Error updating scholarship or sending email:", error);
         }

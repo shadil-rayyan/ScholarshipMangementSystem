@@ -6,6 +6,7 @@ import { onAuthStateChanged } from '@/lib/firebase/auth'; // Ensure this functio
 import Sidebar from "@/components/admin/SideBar";
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '@/lib/firebase/config'
+import TopBar from '@/components/admin/TopBar';
 interface AdminLayoutProps {
   children: ReactNode;
 }
@@ -52,17 +53,25 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   // Only render the layout if authenticated as admin
   return (
+
     <div className="flex flex-col h-screen">
       <div className="flex">
         <Sidebar />
+        
         <div className="flex flex-1">
-          <main className="flex-1 p-4 overflow-auto">
-            {children}
+        
+          <main className="flex-1 overflow-auto">
+          <TopBar />
+          <div className="flex-1 p-4 overflow-auto">
+          {children}
+        </div>
+            
           </main>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default AdminLayout;

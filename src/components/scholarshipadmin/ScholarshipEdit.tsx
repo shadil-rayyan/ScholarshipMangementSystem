@@ -343,8 +343,6 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
     );
 };
 
-
-
 export interface EducationalAndBankDetailsProps {
     scholarshipDetails: ScholarshipDetails;
     handleInputChange: (updatedDetails: Partial<ScholarshipDetails>) => void;
@@ -355,9 +353,11 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
     handleInputChange
 }) => {
     const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof ScholarshipDetails) => {
+
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         handleInputChange({ [field]: value });
     };
+
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             {/* College Name */}
@@ -371,7 +371,6 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                     className="input-class"
                 />
             </div>
-
 
             {/* Branch */}
             <div>
@@ -397,17 +396,10 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 />
             </div>
 
-            {/* Hostel Resident */}
-            <div>
-                <label htmlFor="hostelResident"><strong>Hostel Resident:</strong></label>
-                <input
-                    id="hostelResident"
-                    type="checkbox"
-                    checked={!!scholarshipDetails?.hostelResident}
-                    onChange={(e) => handleFieldChange(e, 'hostelResident')}
-                />
-                <label htmlFor="hostelResident">Yes</label>
-            </div>
+            {/* Hostel Resident (Checkbox) */}
+
+
+
 
             {/* CGPA */}
             <div>
@@ -487,76 +479,77 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
 
 
 
-// export interface DocumentationProps {
-//     scholarshipDetails: ScholarshipDetails;
-//     onUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string) => Promise<void>;
-//     onEye: (url: string) => void;
-//     fileStatus: { [key: string]: string };  // File status for tracking upload progress or displaying existing files
-// }
 
-// export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails, onUpload, onEye, fileStatus }) => {
-//     const documentFields = [
-//         { name: 'Photo', url: scholarshipDetails?.photoUrl, field: 'photoUrl' },
-//         { name: 'Check', url: scholarshipDetails?.checkUrl, field: 'checkUrl' },
-//         { name: 'Aadhar Card', url: scholarshipDetails?.aadharCardUrl, field: 'aadharCardUrl' },
-//         { name: 'College ID Card', url: scholarshipDetails?.collegeIdCardUrl, field: 'collegeIdCardUrl' },
-//         { name: 'Income Certificate', url: scholarshipDetails?.incomeUrl, field: 'incomeUrl' },
-//     ];
+export interface DocumentationProps {
+    scholarshipDetails: ScholarshipDetails;
+    onUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string) => Promise<void>;
+    onEye: (url: string) => void;
+    fileStatus: { [key: string]: string };  // File status for tracking upload progress or displaying existing files
+}
 
-//     return (
-//         <div className="p-4">
-//             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-//                 <thead>
-//                     <tr>
-//                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
-//                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
-//                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
-//                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Actions</th>
-//                     </tr>
-//                 </thead>
-//                 <tbody>
-//                     {documentFields.map((doc, index) => (
-//                         <tr key={index}>
-//                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{index + 1}</td>
-//                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
-//                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
-//                                 {doc.url ? (
-//                                     <button
-//                                         type="button"
-//                                         onClick={() => onEye(doc.url)}
-//                                         className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center mr-2"
-//                                     >
-//                                         <FaEye />
-//                                     </button>
-//                                 ) : (
-//                                     fileStatus[doc.field] || 'Not Available' // Display file name or "Not Available"
-//                                 )}
-//                             </td>
-//                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
-//                                 {/* Upload Button */}
-//                                 <label className="mr-2">
-//                                     <input
-//                                         type="file"
-//                                         onChange={(e) => onUpload(e, doc.field)}
-//                                         style={{ display: 'none' }}
-//                                         data-field={doc.field}
-//                                     />
-//                                     <button
-//                                         type="button"
-//                                         onClick={() => {
-//                                             const fileInput = document.querySelector(`input[type='file'][data-field='${doc.field}']`) as HTMLInputElement;
-//                                             fileInput?.click();
-//                                         }}
-//                                         className="bg-green-500 text-white p-2 rounded hover:bg-green-600 flex items-center justify-center"
-//                                     >
-//                                         <FaUpload />
-//                                     </button>
-//                                 </label>
-//                             </td>
-//                         </tr>
-//                     ))}
-//                 </tbody>
-//             </table>
-//         </div>
-//     );
-// };
+export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails, onUpload, onEye, fileStatus }) => {
+    const documentFields = [
+        { name: 'Photo', url: scholarshipDetails?.photoUrl, field: 'photo' },
+        { name: 'Check', url: scholarshipDetails?.checkUrl, field: 'cheque' },
+        { name: 'Aadhar Card', url: scholarshipDetails?.aadharCardUrl, field: 'aadharCard' },
+        { name: 'College ID Card', url: scholarshipDetails?.collegeIdCardUrl, field: 'collegeID' },
+        { name: 'Income Certificate', url: scholarshipDetails?.incomeUrl, field: 'incomeCertificate' },
+    ];
+
+    return (
+        <div className="p-4">
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                    <tr>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {documentFields.map((doc, index) => (
+                        <tr key={index}>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{index + 1}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px' }}>{doc.name}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
+                                {doc.url ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => onEye(doc.url)}
+                                        className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center mr-2"
+                                    >
+                                        <FaEye />
+                                    </button>
+                                ) : (
+                                    fileStatus[doc.field] || 'Not Available' // Display file name or "Not Available"
+                                )}
+                            </td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
+                                {/* Upload Button */}
+                                <label className="mr-2">
+                                    <input
+                                        type="file"
+                                        onChange={(e) => onUpload(e, doc.field)}
+                                        style={{ display: 'none' }}
+                                        data-field={doc.field}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const fileInput = document.querySelector(`input[type='file'][data-field='${doc.field}']`) as HTMLInputElement;
+                                            fileInput?.click();
+                                        }}
+                                        className="bg-green-500 text-white p-2 rounded hover:bg-green-600 flex items-center justify-center"
+                                    >
+                                        <FaUpload />
+                                    </button>
+                                </label>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};

@@ -248,7 +248,7 @@ const ApplyForm: React.FC = () => {
             // Redirect to home page after 3 seconds
             setTimeout(() => {
                 router.push('/');  // Adjust this path to your home page route
-            }, 3000);
+            }, 1000);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
             setSuccessMessage('Failed to submit application. Please try again.');
@@ -322,7 +322,7 @@ const ApplyForm: React.FC = () => {
         <div className="max-w-5xl mx-auto p-6">
             {successMessage && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong className="font-bold">Success!</strong>
+                    {/* <strong className="font-bold">Success!</strong> */}
                     <span className="block sm:inline"> {successMessage}</span>
                 </div>
             )}

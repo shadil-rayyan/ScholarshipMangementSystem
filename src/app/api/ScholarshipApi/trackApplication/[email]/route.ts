@@ -29,7 +29,7 @@ export async function GET(req: Request, { params }: { params: { email: string } 
             { label: 'Step 2: Select', value: scholarshipData.selectadmin || '', admin: scholarshipData.selectadmin ? 'Admin' : null },
             { label: 'Step 3: Amount Proceed', value: scholarshipData.amountadmin || '', admin: scholarshipData.amountadmin ? 'Admin' : null },
             { label: 'Step 4: Reject', value: scholarshipData.rejectadmin || '', admin: scholarshipData.rejectadmin ? 'Admin' : null },
-            { label: 'Step 5: Renewal', value: scholarshipData.revertedadmin || '', admin: scholarshipData.revertedadmin ? 'Admin' : null },
+            { label: 'Step 5: Reverted', value: scholarshipData.revertedadmin || '', admin: scholarshipData.revertedadmin ? 'Admin' : null },
         ];
 
         console.log('Scholarship details with verification table fetched successfully');

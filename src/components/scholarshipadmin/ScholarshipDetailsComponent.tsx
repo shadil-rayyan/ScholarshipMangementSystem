@@ -100,7 +100,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
       <div><strong>State:</strong> {scholarshipDetails.state}</div>
-      <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
+      <div><strong> Pin Code </strong> {scholarshipDetails.pinCode}</div>
 
       <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
       <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
