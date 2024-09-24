@@ -1,18 +1,20 @@
 // app/admin/AddAdmin.tsx
 "use client";
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, firestore } from '@/lib/firebase/config'; // Ensure this is correctly set up
-import { doc, setDoc, getDoc } from 'firebase/firestore'; // Import getDoc here
+import { auth, firestore } from '@/lib/firebase/config';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const AddAdmin: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   // Function to check if the user is an admin
-  const checkIfUserIsAdmin = async (userEmail: string) => {
+  const checkIfUserIsAdmin = async (userEmail: string): Promise<boolean> => {
     const adminDoc = doc(firestore, 'adminemail', userEmail);
     const docSnap = await getDoc(adminDoc);
     return docSnap.exists();
@@ -25,6 +27,10 @@ const AddAdmin: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
     try {
       const user = auth.currentUser;
 
@@ -32,7 +38,12 @@ const AddAdmin: React.FC = () => {
         const isAdmin = await checkIfUserIsAdmin(user.email!);
 
         if (isAdmin) {
-          await setDoc(doc(firestore, 'adminemail', email), { role: 'admin' });
+          const adminData = {
+            role: 'admin',
+            addedBy: user.email,
+            timestamp: new Date()
+          };
+          await setDoc(doc(firestore, 'adminemail', email), adminData);
           setSuccess('Admin added successfully!');
           setEmail('');
         } else {
@@ -41,9 +52,11 @@ const AddAdmin: React.FC = () => {
       } else {
         setError('You must be logged in to add an admin.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding admin:', err);
       setError('Failed to add admin: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,6 +65,7 @@ const AddAdmin: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">Add New Admin</h2>
       {error && <p className="text-red-500">{error}</p>}
       {success && <p className="text-green-500">{success}</p>}
+      {loading && <p className="text-blue-500">Loading...</p>}
       <input
         type="email"
         value={email}
@@ -62,6 +76,7 @@ const AddAdmin: React.FC = () => {
       <button
         onClick={handleAddAdmin}
         className="bg-blue-600 text-white py-2 px-4 rounded"
+        disabled={loading}
       >
         Add Admin
       </button>

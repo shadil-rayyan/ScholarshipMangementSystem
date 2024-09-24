@@ -1,10 +1,13 @@
+// app/(admin)/Scholarships/[applicationNumber]/page.tsx
+
 'use client'
 import React, { useState, useEffect } from 'react';
 import { PersonalDetails, ContactDetails, EducationalAndBankDetails, Documentation, Verification, ScholarshipDetails } from '@/components/scholarshipadmin/ScholarshipDetailsComponent';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import ScholarshipBox from '@/components/scholarshipadmin/detailbox';
-
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
 
 
 const ScholarshipDetailPage: React.FC = () => {
@@ -14,17 +17,28 @@ const ScholarshipDetailPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState("personal");
     const [showDraftSaved, setShowDraftSaved] = useState(false);
+
     const router = useRouter();
     // Dummy verificationTable and setVerificationTable state
     const [verificationTable, setVerificationTable] = useState<any[]>([]);
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
 
 
+    const adminName = user?.displayName || ' Admin';
+    const profileImage = user?.photoURL || '';
 
     const handleEditClick = () => {
-        // Navigate to the edit page with the application number
+        // Handle the edit action, e.g., navigate to an edit page
         router.push(`/Scholarships/edit/${applicationNumber}`);
     };
-
     useEffect(() => {
         fetchScholarshipDetail();
     }, [applicationNumber]);
@@ -54,13 +68,15 @@ const ScholarshipDetailPage: React.FC = () => {
             }
 
             const updatedScholarshipDetails = {
+                applicationNumber: scholarshipDetails.applicationNumber,
                 status: scholarshipDetails.status,
                 remark: scholarshipDetails.remark || '', // Add remark to the update
                 verifyadmin: verificationTable[0]?.admin || '', // Adjust these fields
                 selectadmin: verificationTable[1]?.admin || '',
                 amountadmin: verificationTable[2]?.admin || '',
                 rejectadmin: verificationTable[3]?.admin || '',
-                renewaladmin: verificationTable[4]?.admin || ''
+                revertedadmin: verificationTable[4]?.admin || '',
+                adminName: adminName, // Include admin name here
             };
 
             console.log("Updating with:", updatedScholarshipDetails);
@@ -70,7 +86,7 @@ const ScholarshipDetailPage: React.FC = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(updatedScholarshipDetails),
+                body: JSON.stringify(updatedScholarshipDetails), // Remove adminName from here
             });
 
             if (!response.ok) {
@@ -81,36 +97,19 @@ const ScholarshipDetailPage: React.FC = () => {
             console.log("Response Body:", await response.text());
             console.log("Scholarship updated successfully.");
 
-            const previousStatus = scholarshipDetails.status;
-            const newStatus = updatedScholarshipDetails.status;
+            router.push('/Scholarships'); // Adjust this path to your home page route
 
-            if (previousStatus !== newStatus) {
-                const remark = `Status updated to ${newStatus}`;
-
-                const emailResponse = await fetch(`/api/SendMail/sendEmail`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        applicationNumber,
-                        status: newStatus,
-                        remark: scholarshipDetails.remark || '', // Send the remark in the email notification
-                    }),
-                });
-
-                if (!emailResponse.ok) {
-                    const errorData = await emailResponse.json();
-                    throw new Error(`Failed to send email. Error: ${errorData.message}`);
-                }
-
-                console.log("Email notification sent.");
-            }
         } catch (error) {
             console.error("Error updating scholarship or sending email:", error);
         }
     };
 
+    const handleViewLogClick = async () => {
+
+        router.push(`/adminLog/${applicationNumber}`);  // Adjust this path to your home page route
+
+
+    };
 
 
     const handleNextClick = () => {
@@ -146,9 +145,6 @@ const ScholarshipDetailPage: React.FC = () => {
                 return <Documentation scholarshipDetails={scholarshipDetails} />;
             case "verification":
                 return (
-
-
-                    // Pass this function to props
                     <Verification
                         status={scholarshipDetails.status || "Verify"}
                         setStatus={(status) =>
@@ -157,9 +153,8 @@ const ScholarshipDetailPage: React.FC = () => {
                         verificationTable={verificationTable} // Pass the verificationTable
                         setVerificationTable={setVerificationTable} // Pass the setVerificationTable
                         scholarshipDetails={scholarshipDetails}
-                        setScholarshipDetails={updateScholarshipDetails}
+                        setScholarshipDetails={setScholarshipDetails}
                     />
-
                 );
             default:
                 return null;
@@ -171,7 +166,8 @@ const ScholarshipDetailPage: React.FC = () => {
 
     return (
         <div className="max-w-5xl mx-auto p-6">
-            <div className="flex justify-center items-center mb-4">
+            <div className="flex justify-between items-center mb-4">
+                
                 {scholarshipDetails ? (
                     <ScholarshipBox
                         name={scholarshipDetails.name}
@@ -180,14 +176,23 @@ const ScholarshipDetailPage: React.FC = () => {
                         imageUrl={scholarshipDetails.photoUrl}
                     />
                 ) : (
-                    <p>No scholarship details available.</p>
+                    <p className="text-gray-600">No scholarship details available.</p>
                 )}
-            </div>
-            <div className="flex justify-end mb-4">
-                <button onClick={handleEditClick} className="px-4 py-2 bg-yellow-500 text-white rounded">
-                    Edit
+
+<div className='gap-4'>
+            <button onClick={handleViewLogClick} className="px-4 py-2 bg-blue-500 text-white rounded shadow">
+                    Verification Log
                 </button>
+            <button
+                onClick={handleEditClick}
+                className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+                Edit
+            </button>
             </div>
+
+            </div>
+            
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="flex border-b">
                     {["personal", "contact", "educational", "documentation", "verification"].map((tab) => (
@@ -208,16 +213,16 @@ const ScholarshipDetailPage: React.FC = () => {
 
             <div className={`flex mt-6 ${activeTab === "personal" ? "justify-end" : "justify-between"}`}>
                 {activeTab !== "personal" && (
-                    <button onClick={handlePreviousClick} className="px-4 py-2 bg-blue-500 text-white rounded">
+                    <button onClick={handlePreviousClick} className="px-4 py-2 bg-blue-500 text-white rounded shadow">
                         Previous
                     </button>
                 )}
                 {activeTab !== "verification" ? (
-                    <button onClick={handleNextClick} className="px-4 py-2 bg-blue-500 text-white rounded">
+                    <button onClick={handleNextClick} className="px-4 py-2 bg-blue-500 text-white rounded shadow">
                         Next
                     </button>
                 ) : (
-                    <button onClick={handleSubmitClick} className="px-4 py-2 bg-blue-500 text-white rounded">
+                    <button onClick={handleSubmitClick} className="px-4 py-2 bg-blue-500 text-white rounded shadow">
                         Submit
                     </button>
                 )}
@@ -225,6 +230,7 @@ const ScholarshipDetailPage: React.FC = () => {
 
             {showDraftSaved && <div className="mt-4 text-green-500">Draft saved!</div>}
         </div>
+
     );
 };
 

@@ -8,7 +8,7 @@ interface InputFieldProps {
     required?: boolean;
     error?: string;
     className?: string; // Add this line
-
+    readOnly?: boolean;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -17,6 +17,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     onChange,
     type = 'text',
     required = false,
+    readOnly = false,
     error,
 }) => {
     return (
@@ -28,9 +29,9 @@ export const InputField: React.FC<InputFieldProps> = ({
                 type={type}
                 value={value}
                 onChange={onChange}
-                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                    error ? 'border-red-500' : 'border-gray-300'
-                }`}
+                readOnly={readOnly}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${error ? 'border-red-500' : 'border-gray-300'
+                    }`}
             />
             {error && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">

@@ -1,168 +1,133 @@
 import { NextResponse } from 'next/server';
-import { ScholarshipDb, Scholarship_Table } from '@/db/schema/scholarship/scholarshipData';
-import { testConnection } from '@/db';
-import { storage } from '@/lib/firebase/config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-// Helper function to upload a file to Firebase and return the download URL
-const uploadFileToFirebase = async (file: File | null, path: string): Promise<string | null> => {
-    if (!file) return null;
-    try {
-        console.log(`Uploading file to path: ${path}`);
-        const storageRef = ref(storage, `darsana/${path}/${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        console.log(`Upload completed with metadata: ${JSON.stringify(snapshot.metadata)}`);
-        const downloadURL = await getDownloadURL(storageRef);
-        console.log(`Download URL: ${downloadURL}`);
-        return downloadURL;
-    } catch (error) {
-        console.error(`Failed to upload file at path ${path}:`, error);
-        return null;
-    }
-};
-
-// Function to validate scholarship data
-const validateScholarshipData = (data: any) => {
-    const errors: string[] = [];
-    const { personalDetails, contactDetails, educationalDetails, bankDetails } = data;
-
-    if (!personalDetails.name) errors.push('Name is required');
-    if (!personalDetails.dob) errors.push('Date of Birth is required');
-    if (!contactDetails.studentEmail) errors.push('Student Email is required');
-    if (!educationalDetails.college) errors.push('College name is required');
-    if (!bankDetails.bankName) errors.push('Bank Name is required');
-    if (!bankDetails.accountNumber) errors.push('Account Number is required');
-    if (!bankDetails.ifsc) errors.push('IFSC Code is required');
-
-    return errors;
-};
+import {
+  ScholarshipDb,
+  Scholarship_Table,
+} from '@/db/schema/scholarship/scholarshipData';
 
 export async function POST(request: Request) {
-    try {
-        console.log('API route hit');
+  try {
+    const formData = await request.formData();
 
-        // Test database connection
-        const isConnected = await testConnection();
-        console.log('Database connection result:', isConnected);
+    const scholarshipDataJson = formData.get('scholarshipData') as string;
+    if (!scholarshipDataJson) throw new Error('scholarshipData is missing');
 
-        if (!isConnected) {
-            throw new Error('Database connection failed');
-        }
+    const scholarshipDataParsed = JSON.parse(scholarshipDataJson);
 
-        // Parse form data from the request
-        const formData = await request.formData();
-        console.log('Received form data');
+    // Directly access fields from the parsed scholarship data, since it's flat
+    const {
+      name,
+      dateOfBirth,
+      gender,
+      applicationtype,
+      category,
+      adharNumber,
+      fatherName,
+      fatherNumber,
+      motherName,
+      motherNumber,
+      income,
+      fatherOccupation,
+      motherOccupation,
+      studentNumber,
+      houseApartmentName,
+      pinCode,
+      postOffice,
+      country,
+      state,
+      district,
+      alternativeNumber,
+      studentEmail,
+      placeState,
+      whatsappNumber,
+      nameOfTheCollege,
+      branch,
+      semester,
+      cgpa,
+      bankName,
+      accountNumber,
+      ifscCode,
+      branchName,
+      accountHolder,
+    } = scholarshipDataParsed;
 
-        // Extract the scholarship data from formData
-        const scholarshipDataJson = formData.get('scholarshipData') as string;
-        if (!scholarshipDataJson) {
-            console.error('scholarshipData is missing');
-            throw new Error('scholarshipData is missing');
-        }
+    // Validate the required fields
+    const validationErrors = [];
+    if (!name) validationErrors.push('Name is required');
+    if (!dateOfBirth) validationErrors.push('Date of Birth is required');
+    if (!studentEmail) validationErrors.push('Student Email is required');
+    if (!nameOfTheCollege) validationErrors.push('College name is required');
+    if (!bankName) validationErrors.push('Bank Name is required');
+    if (!accountNumber) validationErrors.push('Account Number is required');
+    if (!ifscCode) validationErrors.push('IFSC Code is required');
 
-        const scholarshipDataParsed = JSON.parse(scholarshipDataJson);
-        const validationErrors = validateScholarshipData(scholarshipDataParsed);
-        if (validationErrors.length > 0) {
-            console.error('Validation errors:', validationErrors);
-            throw new Error(`Validation failed: ${validationErrors.join(', ')}`);
-        }
-
-        const { personalDetails, contactDetails, educationalDetails, bankDetails } = scholarshipDataParsed;
-
-        // Construct the initial scholarship data object
-        const scholarshipData = {
-            applicationType: 'Scholarship',
-            name: personalDetails.name,
-            dateOfBirth: new Date(personalDetails.dob),
-            gender: personalDetails.gender,
-            applicationtype: personalDetails.applicationtype,
-            category: personalDetails.category,
-            adharNumber: personalDetails.aadhar,
-            fatherName: personalDetails.fatherName,
-            fatherNumber: personalDetails.fatherPhone,
-            income: personalDetails.income,
-            mother_name: personalDetails.motherName,
-            mother_number: personalDetails.motherPhone,
-            father_occupation: personalDetails.fatherOccupation,
-            mother_occupation: personalDetails.motherOccupation,
-            student_number: personalDetails.studentPhone,
-            house_apartment: contactDetails.house,
-            pin_code: contactDetails.pincode,
-            post_office: contactDetails.postOffice,
-            country: contactDetails.country,
-            state: contactDetails.state,
-            district: contactDetails.district,
-            alternatie_number: contactDetails.alternativePhone,
-            studentEmail: contactDetails.studentEmail,
-            nameOfTheCollege: educationalDetails.college,
-            branch: educationalDetails.branch,
-            semester: educationalDetails.semester,
-            cgpa: educationalDetails.cgpa,
-            bankName: bankDetails.bankName,
-            accountNumber: bankDetails.accountNumber,
-            ifscCode: bankDetails.ifsc,
-            branchName: bankDetails.branchName,
-            accountHolder: bankDetails.accountHolder,
-            remark: formData.get('remark') as string || null,
-            applicationDate: new Date(),
-            status: 'Pending',
-            adminLog: [],
-            photoUrl: null,
-            checkUrl: null,
-            aadharCardUrl: null,
-            collegeIdCardUrl: null,
-            incomeUrl: null,
-        };
-
-        // Extract files from formData
-        const files = {
-            photo: formData.get('photo') as File | null,
-            cheque: formData.get('cheque') as File | null,
-            aadharCard: formData.get('aadharCard') as File | null,
-            collegeID: formData.get('collegeID') as File | null,
-            incomeCertificate: formData.get('incomeCertificate') as File | null,
-        };
-
-        // Upload files to Firebase Storage and get URLs
-        console.log('Uploading files to Firebase Storage...');
-        const photoUrl = files.photo ? await uploadFileToFirebase(files.photo, 'photos') : null;
-        console.log('Photo URL:', photoUrl);
-
-        const chequeUrl = files.cheque ? await uploadFileToFirebase(files.cheque, 'cheques') : null;
-        console.log('Cheque URL:', chequeUrl);
-
-        const aadharCardUrl = files.aadharCard ? await uploadFileToFirebase(files.aadharCard, 'aadharCards') : null;
-        console.log('Aadhar Card URL:', aadharCardUrl);
-
-        const collegeIDUrl = files.collegeID ? await uploadFileToFirebase(files.collegeID, 'collegeIDs') : null;
-        console.log('College ID URL:', collegeIDUrl);
-
-        const incomeCertificateUrl = files.incomeCertificate ? await uploadFileToFirebase(files.incomeCertificate, 'incomeCertificates') : null;
-        console.log('Income Certificate URL:', incomeCertificateUrl);
-
-        // Add file URLs to scholarship data
-        scholarshipData.photoUrl = photoUrl;
-        scholarshipData.checkUrl = chequeUrl;
-        scholarshipData.aadharCardUrl = aadharCardUrl;
-        scholarshipData.collegeIdCardUrl = collegeIDUrl;
-        scholarshipData.incomeUrl = incomeCertificateUrl;
-
-        // Insert the scholarship data into the database
-        console.log('Inserting scholarship data into the database');
-        const result = await ScholarshipDb.insert(Scholarship_Table).values(scholarshipData).returning();
-        console.log('New scholarship application added:', result);
-
-        // Return the inserted scholarship data as the response
-        return NextResponse.json(result[0], { status: 201 });
-    } catch (error) {
-        // Log the error and send a 500 response with error details
-        console.error('Error processing scholarship application:', {
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : 'No stack trace'
-        });
-        return NextResponse.json({
-            error: 'Failed to process scholarship application',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        { error: `Validation failed: ${validationErrors.join(', ')}` },
+        { status: 400 }
+      );
     }
+
+    // Construct the scholarship data for database insertion
+    // Add the URLs directly from the parsed scholarshipDataParsed
+    const scholarshipData = {
+      applicationType: 'Scholarship',
+      name,
+      dateOfBirth: new Date(dateOfBirth),
+      gender,
+      applicationtype: 'Fresh',
+      category,
+      adharNumber,
+      fatherName,
+      fatherNumber,
+      income,
+      motherName,
+      motherNumber,
+      fatherOccupation,
+      motherOccupation,
+      studentNumber,
+      houseApartmentName,
+      pinCode,
+      postOffice,
+      country,
+      state,
+      district,
+      alternativeNumber,
+      studentEmail,
+      placeState,
+      whatsappNumber,
+      nameOfTheCollege,
+      branch,
+      semester,
+      cgpa,
+      bankName,
+      accountNumber,
+      ifscCode,
+      branchName,
+      accountHolder,
+      applicationDate: new Date(),
+      status: 'Pending',
+      adminLog: [],
+      photoUrl: scholarshipDataParsed.photoUrl || null,
+      checkUrl: scholarshipDataParsed.checkUrl || null,
+      aadharCardUrl: scholarshipDataParsed.aadharCardUrl || null,
+      collegeIdCardUrl: scholarshipDataParsed.collegeIdCardUrl || null,
+      incomeUrl: scholarshipDataParsed.incomeUrl || null,
+    };
+
+    // Insert into the database
+    const result = await ScholarshipDb.insert(Scholarship_Table)
+      .values(scholarshipData)
+      .returning();
+
+    return NextResponse.json(result[0], { status: 201 });
+  } catch (error) {
+    console.error('Error in scholarship POST request:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to process scholarship application',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
 }

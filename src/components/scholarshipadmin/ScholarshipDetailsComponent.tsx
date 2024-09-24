@@ -58,7 +58,7 @@ export interface ScholarshipDetails {
   selectadmin: string;
   amountadmin: string;
   rejectadmin: string;
-  renewaladmin: string;
+  revertedadmin: string;
 }
 
 export interface PersonalDetailsProps {
@@ -100,7 +100,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
       <div><strong>State:</strong> {scholarshipDetails.state}</div>
-      <div><strong>Postal Code:</strong> {scholarshipDetails.pinCode}</div>
+      <div><strong> Pin Code </strong> {scholarshipDetails.pinCode}</div>
 
       <div><strong>House / Apartment Name:</strong> {scholarshipDetails.houseApartmentName}</div>
       <div><strong>Place / State:</strong> {scholarshipDetails.placeState}</div>
@@ -149,7 +149,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
   const documentFields = [
     { name: 'Photo', url: scholarshipDetails.photoUrl },
-    { name: 'Check', url: scholarshipDetails.checkUrl },
+    { name: 'cheque or bank passbook', url: scholarshipDetails.checkUrl },
     { name: 'Aadhar Card', url: scholarshipDetails.aadharCardUrl },
     { name: 'College ID Card', url: scholarshipDetails.collegeIdCardUrl },
     { name: 'Income Certificate', url: scholarshipDetails.incomeUrl },
@@ -212,8 +212,6 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
 
 
 
-
-
 export interface VerificationProps {
   status: string;
   setStatus: (status: string) => void;
@@ -251,7 +249,7 @@ export const Verification: React.FC<VerificationProps> = ({
     updatedTable[1].label = 'Selected for Scholarship';
     updatedTable[2].label = 'Amount Processed';
     updatedTable[3].label = 'Rejected';
-    updatedTable[4].label = 'Renewal';
+    updatedTable[4].label = 'Reverted';
 
     // Update the verification table based on the status
     if (currentStatus === 'Verify') {
@@ -274,12 +272,14 @@ export const Verification: React.FC<VerificationProps> = ({
       updatedTable[3].value = 'Yes';
       updatedTable[3].admin = adminName;
       updatedTable[4].value = '';
-    } else if (currentStatus === 'Renewal') {
+    } else if (currentStatus === 'Reverted') {
       updatedTable[4].value = 'Yes';
       updatedTable[4].admin = adminName;
     }
 
     setVerificationTable(updatedTable);
+    // Save the updated table to localStorage
+    localStorage.setItem('verificationTable', JSON.stringify(updatedTable));
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -289,10 +289,24 @@ export const Verification: React.FC<VerificationProps> = ({
     // Update the verification table and sync the status with scholarship details
     updateTableBasedOnStatus(selectedStatus);
     setScholarshipDetails((prev) => ({ ...prev, status: selectedStatus }));
+    // Save status to localStorage
+    localStorage.setItem('status', selectedStatus);
   };
 
-  // Initialize status on first load
+  // Load initial values from localStorage on first load
   useEffect(() => {
+    const savedStatus = localStorage.getItem('status');
+    const savedTable = localStorage.getItem('verificationTable');
+
+    if (savedStatus) {
+      setStatus(savedStatus);
+      setScholarshipDetails((prev) => ({ ...prev, status: savedStatus }));
+    }
+
+    if (savedTable) {
+      setVerificationTable(JSON.parse(savedTable));
+    }
+
     if (scholarshipDetails?.status) {
       setStatus(scholarshipDetails.status); // Sync the dropdown with initial status
       updateTableBasedOnStatus(scholarshipDetails.status);
@@ -317,16 +331,9 @@ export const Verification: React.FC<VerificationProps> = ({
             <option value="">Select Status</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Renewal">
-              Renewal
-            </option>
-            <option value="Select" disabled={!isVerifySelected}>
-              Select
-            </option>
-            <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>
-              Amount Proceed
-            </option>
-
+            <option value="Reverted">Reverted</option>
+            <option value="Select" disabled={!isVerifySelected}>Select</option>
+            <option value="Amount Proceed" disabled={!isVerifySelected || !isSelectSelected}>Amount Proceed</option>
           </select>
         </label>
       </div>
@@ -350,27 +357,44 @@ export const Verification: React.FC<VerificationProps> = ({
         </tbody>
       </table>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          <strong>Status:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.status || ''}
-            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, status: e.target.value }))}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
-          />
-        </label>
+      <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+  <label style={{ display: 'block' }}>
+    <strong>Status:</strong>
+    <div
+      style={{
+        padding: '10px',
+        border: '1px solid #ccc',
+        width: '100%',
+        textTransform: 'uppercase',
+        backgroundColor: '#f5f5f5',
+        color: '#333',
+        borderRadius: '4px',
+        marginTop: '5px',
+      }}
+    >
+      {scholarshipDetails?.status || ''}
+    </div>
+  </label>
 
-        <label>
-          <strong>Remark:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.remark || ''}
-            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, remark: e.target.value }))}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
-          />
-        </label>
-      </div>
+  <label style={{ display: 'block' }}>
+    <strong>Remark:</strong>
+    <input
+      type="text"
+      value={scholarshipDetails?.remark || ''}
+      onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, remark: e.target.value }))}
+      style={{
+        padding: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        width: '100%',
+        boxSizing: 'border-box',
+        backgroundColor: '#f9f9f9',
+        marginTop: '5px',
+      }}
+    />
+  </label>
+</div>
+
     </div>
   );
 };

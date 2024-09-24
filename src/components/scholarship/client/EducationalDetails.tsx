@@ -22,7 +22,7 @@ const branches = [
     'Chemical Engineering (CHE)',
     'Information Technology (IT)',
     'Aeronautical Engineering',
-    // Include Others for custom entry
+    'Others' // Include Others for custom entry
 ];
 
 const semesters = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
@@ -46,7 +46,8 @@ export const EducationalDetails: React.FC<{
                 label="Name Of The College"
                 required
                 value={educationalDetails.college}
-                onChange={(e) => handleChange('college', e.target.value)}
+                onChange={() => { }}
+                readOnly
                 error={errors.college}
             />
             <DropdownField

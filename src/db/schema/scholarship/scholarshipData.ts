@@ -1,3 +1,4 @@
+// src\db\schema\scholarship\scholarshipData.ts
 import { pgTable, serial, integer, text, timestamp, boolean, decimal, jsonb } from 'drizzle-orm/pg-core';
 import { drizzle } from 'drizzle-orm/vercel-postgres';
 import { sql } from "@vercel/postgres";
@@ -64,7 +65,7 @@ export const Scholarship_Table = pgTable('scholarship', {
   selectadmin:text('selectadmin').default('null'),
   amountadmin:text('amountadmin').default('null'),
   rejectadmin:text('rejectadmin').default('null'),
-  renewaladmin:text('renewaladmin').default('null'),
+  revertedadmin:text('revertedadmin').default('null'),
 
 
 });
