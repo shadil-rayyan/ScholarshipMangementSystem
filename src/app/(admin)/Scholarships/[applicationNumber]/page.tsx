@@ -145,6 +145,9 @@ const ScholarshipDetailPage: React.FC = () => {
                 return <Documentation scholarshipDetails={scholarshipDetails} />;
             case "verification":
                 return (
+
+
+                    // Pass this function to props
                     <Verification
                         status={scholarshipDetails.status || "Verify"}
                         setStatus={(status) =>
@@ -153,8 +156,9 @@ const ScholarshipDetailPage: React.FC = () => {
                         verificationTable={verificationTable} // Pass the verificationTable
                         setVerificationTable={setVerificationTable} // Pass the setVerificationTable
                         scholarshipDetails={scholarshipDetails}
-                        setScholarshipDetails={setScholarshipDetails}
+                        setScholarshipDetails={updateScholarshipDetails}
                     />
+
                 );
             default:
                 return null;

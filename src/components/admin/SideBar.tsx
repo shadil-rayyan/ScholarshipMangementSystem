@@ -27,14 +27,18 @@ const Sidebar: React.FC = () => {
     return (
         <div className="w-64 bg-white shadow-lg min-h-screen flex flex-col justify-between">
             {/* Top Section */}
+        <div className="w-64 bg-white shadow-lg min-h-screen flex flex-col justify-between">
+            {/* Top Section */}
             <div className="p-6">
                 {/* Logo with object-fit and specific size */}
                 <div className="flex items-center justify-center w-25 h-20 overflow-hidden mb-6">
                     <div className="relative w-full h-full">
                         <Image
                             src={logo} // Path to logo image
+                            src={logo} // Path to logo image
                             alt="Admin Dashboard"
                             layout="fill" // Fill the container
+                            objectFit="contain" // Ensure the image fits without stretching
                             objectFit="contain" // Ensure the image fits without stretching
                         />
                     </div>
@@ -46,9 +50,15 @@ const Sidebar: React.FC = () => {
 
                 {/* Space for other menu items */}
                 <div className="space-y-2 mt-10">
+
+                {/* Space for other menu items */}
+                <div className="space-y-2 mt-10">
                     {/* Dashboard Button */}
                     <Link href="/Scholarships" passHref>
+                    <Link href="/Scholarships" passHref>
                         <button
+                            className={`flex items-center w-full p-3 transition rounded-xl border-2 duration-300 ${pathname === '/Scholarships'
+                                ? 'bg-purple-100 text-purple-600 hover:bg-purple-300'
                             className={`flex items-center w-full p-3 transition rounded-xl border-2 duration-300 ${pathname === '/Scholarships'
                                 ? 'bg-purple-100 text-purple-600 hover:bg-purple-300'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'

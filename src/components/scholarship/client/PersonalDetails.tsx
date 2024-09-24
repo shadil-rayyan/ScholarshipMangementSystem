@@ -37,6 +37,8 @@ const occupationOptions = [
     'Unemployed',
 ];
 
+
+
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
     personalDetails,
     setPersonalDetails,

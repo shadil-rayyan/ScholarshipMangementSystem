@@ -17,7 +17,7 @@ export const DropdownField: React.FC<DropdownFieldProps> = ({
     onChange,
     error,
     allowCustom = false,
-    className
+    className = ''
 }) => {
     const [customValue, setCustomValue] = useState('');
 
