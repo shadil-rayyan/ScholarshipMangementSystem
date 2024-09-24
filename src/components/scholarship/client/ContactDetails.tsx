@@ -70,7 +70,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
                 error={errors.pincode}
             />
             <InputField
-                label="state"
+                label="State"
                 required
                 value={contactDetails.state}
                 onChange={(e) => handleChange('state', e.target.value)}
@@ -90,11 +90,13 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
                 onChange={(e) => handleChange('whatsappNumber', e.target.value)}
                 error={errors.whatsappNumber}
             />
+
             <InputField
                 label="Student Email"
                 value={contactDetails.studentEmail}
-                onChange={(e) => handleChange('studentEmail', e.target.value)}
                 error={errors.studentEmail}
+                onChange={() => { }}
+                readOnly // Makes the input field uneditable
             />
             <InputField
                 label="Alternative number"

@@ -56,7 +56,6 @@ export interface ScholarshipDetails {
     revertedadmin: string;
 }
 
-
 export interface PersonalDetailsProps {
     scholarshipDetails: ScholarshipDetails;
     handleInputChange: (updatedDetails: Partial<ScholarshipDetails>) => void;
@@ -479,9 +478,18 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
 
 
 
+export interface ScholarshipDetailFile {
 
+
+    photoUrl: string;
+    checkUrl: string;
+    aadharCardUrl: string;
+    collegeIdCardUrl: string;
+    incomeUrl: string;
+
+}
 export interface DocumentationProps {
-    scholarshipDetails: ScholarshipDetails;
+    scholarshipDetails: ScholarshipDetailFile;
     onUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string) => Promise<void>;
     onEye: (url: string) => void;
     fileStatus: { [key: string]: string };  // File status for tracking upload progress or displaying existing files
@@ -504,7 +512,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Actions</th>
+                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>upload new </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -527,7 +535,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                             </td>
                             <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
                                 {/* Upload Button */}
-                                <label className="mr-2">
+                                <label className="mr-2 ">
                                     <input
                                         type="file"
                                         onChange={(e) => onUpload(e, doc.field)}
@@ -540,7 +548,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                                             const fileInput = document.querySelector(`input[type='file'][data-field='${doc.field}']`) as HTMLInputElement;
                                             fileInput?.click();
                                         }}
-                                        className="bg-green-500 text-white p-2 rounded hover:bg-green-600 flex items-center justify-center"
+                                        className="bg-green-500 text-white p-2 mt-5 rounded hover:bg-green-600 flex items-center justify-center"
                                     >
                                         <FaUpload />
                                     </button>

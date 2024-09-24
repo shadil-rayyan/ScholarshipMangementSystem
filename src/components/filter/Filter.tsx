@@ -3,8 +3,8 @@ import { FaFilter, FaRedo } from 'react-icons/fa';
 import './Filter.css';
 
 interface FilterProps {
-  filters: { applicationId: string; status: string; year: string; priority: string };
-  onFilterChange: (filters: { applicationId: string; status: string; year: string; priority: string }) => void;
+  filters: { applicationId: string; status: string; year: string; priority: string; name: string };
+  onFilterChange: (filters: { applicationId: string; status: string; year: string; priority: string; name: string }) => void;
   onResetFilters: () => void;
 }
 
@@ -26,7 +26,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onResetFilters
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 bg-white rounded-2xl  border border-gray-200">
+    <div className="w-full max-w-5xl mx-auto p-4 bg-white rounded-2xl border border-gray-200">
       <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 overflow-x-auto">
         <div className="flex items-center">
           <FaFilter className="text-gray-600 mr-2" />
@@ -45,6 +45,17 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onResetFilters
         </div>
 
         <div className="flex-1">
+          <input
+            id="name"
+            type="text"
+            value={localFilters.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="Name"
+          />
+        </div>
+
+        <div className="flex-1">
           <select
             id="status"
             value={localFilters.status}
@@ -52,6 +63,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onResetFilters
             className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white"
           >
             <option value="">Status</option>
+            <option value="Pending">Pending</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
             <option value="Reverted">Reverted</option>

@@ -1,20 +1,26 @@
+// app/api/ScholarshipApi/UpdateScholarship/[applicationNumber]/route.ts
+
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import {
   ScholarshipDb,
   Scholarship_Table,
 } from '@/db/schema/scholarship/scholarshipData';
+import {
+  VerificationDb,
+  Verification_Table,
+} from '@/db/schema/scholarship/VerificationLogs'; // Import Verification table
 import { sendMail } from '@/util/mailer'; // Adjust import for sendMail function
 
 // Define the type for updateData based on Scholarship_Table
 type UpdateScholarshipData = {
   status?: string;
+  remark?: string;
   verifyadmin?: string;
   selectadmin?: string;
   amountadmin?: string;
   rejectadmin?: string;
   revertedadmin?: string;
-  remark?: string;
 };
 
 export async function POST(
@@ -26,6 +32,7 @@ export async function POST(
   try {
     // Parse request body
     const data = await req.json();
+    console.log('Parsed request data:', data); // Debugging: Log parsed data
 
     // Validate request data
     if (
@@ -36,7 +43,8 @@ export async function POST(
       typeof data.selectadmin !== 'string' ||
       typeof data.amountadmin !== 'string' ||
       typeof data.rejectadmin !== 'string' ||
-      typeof data.revertedadmin !== 'string'
+      typeof data.revertedadmin !== 'string' ||
+      typeof data.adminName !== 'string' // Validate that adminName is included
     ) {
       console.error('Invalid data format', data);
       return NextResponse.json(
@@ -51,6 +59,8 @@ export async function POST(
       .where(eq(Scholarship_Table.applicationNumber, Number(applicationNumber)))
       .execute();
 
+    console.log('Existing scholarship record:', existingRecord); // Debugging: Log fetched record
+
     if (existingRecord.length === 0) {
       console.error(
         'Scholarship not found for application number:',
@@ -64,7 +74,7 @@ export async function POST(
 
     const currentRecord = existingRecord[0];
 
-    // Prepare the update data
+    // Prepare the update data, excluding adminName since it's only for the Verification log
     const updateData: UpdateScholarshipData = {
       status: data.status,
       remark: data.remark,
@@ -74,6 +84,8 @@ export async function POST(
       rejectadmin: data.rejectadmin,
       revertedadmin: data.revertedadmin,
     };
+
+    console.log('Update data:', updateData); // Debugging: Log the data to be updated
 
     // Initialize changes flag
     let hasChanges = false;
@@ -98,11 +110,21 @@ export async function POST(
         )
         .execute();
 
-      console.log(
-        'Scholarship updated successfully for application number:',
-        applicationNumber
-      );
-      console.log('Update result:', result); // Log result of the update operation
+      console.log('Update result:', result); // Debugging: Log result of the update operation
+
+      // Insert the verification log into Verification_Table
+      const verificationLog = {
+        applicationNumber: Number(applicationNumber), // Assuming applicationNumber is a number
+        status: data.status,
+        adminName: data.adminName, // Use adminName from the request body for the verification log
+        createdAt: new Date(), // Automatically populated if not specified
+      };
+
+      const verificationResult = await VerificationDb.insert(Verification_Table)
+        .values(verificationLog) // Pass the actual values here
+        .execute();
+
+      console.log('Verification log result:', verificationResult); // Debugging: Log result of the verification log insert
 
       // Check if the status has changed and send an email if it has
       if (currentRecord.status !== data.status) {
@@ -110,17 +132,16 @@ export async function POST(
         if (recipientEmail) {
           let subject, body;
 
-          // Structure of the email for a 'Reverted' status
           if (data.status === 'Reverted') {
-  subject = 'Scholarship Application Reverted';
-  body = `We regret to inform you that your scholarship application has been reverted. Remarks: ${data.remark}. This application was verified by ${data.revertedadmin}. Please review the comments and provide the necessary documents to correct the issues mentioned. You can reply directly to this email with the required documents so we can assist you further.`;
-} else {
-  subject = 'Scholarship Status Update';
-  body = `We are pleased to inform you that your scholarship status has been updated to "${data.status}". Remarks: ${data.remark}. Verified by: ${data.verifyadmin}. If you have any questions regarding this update, feel free to contact us by replying to this email.`;
-}
+            // Assuming 'Reverted' is a status for reversion
+            subject = 'Scholarship Application Reverted';
+            body = `Your scholarship application has been reverted. Remarks: ${data.rejectadmin}. 
+                        Please review the remarks and send the necessary documents to correct the issues mentioned.`;
+          } else {
+            subject = 'Scholarship Status Update';
+            body = `Your scholarship status has been updated to ${data.status}. Remarks: ${data.verifyadmin}.`;
+          }
 
-
-          // Send the email using the sendMail function
           await sendMail(recipientEmail, subject, body);
           console.log('Email notification sent to:', recipientEmail);
         }

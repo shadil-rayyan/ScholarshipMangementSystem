@@ -22,6 +22,13 @@ export default defineConfig({
       name: 'WebKit',
       use: { ...devices['Desktop Safari'] },
     },
+    {
+      name: 'Edge (Chromium)',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'msedge', // Use Microsoft Edge
+      },
+    },
   ],
   reporter: [['list'], ['html', { outputFolder: 'reports' }]],
 });

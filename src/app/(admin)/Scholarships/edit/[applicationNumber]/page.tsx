@@ -133,21 +133,47 @@ const ScholarshipDetailPage: React.FC = () => {
     return (
         <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-6">
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
+            <div style={{ margin: '20px 0', padding: '20px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
+      <h2 style={{ color: '#1976d2', marginBottom: '15px' }}>Editing data Instruction</h2> 
+      <ol style={{ paddingLeft: '20px', color: '#424242', lineHeight: '1.6' }}>
+        <li style={{ marginBottom: '10px' }}>Click on the <strong style={{ color: '#d32f2f' }}>data</strong> then editing enabled.</li>
+        <li style={{ marginBottom: '10px' }}>Click <strong style={{ color: '#1976d2' }}>'Save Changes'</strong> button for successful submission of data.wait for redirecting  to previous page</li> 
+       
+      </ol>
+    </div>
                 <div className="p-6">
                     {scholarshipDetails && (
                         <>
-                            <PersonalDetails
-                                scholarshipDetails={scholarshipDetails}
-                                handleInputChange={handleInputChange}
-                            />
-                            <ContactDetails
-                                scholarshipDetails={scholarshipDetails}
-                                handleInputChange={handleInputChange}
-                            />
-                            <EducationalAndBankDetails
-                                scholarshipDetails={scholarshipDetails}
-                                handleInputChange={handleInputChange}
-                            />
+                            <div style={{ marginBottom: '20px' }}>
+    <PersonalDetails
+      scholarshipDetails={scholarshipDetails}
+      handleInputChange={handleInputChange}
+    />
+  </div>
+  <div style={{ marginBottom: '20px' }}>
+    <ContactDetails
+      scholarshipDetails={scholarshipDetails}
+      handleInputChange={handleInputChange}
+    />
+  </div>
+  <div style={{ marginBottom: '20px' }}>
+    <EducationalAndBankDetails
+      scholarshipDetails={scholarshipDetails}
+      handleInputChange={handleInputChange}
+    />
+  </div>
+
+<div style={{ margin: '20px 0', padding: '20px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f5f5f5' }}>
+      <h2 style={{ color: '#1976d2', marginBottom: '15px' }}>Updating Documents Instruction</h2>
+      <ol style={{ paddingLeft: '20px', color: '#424242', lineHeight: '1.6' }}>
+        <li style={{ marginBottom: '10px' }}>Click the <strong style={{ color: '#d32f2f' }}>upload file icon</strong>.</li>
+        <li style={{ marginBottom: '10px' }}>Select a file from your device.</li>
+        <li style={{ marginBottom: '10px' }}>Click the <strong style={{ color: '#d32f2f' }}>upload file </strong>button.(it will shown after selecting file)</li>
+        <li style={{ marginBottom: '10px' }}>Wait for the alert message: <em style={{ color: '#388e3c' }}>"File uploaded and URL updated successfully!"</em></li>
+        <li style={{ marginBottom: '10px' }}>Click <strong style={{ color: '#1976d2' }}>'Save Changes'</strong> for successful submission of data.wait for redirecting  to previous page</li>
+      </ol>
+    </div>
+
                             <Documentation
                                 scholarshipDetails={scholarshipDetails}
                                 onUpload={handleUpload}

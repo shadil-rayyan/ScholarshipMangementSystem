@@ -71,6 +71,32 @@ const Sidebar: React.FC = () => {
                         </button>
                     </Link>
                 </div>
+                <div className="space-y-2 mt-3">
+                    {/* Dashboard Button */}
+                    <Link href="/listadmin" passHref>
+                        <button
+                            className={`flex items-center w-full p-3 transition rounded-xl border-2 duration-300 ${pathname === '/addadmin'
+                                ? 'bg-purple-100 text-purple-600 hover:bg-purple-300'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                }`}
+                        >
+                            list admin
+                        </button>
+                    </Link>
+                </div>
+                <div className="space-y-2 mt-3">
+                    {/* Dashboard Button */}
+                    <Link href="/removeadmin" passHref>
+                        <button
+                            className={`flex items-center w-full p-3 transition rounded-xl border-2 duration-300 ${pathname === '/addadmin'
+                                ? 'bg-purple-100 text-purple-600 hover:bg-purple-300'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                }`}
+                        >
+                            remove the admin 
+                        </button>
+                    </Link>
+                </div>
             </div>
 
             {/* Bottom Section for Logout */}

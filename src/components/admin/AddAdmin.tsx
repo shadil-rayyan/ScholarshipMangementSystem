@@ -3,8 +3,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, firestore } from '@/lib/firebase/config'; // Ensure this is correctly set up
-import { doc, setDoc, getDoc } from 'firebase/firestore'; // Import getDoc here
+import { auth, firestore } from '@/lib/firebase/config';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const AddAdmin: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -38,7 +38,12 @@ const AddAdmin: React.FC = () => {
         const isAdmin = await checkIfUserIsAdmin(user.email!);
 
         if (isAdmin) {
-          await setDoc(doc(firestore, 'adminemail', email), { role: 'admin' });
+          const adminData = {
+            role: 'admin',
+            addedBy: user.email,
+            timestamp: new Date()
+          };
+          await setDoc(doc(firestore, 'adminemail', email), adminData);
           setSuccess('Admin added successfully!');
           setEmail('');
         } else {

@@ -1,5 +1,5 @@
 {
-  "id": "5804060a-09dd-49b9-b97a-4ba4173f7fe2",
+  "id": "7f4e8114-64c5-46a9-b51f-9159948f9bc4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -331,6 +331,340 @@
         },
         "scholarship_student_email_unique": {
           "name": "scholarship_student_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "student_email"
+          ]
+        }
+      }
+    },
+    "public.verification_logs": {
+      "name": "verification_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "application_number": {
+          "name": "application_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "admin_name": {
+          "name": "admin_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "verification_logs_application_number_scholarship_application_number_fk": {
+          "name": "verification_logs_application_number_scholarship_application_number_fk",
+          "tableFrom": "verification_logs",
+          "tableTo": "scholarship",
+          "columnsFrom": [
+            "application_number"
+          ],
+          "columnsTo": [
+            "application_number"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.savedata": {
+      "name": "savedata",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "application_number": {
+          "name": "application_number",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_of_birth": {
+          "name": "date_of_birth",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "applicationtype": {
+          "name": "applicationtype",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "adhar_number": {
+          "name": "adhar_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "father_name": {
+          "name": "father_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "father_number": {
+          "name": "father_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mother_name": {
+          "name": "mother_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mother_number": {
+          "name": "mother_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "income": {
+          "name": "income",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "father_occupation": {
+          "name": "father_occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mother_occupation": {
+          "name": "mother_occupation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_number": {
+          "name": "student_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "house_apartment_name": {
+          "name": "house_apartment_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "place_state": {
+          "name": "place_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "post_office": {
+          "name": "post_office",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pin_code": {
+          "name": "pin_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district": {
+          "name": "district",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsapp_number": {
+          "name": "whatsapp_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_email": {
+          "name": "student_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alternative_number": {
+          "name": "alternative_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_of_the_college": {
+          "name": "name_of_the_college",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "branch": {
+          "name": "branch",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "semester": {
+          "name": "semester",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hostel_resident": {
+          "name": "hostel_resident",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "cgpa": {
+          "name": "cgpa",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bank_name": {
+          "name": "bank_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_number": {
+          "name": "account_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ifsc_code": {
+          "name": "ifsc_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "branch_name": {
+          "name": "branch_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_holder": {
+          "name": "account_holder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "photo_url": {
+          "name": "photo_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "check_url": {
+          "name": "check_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aadhar_card_url": {
+          "name": "aadhar_card_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "college_id_card_url": {
+          "name": "college_id_card_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "income_url": {
+          "name": "income_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "savedata_application_number_unique": {
+          "name": "savedata_application_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "application_number"
+          ]
+        },
+        "savedata_adhar_number_unique": {
+          "name": "savedata_adhar_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "adhar_number"
+          ]
+        },
+        "savedata_student_email_unique": {
+          "name": "savedata_student_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "student_email"

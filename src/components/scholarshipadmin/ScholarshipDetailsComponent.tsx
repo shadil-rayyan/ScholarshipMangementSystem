@@ -357,27 +357,44 @@ export const Verification: React.FC<VerificationProps> = ({
         </tbody>
       </table>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label>
-          <strong>Status:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.status || ''}
-            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, status: e.target.value }))}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '90%', textTransform: 'uppercase' }}
-          />
-        </label>
+      <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+  <label style={{ display: 'block' }}>
+    <strong>Status:</strong>
+    <div
+      style={{
+        padding: '10px',
+        border: '1px solid #ccc',
+        width: '100%',
+        textTransform: 'uppercase',
+        backgroundColor: '#f5f5f5',
+        color: '#333',
+        borderRadius: '4px',
+        marginTop: '5px',
+      }}
+    >
+      {scholarshipDetails?.status || ''}
+    </div>
+  </label>
 
-        <label>
-          <strong>Remark:</strong>
-          <input
-            type="text"
-            value={scholarshipDetails?.remark || ''}
-            onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, remark: e.target.value }))}
-            style={{ padding: '5px', border: '1px solid #ccc', width: '100%' }}
-          />
-        </label>
-      </div>
+  <label style={{ display: 'block' }}>
+    <strong>Remark:</strong>
+    <input
+      type="text"
+      value={scholarshipDetails?.remark || ''}
+      onChange={(e) => setScholarshipDetails((prev) => ({ ...prev, remark: e.target.value }))}
+      style={{
+        padding: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        width: '100%',
+        boxSizing: 'border-box',
+        backgroundColor: '#f9f9f9',
+        marginTop: '5px',
+      }}
+    />
+  </label>
+</div>
+
     </div>
   );
 };

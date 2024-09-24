@@ -12,6 +12,7 @@ const ScholarshipPage: React.FC = () => {
     const router = useRouter();
     const [filters, setFilters] = useState({
         applicationId: '',
+        name: '',
         status: '',
         year: '',
         priority: '',
@@ -56,13 +57,14 @@ const ScholarshipPage: React.FC = () => {
         router.push(`/Scholarships/${applicationNumber.toString()}`);
     };
 
-    const handleFilterChange = (newFilters: { applicationId: string; status: string; year: string; priority: string }) => {
+    const handleFilterChange = (newFilters: { applicationId: string; name: string; status: string; year: string; priority: string }) => {
         setFilters(newFilters);
     };
 
     const resetFilters = () => {
         const reset = {
             applicationId: '',
+            name: '',
             status: '',
             year: '',
             priority: '',
@@ -90,12 +92,25 @@ const ScholarshipPage: React.FC = () => {
         }
     };
 
+    const handleStatusClick = (status: string) => {
+        setFilters(prevFilters => ({
+            ...prevFilters,
+            status,
+        }));
+    };
+
     const getFilteredScholarships = () => {
         let filteredScholarships = scholarships;
 
         if (filters.applicationId) {
             filteredScholarships = filteredScholarships.filter(scholarship =>
                 scholarship.applicationNumber.toString().includes(filters.applicationId)
+            );
+        }
+
+        if (filters.name) {
+            filteredScholarships = filteredScholarships.filter(scholarship =>
+                scholarship.name.toLowerCase().includes(filters.name.toLowerCase())
             );
         }
 
@@ -147,10 +162,9 @@ const ScholarshipPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 pt-0">
-            
             <div>
                 <h1 className="text-xl pl-4 font-light">Overview</h1>
-                <DashboardStats stats={stats} />
+                <DashboardStats stats={stats} onStatusClick={handleStatusClick} />
             </div>
             <Filter filters={filters} onFilterChange={handleFilterChange} onResetFilters={resetFilters} />
             <table className="min-w-full bg-white border border-gray-300 mt-4">

@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const ScholarshipDetailPage: React.FC = () => {
+const FinalSubmit: React.FC = () => {
     const { applicationNumber } = useParams();
     const [scholarshipDetails, setScholarshipDetails] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -149,4 +149,4 @@ const ScholarshipDetailPage: React.FC = () => {
     );
 };
 
-export default ScholarshipDetailPage;
+export default FinalSubmit;
