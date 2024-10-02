@@ -1,0 +1,28 @@
+name: Accessibility Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start the app
+        run: npm start &
+        # Wait for the app to start
+        run: sleep 30
+
+      - name: Run Pa11y CI Accessibility Tests
+        run: npx pa11y-ci http://localhost:3000

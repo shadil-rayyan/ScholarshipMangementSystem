@@ -1,0 +1,39 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install
+
+      - name: Start the application
+        run: npm start &
+        # Wait for the application to start (adjust the sleep duration as necessary)
+        run: sleep 30
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Stop the application
+        run: kill $(jobs -p) # Stop the background application

@@ -1,0 +1,15 @@
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v2.1.1
+        with:
+          url: 'http://localhost:3000' # Change to your app's URL
+          configPath: './lighthouserc.js' # Path to your Lighthouse config if you have one

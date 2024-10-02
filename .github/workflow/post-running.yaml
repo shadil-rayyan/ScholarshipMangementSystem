@@ -1,0 +1,13 @@
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        if: failure() # Send notification only on failure
+        uses: 8398a7/action-slack@v3.15.0
+        with:
+          status: 'failure'
+          author_name: 'GitHub Actions'
+          title: 'Build Failed'
+          channel: '#your-channel'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
