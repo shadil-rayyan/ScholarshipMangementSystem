@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db/index';
-import { categories } from '@/db/schema/admin/categories';
+import { occupations } from '@/db/schema/admin/occupation';
 
 // POST method to add a new category
 export async function POST(req: Request) {
@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
   if (!name || name.trim() === '') {
     return NextResponse.json(
-      { error: 'Category name is required.' },
+      { error: 'occupations name is required.' },
       { status: 400 }
     );
   }
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   try {
     // Insert the new category into the database
     const newCategory = await db
-      .insert(categories)
+      .insert(occupations)
       .values({
         name,
       })
@@ -35,8 +35,8 @@ export async function POST(req: Request) {
 // GET method to fetch all categories
 export async function GET() {
   try {
-    const allCategories = await db.select().from(categories);
-    return NextResponse.json(allCategories, { status: 200 });
+    const alloccupations = await db.select().from(occupations);
+    return NextResponse.json(alloccupations, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch categories.' },

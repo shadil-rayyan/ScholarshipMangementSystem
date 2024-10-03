@@ -86,7 +86,7 @@ const AdminPanel = () => {
   // Handle deleting an occupation
   const handleDeleteOccupation = async (id: string) => {
     try {
-      await axios.delete(`/api/admin/occupations?id=${id}`);
+      await axios.delete(`/api/admin/occupations/deleteOccupations?id=${id}`);
       setOccupations(occupations.filter((occupation) => occupation.id !== id));
     } catch (error) {
       console.error('Error deleting occupation:', error);
@@ -94,19 +94,19 @@ const AdminPanel = () => {
   };
 
   // Handle editing an occupation
-  const handleEditOccupation = async (id: string) => {
-    if (!occupationEditValue.trim()) return alert('Occupation name cannot be empty!');
-    try {
-      const response = await axios.put(`/api/admin/occupations/${id}`, { name: occupationEditValue });
-      setOccupations(
-        occupations.map((occupation) => (occupation.id === id ? response.data : occupation))
-      );
-      setEditingOccupationId(null);
-      setOccupationEditValue('');
-    } catch (error) {
-      console.error('Error editing occupation:', error);
-    }
-  };
+  // const handleEditOccupation = async (id: string) => {
+  //   if (!occupationEditValue.trim()) return alert('Occupation name cannot be empty!');
+  //   try {
+  //     const response = await axios.put(`/api/admin/occupations/${id}`, { name: occupationEditValue });
+  //     setOccupations(
+  //       occupations.map((occupation) => (occupation.id === id ? response.data : occupation))
+  //     );
+  //     setEditingOccupationId(null);
+  //     setOccupationEditValue('');
+  //   } catch (error) {
+  //     console.error('Error editing occupation:', error);
+  //   }
+  // };
 
   return (
     <div className="p-6">
@@ -193,24 +193,24 @@ const AdminPanel = () => {
                     value={occupationEditValue}
                     onChange={(e) => setOccupationEditValue(e.target.value)}
                   />
-                  <button
+                  {/* <button
                     className="bg-green-500 text-white px-2 py-1 rounded mr-2"
                     onClick={() => handleEditOccupation(occupation.id)}
-                  >
-                    Save
-                  </button>
-                  <button
+                  > */}
+                  {/* Save
+                  </button> */}
+                  {/* <button
                     className="bg-gray-500 text-white px-2 py-1 rounded"
                     onClick={() => setEditingOccupationId(null)}
                   >
                     Cancel
-                  </button>
+                  </button> */}
                 </>
               ) : (
                 <>
                   {occupation.name}
                   <div>
-                    <button
+                    {/* <button
                       className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
                       onClick={() => {
                         setEditingOccupationId(occupation.id);
@@ -218,7 +218,7 @@ const AdminPanel = () => {
                       }}
                     >
                       Edit
-                    </button>
+                    </button> */}
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded"
                       onClick={() => handleDeleteOccupation(occupation.id)}

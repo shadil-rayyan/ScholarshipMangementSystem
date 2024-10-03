@@ -1,5 +1,5 @@
 import { db } from '@/db/index';
-import { categories } from '@/db/schema/admin/categories';
+import { occupations } from '@/db/schema/admin/occupation';
 import { eq } from 'drizzle-orm';
 
 export async function DELETE(req: Request) {
@@ -15,7 +15,7 @@ export async function DELETE(req: Request) {
 
   try {
     // Delete the category from the database where id matches
-    await db.delete(categories).where(eq(categories.id, id));
+    await db.delete(occupations).where(eq(occupations.id, id));
 
     return new Response(
       JSON.stringify({ message: 'Category deleted successfully' }),

@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db/index';
-import { categories } from '@/db/schema/admin/categories';
+import { occupations } from '@/db/schema/admin/occupation';
 
 export async function GET() {
   try {
     // Fetch all categories from the database
-    const allCategories = await db.select().from(categories);
-    return NextResponse.json(allCategories, { status: 200 });
+    const alloccupations = await db.select().from(occupations);
+    return NextResponse.json(alloccupations, { status: 200 });
   } catch (error) {
     console.error('Error fetching categories:', error);
     return NextResponse.json(
