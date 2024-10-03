@@ -41,8 +41,9 @@ export const DropdownField: React.FC<DropdownFieldProps> = ({
 
     const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        setCustomValue(newValue);
-        onChange(`Others: ${newValue}`); // Send custom value prefixed with 'Others:'
+        const capitalizedValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+        setCustomValue(capitalizedValue);
+        onChange(`Others: ${capitalizedValue}`); // Send custom value prefixed with 'Others:'
     };
 
     return (

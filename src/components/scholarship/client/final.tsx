@@ -56,7 +56,6 @@ export interface ScholarshipDetails {
     revertedadmin: string;
 }
 
-
 export interface PersonalDetailsProps {
     scholarshipDetails: ScholarshipDetails;
     handleInputChange: (updatedDetails: Partial<ScholarshipDetails>) => void;
@@ -81,6 +80,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <input
                     type="text"
                     value={scholarshipDetails?.name || ''}
+                    readOnly
                     onChange={(e) => handleFieldChange(e, 'name')}
                     className="input-class"
                 />
@@ -92,6 +92,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <input
                     type="date"
                     id="dateOfBirth"
+                    readOnly
                     value={scholarshipDetails?.dateOfBirth ? formatDate(scholarshipDetails.dateOfBirth) : ''}
                     onChange={(e) => handleFieldChange(e, 'dateOfBirth')}
                     className="input-class"
@@ -103,6 +104,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Gender:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.gender || ''}
                     onChange={(e) => handleFieldChange(e, 'gender')}
                     className="input-class"
@@ -117,6 +119,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Category:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.category || ''}
                     onChange={(e) => handleFieldChange(e, 'category')}
                     className="input-class"
@@ -128,6 +131,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Aadhar Number:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.adharNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'adharNumber')}
                     className="input-class"
@@ -139,6 +143,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Father Name:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.fatherName || ''}
                     onChange={(e) => handleFieldChange(e, 'fatherName')}
                     className="input-class"
@@ -150,6 +155,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Father Phone:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.fatherNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'fatherNumber')}
                     className="input-class"
@@ -161,6 +167,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Mother Name:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.motherName || ''}
                     onChange={(e) => handleFieldChange(e, 'motherName')}
                     className="input-class"
@@ -172,6 +179,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Mother Phone:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.motherNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'motherNumber')}
                     className="input-class"
@@ -183,6 +191,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Income:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.income || ''}
                     onChange={(e) => handleFieldChange(e, 'income')}
                     className="input-class"
@@ -194,6 +203,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Father Occupation:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.fatherOccupation || ''}
                     onChange={(e) => handleFieldChange(e, 'fatherOccupation')}
                     className="input-class"
@@ -205,6 +215,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Student Phone:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.studentNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'studentNumber')}
                     className="input-class"
@@ -216,6 +227,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({ scholarshipDet
                 <strong>Mother Occupation:</strong>
                 <input
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.motherOccupation || ''}
                     onChange={(e) => handleFieldChange(e, 'motherOccupation')}
                     className="input-class"
@@ -245,6 +257,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="houseApartmentName"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.houseApartmentName || ''}
                     onChange={(e) => handleFieldChange(e, 'houseApartmentName')}
                     className="input-class"
@@ -257,6 +270,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="postOffice"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.postOffice || ''}
                     onChange={(e) => handleFieldChange(e, 'postOffice')}
                     className="input-class"
@@ -269,6 +283,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="placeState"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.placeState || ''}
                     onChange={(e) => handleFieldChange(e, 'placeState')}
                     className="input-class"
@@ -281,6 +296,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="country"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.country || ''}
                     onChange={(e) => handleFieldChange(e, 'country')}
                     className="input-class"
@@ -293,6 +309,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="district"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.district || ''}
                     onChange={(e) => handleFieldChange(e, 'district')}
                     className="input-class"
@@ -306,6 +323,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="whatsappNumber"
                     type="tel"
+                    readOnly
                     value={scholarshipDetails?.whatsappNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'whatsappNumber')}
                     className="input-class"
@@ -320,6 +338,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="studentEmail"
                     type="email"
+                    readOnly
                     value={scholarshipDetails?.studentEmail || ''}
                     onChange={(e) => handleFieldChange(e, 'studentEmail')}
                     className="input-class"
@@ -333,6 +352,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
                 <input
                     id="alternativeNumber"
                     type="tel"
+                    readOnly
                     value={scholarshipDetails?.alternativeNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'alternativeNumber')}
                     className="input-class"
@@ -342,8 +362,6 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({ scholarshipDetai
         </div>
     );
 };
-
-
 
 export interface EducationalAndBankDetailsProps {
     scholarshipDetails: ScholarshipDetails;
@@ -355,9 +373,11 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
     handleInputChange
 }) => {
     const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof ScholarshipDetails) => {
+
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         handleInputChange({ [field]: value });
     };
+
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             {/* College Name */}
@@ -366,12 +386,12 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="collegeName"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.nameOfTheCollege || ''}
                     onChange={(e) => handleFieldChange(e, 'nameOfTheCollege')}
                     className="input-class"
                 />
             </div>
-
 
             {/* Branch */}
             <div>
@@ -379,6 +399,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="branch"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.branch || ''}
                     onChange={(e) => handleFieldChange(e, 'branch')}
                     className="input-class"
@@ -391,23 +412,17 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="semester"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.semester || ''}
                     onChange={(e) => handleFieldChange(e, 'semester')}
                     className="input-class"
                 />
             </div>
 
-            {/* Hostel Resident */}
-            {/* <div>
-                <label htmlFor="hostelResident"><strong>Hostel Resident:</strong></label>
-                <input
-                    id="hostelResident"
-                    type="checkbox"
-                    checked={!!scholarshipDetails?.hostelResident}
-                    onChange={(e) => handleFieldChange(e, 'hostelResident')}
-                />
-                <label htmlFor="hostelResident">Yes</label>
-            </div> */}
+            {/* Hostel Resident (Checkbox) */}
+
+
+
 
             {/* CGPA */}
             <div>
@@ -415,6 +430,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="cgpa"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.cgpa || ''}
                     onChange={(e) => handleFieldChange(e, 'cgpa')}
                     className="input-class"
@@ -427,6 +443,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="bankName"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.bankName || ''}
                     onChange={(e) => handleFieldChange(e, 'bankName')}
                     className="input-class"
@@ -439,6 +456,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="accountNumber"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.accountNumber || ''}
                     onChange={(e) => handleFieldChange(e, 'accountNumber')}
                     className="input-class"
@@ -451,6 +469,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="ifscCode"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.ifscCode || ''}
                     onChange={(e) => handleFieldChange(e, 'ifscCode')}
                     className="input-class"
@@ -463,6 +482,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="branchName"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.branchName || ''}
                     onChange={(e) => handleFieldChange(e, 'branchName')}
                     className="input-class"
@@ -475,6 +495,7 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
                 <input
                     id="accountHolder"
                     type="text"
+                    readOnly
                     value={scholarshipDetails?.accountHolder || ''}
                     onChange={(e) => handleFieldChange(e, 'accountHolder')}
                     className="input-class"
@@ -487,8 +508,18 @@ export const EducationalAndBankDetails: React.FC<EducationalAndBankDetailsProps>
 
 
 
+export interface ScholarshipDetailFile {
+
+
+    photoUrl: string;
+    checkUrl: string;
+    aadharCardUrl: string;
+    collegeIdCardUrl: string;
+    incomeUrl: string;
+
+}
 export interface DocumentationProps {
-    scholarshipDetails: ScholarshipDetails;
+    scholarshipDetails: ScholarshipDetailFile;
     onUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string) => Promise<void>;
     onEye: (url: string) => void;
     fileStatus: { [key: string]: string };  // File status for tracking upload progress or displaying existing files
@@ -496,11 +527,11 @@ export interface DocumentationProps {
 
 export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails, onUpload, onEye, fileStatus }) => {
     const documentFields = [
-        { name: 'Photo', url: scholarshipDetails?.photoUrl, field: 'photoUrl' },
-        { name: 'Check', url: scholarshipDetails?.checkUrl, field: 'checkUrl' },
-        { name: 'Aadhar Card', url: scholarshipDetails?.aadharCardUrl, field: 'aadharCardUrl' },
-        { name: 'College ID Card', url: scholarshipDetails?.collegeIdCardUrl, field: 'collegeIdCardUrl' },
-        { name: 'Income Certificate', url: scholarshipDetails?.incomeUrl, field: 'incomeUrl' },
+        { name: 'Photo', url: scholarshipDetails?.photoUrl, field: 'photo' },
+        { name: 'Check', url: scholarshipDetails?.checkUrl, field: 'cheque' },
+        { name: 'Aadhar Card', url: scholarshipDetails?.aadharCardUrl, field: 'aadharCard' },
+        { name: 'College ID Card', url: scholarshipDetails?.collegeIdCardUrl, field: 'collegeID' },
+        { name: 'Income Certificate', url: scholarshipDetails?.incomeUrl, field: 'incomeCertificate' },
     ];
 
     return (
@@ -511,7 +542,7 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Sl No</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Document</th>
                         <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>File</th>
-                        <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>Actions</th>
+                        {/* <th style={{ borderBottom: '2px solid #1976d2', padding: '10px', textAlign: 'left', backgroundColor: '#1976d2', color: '#fff' }}>upload new </th> */}
                     </tr>
                 </thead>
                 <tbody>
@@ -532,9 +563,9 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                                     fileStatus[doc.field] || 'Not Available' // Display file name or "Not Available"
                                 )}
                             </td>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}>
+                            {/* <td style={{ borderBottom: '1px solid #ddd', padding: '10px', textAlign: 'center' }}> */}
                                 {/* Upload Button */}
-                                <label className="mr-2">
+                                {/* <label className="mr-2 ">
                                     <input
                                         type="file"
                                         onChange={(e) => onUpload(e, doc.field)}
@@ -547,12 +578,12 @@ export const Documentation: React.FC<DocumentationProps> = ({ scholarshipDetails
                                             const fileInput = document.querySelector(`input[type='file'][data-field='${doc.field}']`) as HTMLInputElement;
                                             fileInput?.click();
                                         }}
-                                        className="bg-green-500 text-white p-2 rounded hover:bg-green-600 flex items-center justify-center"
+                                        className="bg-green-500 text-white p-2 mt-5 rounded hover:bg-green-600 flex items-center justify-center"
                                     >
                                         <FaUpload />
                                     </button>
-                                </label>
-                            </td>
+                                </label> */}
+                            {/* </td> */}
                         </tr>
                     ))}
                 </tbody>

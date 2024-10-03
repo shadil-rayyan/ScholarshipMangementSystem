@@ -3,69 +3,80 @@ import { FaFilter, FaRedo } from 'react-icons/fa';
 import './Filter.css';
 
 interface FilterProps {
-  onFilterChange: (filters: { applicationId: string; status: string; year: string; priority: string }) => void;
-  onResetFilters: () => void; // Add this prop for reset functionality
+  filters: { applicationId: string; status: string; year: string; priority: string; name: string };
+  onFilterChange: (filters: { applicationId: string; status: string; year: string; priority: string; name: string }) => void;
+  onResetFilters: () => void;
 }
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange, onResetFilters }) => {
-  const [applicationId, setApplicationId] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [year, setYear] = useState<string>('');
-  const [priority, setPriority] = useState<string>('');
-
-  // Update filter criteria
-  const handleChange = () => {
-    onFilterChange({ applicationId, status, year, priority });
-  };
+const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onResetFilters }) => {
+  const [localFilters, setLocalFilters] = useState(filters);
 
   useEffect(() => {
-    handleChange();
-  }, [applicationId, status, year, priority]);
+    setLocalFilters(filters);
+  }, [filters]);
+
+  const handleChange = (name: string, value: string) => {
+    const newFilters = { ...localFilters, [name]: value };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handleReset = () => {
+    onResetFilters();
+  };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 bg-white rounded-2xl shadow-lg border border-gray-200">
+    <div className="w-full max-w-5xl mx-auto p-4 bg-white rounded-2xl border border-gray-200">
       <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 overflow-x-auto">
-        {/* Filter Icon and Text */}
         <div className="flex items-center">
           <FaFilter className="text-gray-600 mr-2" />
           <span className="text-lg font-semibold text-gray-800">Filter by</span>
         </div>
 
-        {/* Application ID Input */}
         <div className="flex-1">
           <input
             id="applicationId"
             type="text"
-            value={applicationId}
-            onChange={(e) => setApplicationId(e.target.value)}
+            value={localFilters.applicationId}
+            onChange={(e) => handleChange('applicationId', e.target.value)}
             className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             placeholder="Application ID"
           />
         </div>
 
-        {/* Status Selection Dropdown */}
+        <div className="flex-1">
+          <input
+            id="name"
+            type="text"
+            value={localFilters.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="Name"
+          />
+        </div>
+
         <div className="flex-1">
           <select
             id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            value={localFilters.status}
+            onChange={(e) => handleChange('status', e.target.value)}
             className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white"
           >
             <option value="">Status</option>
+            <option value="Pending">Pending</option>
             <option value="Verify">Verify</option>
             <option value="Reject">Reject</option>
-            <option value="Renewal">Reverted</option>
+            <option value="Reverted">Reverted</option>
             <option value="Select">Select</option>
             <option value="Amount Proceed">Amount Proceed</option>
           </select>
         </div>
 
-        {/* Year Selection Dropdown */}
         <div className="flex-1">
           <select
             id="year"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
+            value={localFilters.year}
+            onChange={(e) => handleChange('year', e.target.value)}
             className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white"
           >
             <option value="">Year</option>
@@ -76,12 +87,11 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onResetFilters }) => {
           </select>
         </div>
 
-        {/* Priority Selection Dropdown */}
         <div className="flex-1">
           <select
             id="priority"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
+            value={localFilters.priority}
+            onChange={(e) => handleChange('priority', e.target.value)}
             className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white"
           >
             <option value="">Priority</option>
@@ -90,11 +100,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onResetFilters }) => {
           </select>
         </div>
 
-        {/* Reset Filter Button */}
-        <button
-          onClick={onResetFilters} // Call the reset function passed from parent
-          className="flex items-center px-4 py-2 text-red-500 rounded-lg hover:text-red-700 focus:outline-none"
-        >
+        <button onClick={handleReset} className="flex items-center px-4 py-2 text-red-500 rounded-lg hover:text-red-700 focus:outline-none">
           <FaRedo className="mr-2" />
           <span>Reset</span>
         </button>

@@ -1,23 +1,41 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tab } from './Tab';
 import { PersonalDetails, PersonalDetailsType } from './PersonalDetails';
 import { ContactDetails, ContactDetailsType } from './ContactDetails';
 import { EducationalDetails, EducationalDetailsType } from './EducationalDetails';
 import { BankDetails, BankDetailsType } from './BankDetails';
-import { Documentation, FilesType } from './Documentation';
-import { uploadFileToFirebase } from '@/lib/firebase/config';
-
+import { Documentation } from '@/components/scholarshipadmin/ScholarshipEdit';
+// import { uploadFileToFirebase } from '@/lib/firebase/config';
+import { differenceInYears, isFuture } from 'date-fns';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-
-
-
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
+// import { Divide, Heading1 } from 'lucide-react';
+import FinalSubmit from './FinalSubmit';
 // Validation functions
 
 const validatePersonalDetails = (details: PersonalDetailsType) => {
+    console.log('Validating personal details:', details);
+
     const errors: Partial<Record<keyof PersonalDetailsType, string>> = {};
     if (!details.name.trim()) errors.name = 'Name is required';
-    if (!details.dob) errors.dob = 'Date of Birth is required';
+    if (!details.dob) {
+        errors.dob = 'Date of Birth is required';
+    } else {
+        const dob = new Date(details.dob);
+        const age = differenceInYears(new Date(), dob);
+
+        // Check if the date of birth is not in the future
+        if (isFuture(dob)) {
+            errors.dob = 'Date of Birth cannot be a future date';
+        }
+        // Check if age is between 17 and 30
+        else if (age < 17 || age > 30) {
+            errors.dob = 'Age must be between 17 and 30 years';
+        }
+    }
     if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required';
     if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'application type is required';
     if (!details.category.trim()) errors.category = 'Category is required';
@@ -27,7 +45,7 @@ const validatePersonalDetails = (details: PersonalDetailsType) => {
     if (!/^[0-9]{10}$/.test(details.fatherPhone)) errors.fatherPhone = 'Father Phone must be 10 digits';
     if (!/^[0-9]{10}$/.test(details.studentPhone)) errors.studentPhone = 'student Phone  must be 10 digits';
     if (details.motherPhone && !/^[0-9]{10}$/.test(details.motherPhone)) errors.motherPhone = 'Mother Phone must be 10 digits';
-    if (!details.income.trim() || !/^[0-9]*$/.test(details.income)) errors.income = 'Income must be a number';
+    if (!details.income.trim()) errors.income = 'Income is required';
     if (details.studentPhone && !/^[0-9]{10}$/.test(details.studentPhone)) errors.studentPhone = 'Student Phone must be 10 digits';
     if (!details.fatherOccupation?.trim()) errors.fatherOccupation = 'Father Occupation is required';
     if (!details.motherOccupation?.trim()) errors.motherOccupation = 'mother Occupation  is required';
@@ -69,27 +87,38 @@ const validateBankDetails = (details: BankDetailsType) => {
 };
 
 
-const validateDocumentation = (files: FilesType) => {
+const validateDocumentation = (files: any) => {
     const errors: Partial<Record<string, string>> = {};
 
     const fileLimits = {
-        0: { maxSize: 1 * 1024 * 1024 },
-        1: { maxSize: 1 * 1024 * 1024 }, // 5 MB for Document 1
-        2: { maxSize: 1 * 1024 * 1024 }, // 1 MB for Documents 2-5
-        3: { maxSize: 1 * 1024 * 1024 },
-        4: { maxSize: 1 * 1024 * 1024 },
+        photo: { maxSize: 1 * 1024 * 1024, validTypes: ['image/jpeg', 'image/png'] },
+        cheque: { maxSize: 1 * 1024 * 1024, validTypes: ['application/pdf'] },
+        aadharCard: { maxSize: 1 * 1024 * 1024, validTypes: ['application/pdf'] },
+        collegeID: { maxSize: 1 * 1024 * 1024, validTypes: ['application/pdf'] },
+        incomeCertificate: { maxSize: 1 * 1024 * 1024, validTypes: ['application/pdf'] },
+    };
+
+    const documentNames = {
+        photo: 'Photo',
+        cheque: 'Bank Passbook',
+        aadharCard: 'Aadhar',
+        collegeID: 'College ID Card',
+        incomeCertificate: 'Income Certificate',
     };
 
     for (const key in fileLimits) {
         const file = files[key];
+        const { maxSize, validTypes } = fileLimits[key];
+        const documentName = documentNames[key];
+
         if (!file) {
-            errors[key] = `Document ${key} is required`;
+            errors[key] = `${documentName} is required`;
         } else {
-            if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
-                errors[key] = `Document ${key} must be a PDF or image file`;
+            if (!validTypes.includes(file.type)) {
+                errors[key] = `${documentName} must be one of the following types: ${validTypes.join(', ')}`;
             }
-            if (file.size > fileLimits[key].maxSize) {
-                errors[key] = `Document ${key} must be less than ${fileLimits[key].maxSize / (1024 * 1024)} MB`;
+            if (file.size > maxSize) {
+                errors[key] = ` ${documentName} must be less than ${maxSize / (1024 * 1024)} MB`;
             }
         }
     }
@@ -103,90 +132,239 @@ const ApplyForm: React.FC = () => {
     const router = useRouter();
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [existingData, setExistingData] = useState<any | null>(null);
+    const [scholarshipDetails, setScholarshipDetails] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [fileStatus, setFileStatus] = useState<{ [key: string]: string }>({});
+    const [fileUploaded, setFileUploaded] = useState(false);
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [fileType, setFileType] = useState<string>("");
+
+
+    const [user, setUser] = useState<User | null>(null);
+
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            if (currentUser) {
+                setContactDetails((prevDetails) => ({
+                    ...prevDetails,
+                    studentEmail: currentUser.email || '',
+                }));
+                console.log("Updated studentEmail:", currentUser.email);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+
+
+
+
+
     const [personalDetails, setPersonalDetails] = useState<PersonalDetailsType>({
-        name: 'sha',
+        name: '',
         dob: '',
-        gender: 'male',
-        applicationtype: 'fresh',
-        category: 'obc',
-        aadhar: '234352528798',
-        fatherName: 'abdul',
-        fatherPhone: '9995695010',
-        motherName: 'asma',
-        motherPhone: '9995695010',
-        income: '60000',
-        fatherOccupation: 'coolie',
-        studentPhone: '9995695010',
-        motherOccupation: 'coolie',
+        gender: '',
+        applicationtype: '',
+        category: '',
+        aadhar: '',
+        fatherName: '',
+        fatherPhone: '',
+        motherName: '',
+        motherPhone: '',
+        income: '',
+        fatherOccupation: '',
+        studentPhone: '',
+        motherOccupation: '',
     });
 
     const [contactDetails, setContactDetails] = useState<ContactDetailsType>({
-        house: 'tayyan',
-        place: 'kattilapedika',
-        postOffice: 'vengalam',
-        country: 'indian',
-        pincode: '673303',
-        state: 'kerala',
-        district: 'kozhikode',
-        whatsappNumber: '9995695010',
-        studentEmail: 'shadilrayyan10@gmail.com',
-        alternativeNumber: '9995695010',
+        house: '',
+        place: '',
+        postOffice: '',
+        country: '',
+        pincode: '',
+        state: '',
+        district: '',
+        whatsappNumber: '',
+        studentEmail: '',
+        alternativeNumber: '',
     });
 
     const [educationalDetails, setEducationalDetails] = useState<EducationalDetailsType>({
-        college: 'gec pallkad',
-        branch: 'Computer Science and Enginerring',
-        semester: 'S5',
+        college: 'NSS College Of Engineering',
+        branch: '',
+        semester: '',
         hostelResident: true,
-        cgpa: '6.5',
+        cgpa: '',
     });
 
     const [bankDetails, setBankDetails] = useState<BankDetailsType>({
-        ifsc: 'CNRB0006065',
-        bankName: 'canara',
-        branchName: 'kozhikode',
-        accountNumber: '60651200004657',
-        accountHolder: 'shaidl am ',
+        ifsc: '',
+        bankName: '',
+        branchName: '',
+        accountNumber: '',
+        accountHolder: ' ',
     });
 
-    const [files, setFiles] = useState<FilesType>({});
+    const [files, setFiles] = useState<any>({
+        photo: '',
+        cheque: '',
+        aadharCard: '',
+        collegeID: '',
+        incomeCertificate: '',
+    });
     const [validationErrors, setValidationErrors] = useState<any>({});
 
-    const validateCurrentTab = () => {
-        switch (activeTab) {
-            case 'personal':
-                return validatePersonalDetails(personalDetails);
-            case 'contact':
-                return validateContactDetails(contactDetails);
-            case 'educational':
-                return {
-                    ...validateEducationalDetails(educationalDetails),
-                    ...validateBankDetails(bankDetails),
-                };
-            case 'documentation':
-                return validateDocumentation(files);
-            default:
-                return {};
+    useEffect(() => {
+        const fetchExistingData = async () => {
+            if (user && user.email) {
+                try {
+                    const response = await fetch(`/api/ScholarshipApi/trackInSave/${user.email}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setExistingData(data);
+                        setScholarshipDetails(data);
+                        // Populate form fields with existing data
+                        populateFormFields(data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching existing data:', error);
+                }
+            }
+            setIsLoading(false);
+
+        };
+        fetchExistingData();
+    }, [user]);
+
+
+
+
+
+    const populateFormFields = (data: any) => {
+        // Populate personal details
+        setPersonalDetails({
+            name: data.name || '',
+            dob: data.dateOfBirth || '',
+            gender: data.gender || '',
+            applicationtype: data.applicationtype,
+            category: data.category || '',
+            aadhar: data.adharNumber || '',
+            fatherName: data.fatherName || '',
+            fatherPhone: data.fatherNumber || '',
+            motherName: data.motherName || '',
+            motherPhone: data.motherNumber || '',
+            income: data.income || '',
+            fatherOccupation: data.fatherOccupation || '',
+            studentPhone: data.studentNumber || '',
+            motherOccupation: data.motherOccupation || '',
+        });
+
+        // Populate contact details
+        setContactDetails({
+            house: data.houseApartmentName || '',
+            place: data.placeState || '',
+            postOffice: data.postOffice || '',
+            country: data.country || '',
+            pincode: data.pinCode || '',
+            state: data.state || '',
+            district: data.district || '',
+            whatsappNumber: data.whatsappNumber || '',
+            studentEmail: data.studentEmail || '',
+            alternativeNumber: data.alternativeNumber || '',
+        });
+
+        // Populate educational details
+        setEducationalDetails({
+            college: 'NSS College Of Engineering',
+            branch: data.branch || '',
+            semester: data.semester || '',
+            hostelResident: data.hostelResident || true,
+            cgpa: data.cgpa || '',
+        });
+
+        // Populate bank details
+        setBankDetails({
+            ifsc: data.ifscCode || '',
+            bankName: data.bankName || '',
+            branchName: data.branchName || '',
+            accountNumber: data.accountNumber || '',
+            accountHolder: data.accountHolder || '',
+        });
+
+        setFiles({
+            photo: data.photoUrl,
+            cheque: data.checkUrl,
+            aadharCard: data.aadharCardUrl,
+            collegeID: data.collegeIdCardUrl,
+            incomeCertificate: data.incomeUrl,
+        });
+        // Note: You may need to handle files differently depending on your implementation
+    };
+
+
+
+    const [allFilesUploaded, setAllFilesUploaded] = useState(false);
+   
+    const requiredFields = ["photo", "cheque", "aadharCard", "collegeID", "incomeCertificate"];
+
+    // Validate file upload and set state
+    const handleUpload = async (e, field) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            const isValidFile = validateDocumentation(file);
+            if (!isValidFile) return;
+
+            setFiles((prevFiles) => ({ ...prevFiles, [field]: file }));
+            setFileStatus((prevStatus) => ({ ...prevStatus, [field]: file.name }));
+
+            // Check if all required fields have been uploaded
+            const allUploaded = requiredFields.every((requiredField) => files[requiredField]);
+            setAllFilesUploaded(allUploaded);
+
+        } catch (error) {
+            console.error(`Error uploading ${field} file:`, error);
+            setErrorMessage(`Error uploading ${field} file. Please try again.`);
         }
     };
 
-    const handleNextClick = () => {
-        const errors = validateCurrentTab();
-        if (Object.keys(errors).length > 0) {
-            setValidationErrors(errors);
-            return;
-        }
+    const handleNextClick = async () => {
+        const dataToSend = {
+            personalDetails,
+            contactDetails,
+            educationalDetails,
+            bankDetails,
+            files,
+        };
 
-        setValidationErrors({});
+        const formData = new FormData();
+        formData.append('scholarshipData', JSON.stringify(dataToSend));
 
-        if (activeTab === 'educational') {
-            const eduErrors = validateEducationalDetails(educationalDetails);
-            const bankErrors = validateBankDetails(bankDetails);
+        requiredFields.forEach(field => {
+            if (files[field]) formData.append(field, files[field]);
+        });
 
-            if (Object.keys(eduErrors).length > 0 || Object.keys(bankErrors).length > 0) {
-                setValidationErrors({ educationalDetails: eduErrors, bankDetails: bankErrors });
-                return;
+        try {
+            const response = await axios.post('/api/ScholarshipApi/PostSaveData', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                params: { currentTab: activeTab },
+            });
+
+            if (response.status === 201) {
+                setSuccessMessage(`Data saved successfully for tab: ${activeTab}`);
+            } else {
+                setErrorMessage(`Failed to save data for tab: ${activeTab}`);
             }
+        } catch (error) {
+            console.error('Error saving data:', error.response ? error.response.data : error.message);
+            setErrorMessage('An error occurred while saving data');
         }
 
         setActiveTab(getNextTab());
@@ -197,41 +375,35 @@ const ApplyForm: React.FC = () => {
     };
 
     const handleSubmitClick = async () => {
-        // ... your existing validation code ...
         setIsSubmitting(true);
-        let errors: any = {};
-        const personalErrors = validatePersonalDetails(personalDetails);
-        const contactErrors = validateContactDetails(contactDetails);
-        const educationalErrors = validateEducationalDetails(educationalDetails);
-        const bankErrors = validateBankDetails(bankDetails);
-
-        errors = {
-            ...personalErrors,
-            ...contactErrors,
-            ...educationalErrors,
-            ...bankErrors,
-            ...validateDocumentation(files),
+        const errors = {
+            ...validatePersonalDetails(personalDetails),
+            ...validateContactDetails(contactDetails),
+            ...validateEducationalDetails(educationalDetails),
+            ...validateBankDetails(bankDetails),
         };
 
-        setValidationErrors({});
-        let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
+        setValidationErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            const firstErrorTab = getFirstErrorTab(errors);
+            setActiveTab(firstErrorTab);
+            setIsSubmitting(false);
+            return;
+        }
+
         const formData = new FormData();
-        console.log(scholarshipData);
+        const scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
 
-        // Append scholarship data as a JSON string
         formData.append('scholarshipData', JSON.stringify(scholarshipData));
-
-        // Append files if they exist
-        if (files[0]) formData.append('photo', files[0]);
-        if (files[1]) formData.append('cheque', files[1]);
-        if (files[2]) formData.append('aadharCard', files[2]);
-        if (files[3]) formData.append('collegeID', files[3]);
-        if (files[4]) formData.append('incomeCertificate', files[4]);
+        requiredFields.forEach(field => {
+            if (files[field]) formData.append(field, files[field]);
+        });
 
         try {
             const response = await fetch('/api/ScholarshipApi/PostScholarship', {
                 method: 'POST',
-                body: formData
+                body: formData,
             });
 
             if (!response.ok) {
@@ -240,23 +412,20 @@ const ApplyForm: React.FC = () => {
             }
 
             const result = await response.json();
-            console.log('Scholarship application submitted successfully:', result);
-
-            // Set success message
             setSuccessMessage('Scholarship application submitted successfully!');
 
-            // Redirect to home page after 3 seconds
             setTimeout(() => {
-                router.push('/');  // Adjust this path to your home page route
-            }, 3000);
+                router.push('/');  // Redirect to home page after submission
+            }, 1000);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
-            setSuccessMessage('Failed to submit application. Please try again.');
+            setErrorMessage('Failed to submit application. Please try again.');
         } finally {
-            setIsSubmitting(false);  // Reset submitting state whether submission succeeds or fails
+            setIsSubmitting(false);
         }
     };
 
+    // Render content based on active tab
     const renderTabContent = () => {
         switch (activeTab) {
             case 'personal':
@@ -267,97 +436,100 @@ const ApplyForm: React.FC = () => {
                 return (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
-                            <EducationalDetails
-                                educationalDetails={educationalDetails}
-                                setEducationalDetails={setEducationalDetails}
-                                errors={validationErrors}
-                            />
+                            <EducationalDetails educationalDetails={educationalDetails} setEducationalDetails={setEducationalDetails} errors={validationErrors} />
                         </div>
                         <div className="col-span-1">
-                            <BankDetails
-                                bankDetails={bankDetails}
-                                setBankDetails={setBankDetails}
-                                errors={validationErrors}
-                            />
+                            <BankDetails bankDetails={bankDetails} setBankDetails={setBankDetails} errors={validationErrors} />
                         </div>
                     </div>
                 );
             case 'documentation':
-                return <Documentation files={files} setFiles={setFiles} errors={validationErrors} />;
+                return (
+                    <Documentation scholarshipDetails={files} onUpload={handleUpload} fileStatus={fileStatus} onEye={() => {}} />
+                );
+            case 'finalsubmit':
+                return <FinalSubmit initialEmail={user.email} />;
             default:
                 return null;
         }
     };
 
     const showPreviousButton = activeTab !== 'personal';
-    const showNextButton = activeTab !== 'documentation';
+    const showNextButton = activeTab !== 'finalsubmit';
+    const [buttonOff, setButtonOff] = useState(false);
+
+    useEffect(() => {
+        setButtonOff(activeTab === 'documentation' && !allFilesUploaded);
+    }, [activeTab, allFilesUploaded]);
 
     const getPreviousTab = () => {
         switch (activeTab) {
-            case 'contact':
-                return 'personal';
-            case 'educational':
-                return 'contact';
-            case 'documentation':
-                return 'educational';
-            default:
-                return 'personal';
+            case 'contact': return 'personal';
+            case 'educational': return 'contact';
+            case 'documentation': return 'educational';
+            case 'finalsubmit': return 'documentation';
+            default: return 'personal';
         }
     };
 
     const getNextTab = () => {
         switch (activeTab) {
-            case 'personal':
-                return 'contact';
-            case 'contact':
-                return 'educational';
-            case 'educational':
-                return 'documentation';
-            default:
-                return 'documentation';
+            case 'personal': return 'contact';
+            case 'contact': return 'educational';
+            case 'educational': return 'documentation';
+            case 'documentation': return 'finalsubmit';
+            default: return 'documentation';
         }
     };
 
+    const getFirstErrorTab = (errors) => {
+        if (errors.personalDetails) return 'personal';
+        if (errors.contactDetails) return 'contact';
+        if (errors.educationalDetails || errors.bankDetails) return 'educational';
+        return 'personal'; // Default return if no specific errors found
+    };
+
     return (
-        <div className="max-w-5xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6">
             {successMessage && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong className="font-bold">Success!</strong>
-                    <span className="block sm:inline"> {successMessage}</span>
+                    <span className="block sm:inline">{successMessage}</span>
                 </div>
             )}
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
+                <Tab activeTab={activeTab} setActiveTab={setActiveTab} validationErrors={validationErrors} />
                 <div className="p-6">
                     {renderTabContent()}
+                    <div className="flex justify-between mt-6">
+                        {showPreviousButton && (
+                            <button
+                                onClick={handlePreviousClick}
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                            >
+                                Previous
+                            </button>
+                        )}
+                        {showNextButton && (
+                            <button
+                                onClick={handleNextClick}
+                                className={`${buttonOff ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}
+                                text-white font-semibold py-2 px-4 rounded`}
+                                disabled={buttonOff}
+                            >
+                                Next
+                            </button>
+                        )}
+                        {activeTab === 'finalsubmit' && (
+                            <button
+                                onClick={handleSubmitClick}
+                                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </div>
-            <div className={`mt-6 flex ${activeTab === 'personal' ? 'justify-end' : 'justify-between'}`}>
-                {showPreviousButton && (
-                    <button
-                        onClick={handlePreviousClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Previous
-                    </button>
-                )}
-                {showNextButton ? (
-                    <button
-                        onClick={handleNextClick}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Next
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleSubmitClick}
-                        className={`px-4 py-2 text-white rounded ${isSubmitting ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                            }`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Sending...' : 'Submit'}
-                    </button>
-                )}
             </div>
         </div>
     );

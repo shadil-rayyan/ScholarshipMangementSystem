@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1725982158997,
-      "tag": "0000_living_alex_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1725982907782,
-      "tag": "0001_past_the_stranger",
+      "when": 1727970185043,
+      "tag": "0000_tricky_lightspeed",
       "breakpoints": true
     }
   ]
