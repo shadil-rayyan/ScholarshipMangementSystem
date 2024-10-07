@@ -14,6 +14,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 // import { Divide, Heading1 } from 'lucide-react';
 import FinalSubmit from './FinalSubmit';
+
 // Validation functions
 
 const validatePersonalDetails = (details: PersonalDetailsType) => {
@@ -310,23 +311,45 @@ const ApplyForm: React.FC = () => {
 
 
     const [allFilesUploaded, setAllFilesUploaded] = useState(false);
-   
-    const requiredFields = ["photo", "cheque", "aadharCard", "collegeID", "incomeCertificate"];
+    const requiredFields = ["photo", "cheque", "aadharCard", "collegeID", "incomeCertificate"]; // Add the required fields here
 
-    // Validate file upload and set state
-    const handleUpload = async (e, field) => {
+    const handleUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+        field: string
+    ) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         try {
+            // Perform file validation (size, type, etc.)
             const isValidFile = validateDocumentation(file);
             if (!isValidFile) return;
 
-            setFiles((prevFiles) => ({ ...prevFiles, [field]: file }));
-            setFileStatus((prevStatus) => ({ ...prevStatus, [field]: file.name }));
+            // Update the files state
+            setFiles((prevFiles) => ({
+                ...prevFiles,
+                [field]: file,
+            }));
+
+            // Update the file status
+            setFileStatus((prevStatus) => ({
+                ...prevStatus,
+                [field]: file.name,
+            }));
+
+            // Set the uploaded file and file type
+            setUploadedFile(file);
+            setFileUploaded(true);
+            setFileType(field.replace("Url", ""));
+
+            // Check if all required files are uploaded
+            const updatedStatus = {
+                ...fileStatus,
+                [field]: file.name,
+            };
 
             // Check if all required fields have been uploaded
-            const allUploaded = requiredFields.every((requiredField) => files[requiredField]);
+            const allUploaded = requiredFields.every((requiredField) => updatedStatus[requiredField]);
             setAllFilesUploaded(allUploaded);
 
         } catch (error) {
@@ -335,27 +358,46 @@ const ApplyForm: React.FC = () => {
         }
     };
 
+    // In your JSX:
+    <button disabled={!allFilesUploaded}>Show</button>
+
+
+    const handleEyeClick = (url: string) => {
+        window.open(url, "_blank");
+    };
     const handleNextClick = async () => {
+        // Prepare the scholarship data
         const dataToSend = {
-            personalDetails,
-            contactDetails,
-            educationalDetails,
-            bankDetails,
-            files,
+            ...(personalDetails && { personalDetails }),
+            ...(contactDetails && { contactDetails }),
+            ...(educationalDetails && { educationalDetails }),
+            ...(bankDetails && { bankDetails }),
+            ...(files && { files }),
         };
 
+        // Create FormData and append the scholarship details as JSON
         const formData = new FormData();
         formData.append('scholarshipData', JSON.stringify(dataToSend));
 
-        requiredFields.forEach(field => {
-            if (files[field]) formData.append(field, files[field]);
-        });
+        // Append files if they exist (ensure key names match API)
+        if (files.photo) formData.append('photo', files.photo); // matching 'photo'
+        if (files.cheque) formData.append('cheque', files.cheque); // matching 'cheque'
+        if (files.aadharCard) formData.append('aadharCard', files.aadharCard); // matching 'aadharCard'
+        if (files.collegeID) formData.append('collegeID', files.collegeID); // matching 'collegeID'
+        if (files.incomeCertificate) formData.append('incomeCertificate', files.incomeCertificate); // matching 'incomeCertificate'
+
+        console.log('Data being sent:', dataToSend);
+        console.log('Files being sent:', files);
 
         try {
             const response = await axios.post('/api/ScholarshipApi/PostSaveData', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                params: { currentTab: activeTab },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                params: { currentTab: activeTab }, // Send tab info as query param or adjust as per your API
             });
+
+            console.log('Response from server:', response.data);
 
             if (response.status === 201) {
                 setSuccessMessage(`Data saved successfully for tab: ${activeTab}`);
@@ -370,40 +412,52 @@ const ApplyForm: React.FC = () => {
         setActiveTab(getNextTab());
     };
 
+
+
+
+
+
+
     const handlePreviousClick = () => {
         setActiveTab(getPreviousTab());
     };
 
     const handleSubmitClick = async () => {
+        // ... your existing validation code ...
         setIsSubmitting(true);
-        const errors = {
-            ...validatePersonalDetails(personalDetails),
-            ...validateContactDetails(contactDetails),
-            ...validateEducationalDetails(educationalDetails),
-            ...validateBankDetails(bankDetails),
+        let errors: any = {};
+        const personalErrors = validatePersonalDetails(personalDetails);
+        const contactErrors = validateContactDetails(contactDetails);
+        const educationalErrors = validateEducationalDetails(educationalDetails);
+        const bankErrors = validateBankDetails(bankDetails);
+
+        errors = {
+            ...personalErrors,
+            ...contactErrors,
+            ...educationalErrors,
+            ...bankErrors,
+            // ...validateDocumentation(files),
         };
 
-        setValidationErrors(errors);
-
-        if (Object.keys(errors).length > 0) {
-            const firstErrorTab = getFirstErrorTab(errors);
-            setActiveTab(firstErrorTab);
-            setIsSubmitting(false);
-            return;
-        }
-
+        setValidationErrors({});
+        let scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
         const formData = new FormData();
-        const scholarshipData = { personalDetails, contactDetails, bankDetails, educationalDetails };
+        console.log(scholarshipData);
 
+        // Append scholarship data as a JSON string
         formData.append('scholarshipData', JSON.stringify(scholarshipData));
-        requiredFields.forEach(field => {
-            if (files[field]) formData.append(field, files[field]);
-        });
+
+        // Append files if they exist
+        if (files[0]) formData.append('photo', files[0]);
+        if (files[1]) formData.append('cheque', files[1]);
+        if (files[2]) formData.append('aadharCard', files[2]);
+        if (files[3]) formData.append('collegeID', files[3]);
+        if (files[4]) formData.append('incomeCertificate', files[4]);
 
         try {
             const response = await fetch('/api/ScholarshipApi/PostScholarship', {
                 method: 'POST',
-                body: formData,
+                body: formData
             });
 
             if (!response.ok) {
@@ -412,20 +466,24 @@ const ApplyForm: React.FC = () => {
             }
 
             const result = await response.json();
+            console.log('Scholarship application submitted successfully:', result);
+
+            // Set success message
             setSuccessMessage('Scholarship application submitted successfully!');
 
+            // Redirect to home page after 3 seconds
             setTimeout(() => {
-                router.push('/');  // Redirect to home page after submission
+                router.push('/');  // Adjust this path to your home page route
             }, 1000);
         } catch (error) {
             console.error('Failed to submit scholarship application:', error.message);
-            setErrorMessage('Failed to submit application. Please try again.');
+            setSuccessMessage('Failed to submit application. Please try again.');
         } finally {
-            setIsSubmitting(false);
+            setIsSubmitting(false);  // Reset submitting state whether submission succeeds or fails
         }
+
     };
 
-    // Render content based on active tab
     const renderTabContent = () => {
         switch (activeTab) {
             case 'personal':
@@ -436,68 +494,90 @@ const ApplyForm: React.FC = () => {
                 return (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
-                            <EducationalDetails educationalDetails={educationalDetails} setEducationalDetails={setEducationalDetails} errors={validationErrors} />
+                            <EducationalDetails
+                                educationalDetails={educationalDetails}
+                                setEducationalDetails={setEducationalDetails}
+                                errors={validationErrors}
+                            />
                         </div>
                         <div className="col-span-1">
-                            <BankDetails bankDetails={bankDetails} setBankDetails={setBankDetails} errors={validationErrors} />
+                            <BankDetails
+                                bankDetails={bankDetails}
+                                setBankDetails={setBankDetails}
+                                errors={validationErrors}
+                            />
                         </div>
                     </div>
                 );
             case 'documentation':
                 return (
-                    <Documentation scholarshipDetails={files} onUpload={handleUpload} fileStatus={fileStatus} onEye={() => {}} />
+                    <Documentation
+                        scholarshipDetails={scholarshipDetails}
+                        onUpload={handleUpload}
+                        onEye={handleEyeClick}
+                        fileStatus={fileStatus}
+                    />
                 );
+                ;
             case 'finalsubmit':
-                return <FinalSubmit initialEmail={user.email} />;
+                return <FinalSubmit
+                    initialEmail={user.email}
+                />;
             default:
                 return null;
         }
     };
 
+
     const showPreviousButton = activeTab !== 'personal';
     const showNextButton = activeTab !== 'finalsubmit';
     const [buttonOff, setButtonOff] = useState(false);
 
+    // Update the buttonOff state based on your conditions
     useEffect(() => {
         setButtonOff(activeTab === 'documentation' && !allFilesUploaded);
     }, [activeTab, allFilesUploaded]);
 
+
+
     const getPreviousTab = () => {
         switch (activeTab) {
-            case 'contact': return 'personal';
-            case 'educational': return 'contact';
-            case 'documentation': return 'educational';
-            case 'finalsubmit': return 'documentation';
-            default: return 'personal';
+            case 'contact':
+                return 'personal';
+            case 'educational':
+                return 'contact';
+            case 'documentation':
+                return 'educational';
+            case 'finalsubmit':
+                return 'documentation';
+            default:
+                return 'personal';
         }
     };
 
     const getNextTab = () => {
         switch (activeTab) {
-            case 'personal': return 'contact';
-            case 'contact': return 'educational';
-            case 'educational': return 'documentation';
-            case 'documentation': return 'finalsubmit';
-            default: return 'documentation';
+            case 'personal':
+                return 'contact';
+            case 'contact':
+                return 'educational';
+            case 'educational':
+                return 'documentation';
+            case 'documentation':
+                return 'finalsubmit';
+            default:
+                return 'documentation';
         }
     };
-
-    const getFirstErrorTab = (errors) => {
-        if (errors.personalDetails) return 'personal';
-        if (errors.contactDetails) return 'contact';
-        if (errors.educationalDetails || errors.bankDetails) return 'educational';
-        return 'personal'; // Default return if no specific errors found
-    };
-
     return (
         <div className="max-w-7xl mx-auto p-6">
             {successMessage && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span className="block sm:inline">{successMessage}</span>
+                    <span className="block sm:inline"> {successMessage}</span>
                 </div>
             )}
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                <Tab activeTab={activeTab} setActiveTab={setActiveTab} validationErrors={validationErrors} />
+                <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="p-6">
                     {renderTabContent()}
                     <div className="flex justify-between mt-6">
@@ -512,22 +592,23 @@ const ApplyForm: React.FC = () => {
                         {showNextButton && (
                             <button
                                 onClick={handleNextClick}
-                                className={`${buttonOff ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}
-                                text-white font-semibold py-2 px-4 rounded`}
+                                className={`${buttonOff ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                    } text-white font-semibold py-2 px-4 rounded`}
                                 disabled={buttonOff}
                             >
                                 Next
                             </button>
+
                         )}
-                        {activeTab === 'finalsubmit' && (
+                        {/* {!showNextButton && (
                             <button
                                 onClick={handleSubmitClick}
                                 className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Submitting...' : 'Submit'}
-                            </button>
-                        )}
+                            </button> */}
+                        {/* )} */}
                     </div>
                 </div>
             </div>

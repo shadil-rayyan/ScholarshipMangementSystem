@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { InputField } from './InputField';
 import { DropdownField } from '@/components/DropdownField';
-import axios from 'axios'; // For API calls
-import { useEffect } from 'react';
 
 export interface PersonalDetailsType {
     name: string;
@@ -26,72 +24,24 @@ interface PersonalDetailsProps {
     setPersonalDetails: React.Dispatch<React.SetStateAction<PersonalDetailsType>>;
     errors: Partial<Record<keyof PersonalDetailsType, string>>;
 }
-interface Category {
-    id: number;
-    name: string;
-    createdAt: string;
-}
-interface Occupation {
-    id: number;
-    name: string;
-    createdAt: string;
-}
 
-
-
-
-
-
-
-
+const categories = ['OBC', 'OEC', 'SC', 'ST'];
+const incomeOptions = ['Below 1 Lakh', '1 to 3 Lakh', '3 to 5 Lakh', '5 to 8 Lakh', 'Above 8 Lakh'];
+const occupationOptions = [
+    'Entrepreneur',
+    'Government Sector',
+    'Passed Away',
+    'Private Sector',
+    'Retired',
+    'Self Employed',
+    'Unemployed',
+];
 
 export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
     personalDetails,
     setPersonalDetails,
     errors,
 }) => {
-    const [incomeOptions, setIncomeOptions] = useState<string[]>([
-        'Less than 1 Lakh',
-        '1-3 Lakhs',
-        '3-5 Lakhs',
-        'More than 5 Lakhs'
-    ]);
-    const [occupationOptions, setOccupationOptions] = useState<Occupation[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]); // Correct type
-    // Function to fetch categories from the API
-    const fetchCategories = async () => {
-        if (categories.length === 0) {
-            try {
-                const response = await axios.get('/api/admin/categories');
-                setCategories(response.data); // response.data should be an array of Category objects
-            } catch (error) {
-                console.error('Error fetching categories', error);
-            }
-        }
-    };
-
-    // Function to fetch occupations from the API
-    const fetchOccupations = async () => {
-        if (occupationOptions.length === 0) { // Only fetch if not already fetched
-            try {
-                console.log('Attempting to fetch occupations...');
-                const response = await axios.get('/api/admin/occupations');
-                console.log('Occupations response:', response); // Log full response
-                setOccupationOptions(response.data);
-            } catch (error) {
-                console.error('Error fetching occupations:', error);
-            }
-        }
-    };
-    useEffect(() => {
-        if (categories.length === 0) {
-            fetchCategories();
-            fetchOccupations();
-
-        }
-    }, [categories]); // Fetch when the component is mounted or categories array is empty
-
-
     const handleChange = (field: keyof PersonalDetailsType, value: string) => {
         setPersonalDetails((prevDetails) => ({
             ...prevDetails,
@@ -107,7 +57,6 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
 
     return (
         <div className="grid grid-cols-2 gap-4">
-            {/* Input fields and dropdowns */}
             <InputField
                 label="Name"
                 required
@@ -117,7 +66,7 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             />
 
             <div className="flex flex-col">
-                <label htmlFor="dob" className="font-medium text-sm text-gray-700">
+                <label htmlFor="dob" className=" font-medium text-sm text-gray-700">
                     Date of Birth
                     {errors.dob && <span className="text-red-500 ml-1">*</span>}
                 </label>
@@ -132,18 +81,58 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
                 />
                 {errors.dob && <p className="mt-1 text-sm text-red-500">{errors.dob}</p>}
             </div>
+
+            <div className="col-span-1 flex items-center">
+                <div className="flex items-center space-x-4">
+                    <span className="text-gray-700">Gender:</span>
+                    {['Male', 'Female', 'Other'].map((gender) => (
+                        <label key={gender} className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                name="gender"
+                                value={gender.toLowerCase()}
+                                className="form-radio"
+                                checked={personalDetails.gender === gender.toLowerCase()}
+                                onChange={(e) => handleChange('gender', e.target.value)}
+                                required
+                            />
+                            <span className="ml-2">{gender}</span>
+                        </label>
+                    ))}
+                </div>
+                {errors.gender && <p className="text-red-600 text-sm">{errors.gender}</p>}
+            </div>
+
+            {/* <div className="col-span-1 flex items-center">
+                <div className="flex items-center space-x-4">
+                    <span className="text-gray-700">Application type:</span>
+                    {['Fresh', 'Renewal'].map((applicationtype) => (
+                        <label key={applicationtype} className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                name="applicationtype"
+                                value={applicationtype.toLowerCase()}
+                                className="form-radio"
+                                checked={personalDetails.applicationtype === applicationtype.toLowerCase()}
+                                onChange={(e) => handleChange('applicationtype', e.target.value)}
+                                required
+                            />
+                            <span className="ml-2">{applicationtype}</span>
+                        </label>
+                    ))}
+                </div>
+                {errors.applicationtype && <p className="text-red-600 text-sm">{errors.applicationtype}</p>}
+            </div> */}
+
             <DropdownField
                 label="Category"
                 value={personalDetails.category}
-                options={categories.map((category) => category.name)} // Mapping works now
+                options={categories}
                 onChange={(value) => handleChange('category', value)}
                 error={errors.category}
                 allowCustom={true}
             />
 
-
-
-            {/* Additional fields */}
             <InputField
                 label="Aadhar Number"
                 required
@@ -190,11 +179,9 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <DropdownField
                 label="Father Occupation"
                 value={personalDetails.fatherOccupation}
-                options={occupationOptions.map((Occupation) => Occupation.name)}
+                options={occupationOptions}
                 onChange={(value) => handleChange('fatherOccupation', value)}
                 error={errors.fatherOccupation}
-                allowCustom={true}
-            // onFocus={fetchOccupations} // Fetch occupations on focus
             />
             <InputField
                 label="Student Phone"
@@ -206,33 +193,10 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
             <DropdownField
                 label="Mother Occupation"
                 value={personalDetails.motherOccupation}
-                options={occupationOptions.map((Occupation) => Occupation.name)}
+                options={occupationOptions}
                 onChange={(value) => handleChange('motherOccupation', value)}
                 error={errors.motherOccupation}
-                allowCustom={true}
-            // onFocus={fetchOccupations} // Fetch occupations on focus
             />
-
-            <div className="col-span-1 flex items-center">
-                <div className="flex items-center space-x-4">
-                    <span className="text-gray-700">Gender:</span>
-                    {['Male', 'Female', 'Other'].map((gender) => (
-                        <label key={gender} className="inline-flex items-center">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value={gender.toLowerCase()}
-                                className="form-radio"
-                                checked={personalDetails.gender === gender.toLowerCase()}
-                                onChange={(e) => handleChange('gender', e.target.value)}
-                                required
-                            />
-                            <span className="ml-2">{gender}</span>
-                        </label>
-                    ))}
-                </div>
-                {errors.gender && <p className="text-red-600 text-sm">{errors.gender}</p>}
-            </div>
         </div>
     );
 };

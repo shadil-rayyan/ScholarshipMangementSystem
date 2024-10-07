@@ -98,20 +98,6 @@ const Sidebar: React.FC = () => {
                     </Link>
                 </div>
             </div>
-            <div className="space-y-2 mt-3">
-                    {/* Dashboard Button */}
-                    <Link href="/adminsetting" passHref>
-                        <button
-                            className={`flex items-center w-full p-3 transition rounded-xl border-2 duration-300 ${pathname === '/adminsetting'
-                                ? 'bg-purple-100 text-purple-600 hover:bg-purple-300'
-                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                }`}
-                        >
-                            settings  
-                        </button>
-                    </Link>
-                </div>
-            
 
             {/* Bottom Section for Logout */}
             <div className="p-6">

@@ -137,32 +137,23 @@ const RemovedAdminsList: React.FC = () => {
   return (
     <div className="mt-4">
       <h3 className="text-lg font-semibold mb-2">Removed Admins</h3>
-      {removedAdmins.length > 0 ? (
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b">Email</th>
-              <th className="py-2 px-4 border-b">Removed By</th>
-              <th className="py-2 px-4 border-b">Timestamp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {removedAdmins.map(admin => (
-              <tr key={admin.id}>
-                <td className="py-2 px-4 border-b">{admin.email ?? 'N/A'}</td>
-                <td className="py-2 px-4 border-b">{admin.removedBy ?? 'N/A'}</td>
-                <td className="py-2 px-4 border-b">
-                  {admin.timestamp ? new Date(admin.timestamp.toDate()).toLocaleString() : 'N/A'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No removed admins found.</p>
-      )}
+      <ul>
+        {removedAdmins.length > 0 ? (
+          removedAdmins.map(admin => (
+            <li key={admin.id} className="mb-4 p-4 border border-gray-200 rounded">
+              <p><strong>Email:</strong> {admin.email ?? 'N/A'}</p>
+              <p><strong>Removed By:</strong> {admin.removedBy ?? 'N/A'}</p>
+              <p>
+                <strong>Timestamp:</strong> 
+                {admin.timestamp ? new Date(admin.timestamp.toDate()).toLocaleString() : 'N/A'}
+              </p>
+            </li>
+          ))
+        ) : (
+          <p>No removed admins found.</p>
+        )}
+      </ul>
     </div>
-
   );
 };
 

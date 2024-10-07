@@ -51,33 +51,27 @@ const AdminLog: React.FC = () => {
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b">Admin Name</th>
-                            {/* <th className="py-2 px-4 border-b">ID</th> */}
+                            <th className="py-2 px-4 border-b">ID</th>
                             <th className="py-2 px-4 border-b">Status</th>
-
+                            <th className="py-2 px-4 border-b">Admin Name</th>
                             <th className="py-2 px-4 border-b">Created At</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {verificationLogs
-                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-
-                            .map((log) => (
-                                <tr key={log.id}>
-                                    <td className="py-2 px-4 border-b">{log.adminName}</td>
-                                    {/* <td className="py-2 px-4 border-b">{log.id}</td> */}
-                                    <td className="py-2 px-4 border-b">{log.status}</td>
-
-                                    <td className="py-2 px-4 border-b">{new Date(log.createdAt).toLocaleString()}</td>
-                                </tr>
-                            ))}
+                        {verificationLogs.map((log) => (
+                            <tr key={log.id}>
+                                <td className="py-2 px-4 border-b">{log.id}</td>
+                                <td className="py-2 px-4 border-b">{log.status}</td>
+                                <td className="py-2 px-4 border-b">{log.adminName}</td>
+                                <td className="py-2 px-4 border-b">{new Date(log.createdAt).toLocaleString()}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             ) : (
                 <p>No verification logs available for this application number.</p>
             )}
         </div>
-
     );
 };
 
