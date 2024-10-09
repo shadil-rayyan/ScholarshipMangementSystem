@@ -20,6 +20,27 @@ const DarsanaScholarshipPage: React.FC = () => {
   const [user] = useAuthState(auth);
 
   const router = useRouter();
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchApplyCondition = async () => {
+      try {
+        const response = await fetch('/api/admin/applyButton'); // Your API endpoint
+        const data = await response.json();
+
+        if (data.case === true) {
+          setIsButtonVisible(true); // Show button if case is true
+        }
+      } catch (error) {
+        console.error('Error fetching apply condition:', error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchApplyCondition();
+  }, []);
 
   useEffect(() => {
     const auth = getAuth();
@@ -228,9 +249,8 @@ const DarsanaScholarshipPage: React.FC = () => {
               {['about', 'eligibility', 'faq', 'contact', 'track'].map((tab) => (
                 <li
                   key={tab}
-                  className={`flex-1 text-center py-2 cursor-pointer ${
-                    activeTab === tab ? 'bg-blue-700' : ''
-                  }`}
+                  className={`flex-1 text-center py-2 cursor-pointer ${activeTab === tab ? 'bg-blue-700' : ''
+                    }`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -243,21 +263,28 @@ const DarsanaScholarshipPage: React.FC = () => {
 
           {activeTab !== 'track' && (
             <div className="text-center my-8">
-              <p className="mb-2">Click here to apply for the scholarship</p>
-              {showLoginMessage && (
-                <p className="text-red-500 text-center">
-                  You need to sign in to apply
-                </p>
+              {isButtonVisible ? (
+                <>
+                  <p className="mb-2">Click here to apply for the scholarship</p>
+                  {showLoginMessage && (
+                    <p className="text-red-500 text-center">
+                      You need to sign in to apply
+                    </p>
+                  )}
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={handleApplyClick}
+                  >
+                    APPLY NOW
+                  </button>
+                </>
+              ) : (
+                <p className="text-red-500">Application is currently closed</p>
               )}
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={handleApplyClick}
-              >
-                APPLY NOW
-              </button>
             </div>
           )}
         </div>
+
       </main>
     </div>
   );

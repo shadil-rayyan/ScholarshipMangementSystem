@@ -40,22 +40,30 @@ const AdminList: React.FC = () => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Admin List</h2>
-      <ul>
-        {admins.length > 0 ? (
-          admins.map(admin => (
-            <li key={admin.id} className="mb-4 p-4 border border-gray-200 rounded">
-              <p><strong>Email:</strong> {admin.id}</p>
-              <p><strong>Added By:</strong> {admin.addedBy ?? 'N/A'}</p>
-              <p>
-                <strong>Timestamp:</strong>{' '}
-                {admin.timestamp ? new Date(admin.timestamp.toDate()).toLocaleString() : 'N/A'}
-              </p>
-            </li>
-          ))
-        ) : (
-          <p>No admins found.</p>
-        )}
-      </ul>
+      {admins.length > 0 ? (
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b">Email</th>
+              <th className="py-2 px-4 border-b">Added By</th>
+              <th className="py-2 px-4 border-b">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {admins.map(admin => (
+              <tr key={admin.id}>
+                <td className="py-2 px-4 border-b">{admin.id}</td>
+                <td className="py-2 px-4 border-b">{admin.addedBy ?? 'N/A'}</td>
+                <td className="py-2 px-4 border-b">
+                  {admin.timestamp ? new Date(admin.timestamp.toDate()).toLocaleString() : 'N/A'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No admins found.</p>
+      )}
     </div>
   );
 };

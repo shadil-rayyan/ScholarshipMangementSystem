@@ -1,18 +1,27 @@
 // src\db\schema\scholarship\scholarshipData.ts
-import { pgTable, serial, integer, text, timestamp, boolean, decimal, jsonb } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  serial,
+  integer,
+  text,
+  timestamp,
+  boolean,
+  decimal,
+  jsonb,
+} from 'drizzle-orm/pg-core';
 import { drizzle } from 'drizzle-orm/vercel-postgres';
-import { sql } from "@vercel/postgres";
+import { sql } from '@vercel/postgres';
 
 export const ScholarshipDb = drizzle(sql);
 
 export const Scholarship_Table = pgTable('scholarship', {
-  id: serial('id').primaryKey(),  // Auto-increment primary key
-  applicationNumber: serial('application_number').unique(),  // Unique application number
+  id: serial('id').primaryKey(), // Auto-increment primary key
+  applicationNumber: serial('application_number').unique(), // Unique application number
   // Personal Details
   name: text('name').notNull(),
   dateOfBirth: timestamp('date_of_birth').notNull(),
   gender: text('gender').notNull(),
-  applicationtype:text('applicationtype').notNull(),
+  applicationtype: text('applicationtype').notNull(),
   category: text('category').notNull(),
   adharNumber: text('adhar_number').unique().notNull(),
   fatherName: text('father_name').notNull(),
@@ -23,7 +32,7 @@ export const Scholarship_Table = pgTable('scholarship', {
   fatherOccupation: text('father_occupation'),
   motherOccupation: text('mother_occupation'),
   studentNumber: text('student_number'),
-  
+
   // Contact Details
   houseApartmentName: text('house_apartment_name'),
   placeState: text('place_state'),
@@ -49,7 +58,7 @@ export const Scholarship_Table = pgTable('scholarship', {
   ifscCode: text('ifsc_code').notNull(),
   branchName: text('branch_name').notNull(),
   accountHolder: text('account_holder').notNull(),
-  
+
   // Documentation Details
   photoUrl: text('photo_url'),
   checkUrl: text('check_url'),
@@ -61,13 +70,11 @@ export const Scholarship_Table = pgTable('scholarship', {
   status: text('status').default('Pending'),
   remark: text('remark'),
   applicationDate: timestamp('application_date').defaultNow(), // Application submission date
-  verifyadmin:text('verifyadmin').default('null'),
-  selectadmin:text('selectadmin').default('null'),
-  amountadmin:text('amountadmin').default('null'),
-  rejectadmin:text('rejectadmin').default('null'),
-  revertedadmin:text('revertedadmin').default('null'),
-
-
+  verifyadmin: text('verifyadmin').default('null'),
+  selectadmin: text('selectadmin').default('null'),
+  amountadmin: text('amountadmin').default('null'),
+  rejectadmin: text('rejectadmin').default('null'),
+  revertedadmin: text('revertedadmin').default('null'),
 });
 
 export type InsertScholarship = typeof Scholarship_Table.$inferInsert;

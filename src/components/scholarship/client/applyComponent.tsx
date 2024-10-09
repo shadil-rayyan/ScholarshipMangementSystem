@@ -1,3 +1,5 @@
+
+
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Tab } from './Tab';
@@ -5,7 +7,8 @@ import { PersonalDetails, PersonalDetailsType } from './PersonalDetails';
 import { ContactDetails, ContactDetailsType } from './ContactDetails';
 import { EducationalDetails, EducationalDetailsType } from './EducationalDetails';
 import { BankDetails, BankDetailsType } from './BankDetails';
-import { Documentation } from '@/components/scholarshipadmin/ScholarshipEdit';
+// import { Documentation } from '@/components/scholarshipadmin/ScholarshipEdit';
+import { Documentation } from '@/components/scholarship/client/Documentation';
 // import { uploadFileToFirebase } from '@/lib/firebase/config';
 import { differenceInYears, isFuture } from 'date-fns';
 import axios from 'axios';
@@ -21,7 +24,12 @@ const validatePersonalDetails = (details: PersonalDetailsType) => {
     console.log('Validating personal details:', details);
 
     const errors: Partial<Record<keyof PersonalDetailsType, string>> = {};
-    if (!details.name.trim()) errors.name = 'Name is required';
+    // Check for name
+    if (!details.name.trim()) {
+        errors.name = 'Name is required';
+    } else if (/\d/.test(details.name)) { // Check for numbers in the name
+        errors.name = 'Name must not contain numbers';
+    }
     if (!details.dob) {
         errors.dob = 'Date of Birth is required';
     } else {
@@ -37,21 +45,41 @@ const validatePersonalDetails = (details: PersonalDetailsType) => {
             errors.dob = 'Age must be between 17 and 30 years';
         }
     }
-    if (!['male', 'female', 'other'].includes(details.gender)) errors.gender = 'Gender is required';
-    if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'application type is required';
+
+    if (!['male', 'female', 'other'].includes(details.gender)) {
+        errors.gender = 'Gender is required';
+    }
+
+    // Uncomment and validate application type if needed
+    // if (!['fresh', 'renewal'].includes(details.applicationtype)) errors.applicationtype = 'application type is required';
+
     if (!details.category.trim()) errors.category = 'Category is required';
-    if (!details.fatherName?.trim()) errors.fatherName = 'father Name  is required';
-    if (!details.motherName?.trim()) errors.motherName = 'mother Name  is required';
+
+    // Check for father's name
+    if (!details.fatherName?.trim()) {
+        errors.fatherName = 'Father Name is required';
+    } else if (/\d/.test(details.fatherName)) { // Check for numbers
+        errors.fatherName = 'Father Name must not contain numbers';
+    }
+
+    // Check for mother's name
+    if (!details.motherName?.trim()) {
+        errors.motherName = 'Mother Name is required';
+    } else if (/\d/.test(details.motherName)) { // Check for numbers
+        errors.motherName = 'Mother Name must not contain numbers';
+    }
+
     if (!/^[0-9]{12}$/.test(details.aadhar)) errors.aadhar = 'Aadhar must be 12 digits';
     if (!/^[0-9]{10}$/.test(details.fatherPhone)) errors.fatherPhone = 'Father Phone must be 10 digits';
-    if (!/^[0-9]{10}$/.test(details.studentPhone)) errors.studentPhone = 'student Phone  must be 10 digits';
+    if (!/^[0-9]{10}$/.test(details.studentPhone)) errors.studentPhone = 'Student Phone must be 10 digits';
     if (details.motherPhone && !/^[0-9]{10}$/.test(details.motherPhone)) errors.motherPhone = 'Mother Phone must be 10 digits';
     if (!details.income.trim()) errors.income = 'Income is required';
-    if (details.studentPhone && !/^[0-9]{10}$/.test(details.studentPhone)) errors.studentPhone = 'Student Phone must be 10 digits';
     if (!details.fatherOccupation?.trim()) errors.fatherOccupation = 'Father Occupation is required';
-    if (!details.motherOccupation?.trim()) errors.motherOccupation = 'mother Occupation  is required';
+    if (!details.motherOccupation?.trim()) errors.motherOccupation = 'Mother Occupation is required';
+
     return errors;
 };
+
 
 const validateContactDetails = (details: ContactDetailsType) => {
     const errors: Partial<Record<keyof ContactDetailsType, string>> = {};
@@ -162,10 +190,6 @@ const ApplyForm: React.FC = () => {
     }, []);
 
 
-
-
-
-
     const [personalDetails, setPersonalDetails] = useState<PersonalDetailsType>({
         name: '',
         dob: '',
@@ -220,6 +244,23 @@ const ApplyForm: React.FC = () => {
         incomeCertificate: '',
     });
     const [validationErrors, setValidationErrors] = useState<any>({});
+    const validateCurrentTab = () => {
+        switch (activeTab) {
+            case 'personal':
+                return validatePersonalDetails(personalDetails);
+            case 'contact':
+                return validateContactDetails(contactDetails);
+            case 'educational':
+                return {
+                    ...validateEducationalDetails(educationalDetails),
+                    ...validateBankDetails(bankDetails),
+                };
+            case 'documentation':
+                return validateDocumentation(files);
+            default:
+                return {};
+        }
+    };
 
     useEffect(() => {
         const fetchExistingData = async () => {
@@ -366,6 +407,19 @@ const ApplyForm: React.FC = () => {
         window.open(url, "_blank");
     };
     const handleNextClick = async () => {
+        // Validate the current tab
+        const errors = validateCurrentTab();
+        console.log('Validation errors:', errors); // Debug: Check validation errors
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            console.log('Validation errors present, stopping navigation.'); // Debug: Validation failed
+            return;
+        }
+
+        // Clear validation errors if no errors
+        setValidationErrors({});
+        console.log('No validation errors, proceeding to save data.'); // Debug: No validation errors
+
         // Prepare the scholarship data
         const dataToSend = {
             ...(personalDetails && { personalDetails }),
@@ -409,8 +463,14 @@ const ApplyForm: React.FC = () => {
             setErrorMessage('An error occurred while saving data');
         }
 
-        setActiveTab(getNextTab());
+        // Get the next tab
+        const nextTab = getNextTab();
+        console.log('Setting active tab to:', nextTab); // Debug: Next tab
+
+        // Set the next active tab
+        setActiveTab(nextTab);
     };
+
 
 
 

@@ -12,7 +12,7 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [loading, setLoading] = useState(true); // State to track loading
+  // const [loading, setLoading] = useState(true); // State to track loading
   const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication
   const router = useRouter();
 
@@ -36,7 +36,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           setIsAuthenticated(false); // If no authenticated user, redirect to login
           router.push('/auth/Login');
         }
-        setLoading(false); // Stop loading after check
+        // setLoading(false); // Stop loading after check
       });
 
       // Cleanup subscription on unmount
@@ -47,9 +47,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   }, [router]);
 
   // Show a loading indicator while checking authentication
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   // Only render the layout if authenticated as admin
   return (

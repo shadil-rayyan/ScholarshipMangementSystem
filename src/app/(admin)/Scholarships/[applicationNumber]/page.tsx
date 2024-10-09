@@ -13,7 +13,7 @@ import { auth } from '@/lib/firebase/config';
 const ScholarshipDetailPage: React.FC = () => {
     const { applicationNumber } = useParams();
     const [scholarshipDetails, setScholarshipDetails] = useState<ScholarshipDetails | null>(null);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState("personal");
     const [showDraftSaved, setShowDraftSaved] = useState(false);
@@ -54,7 +54,7 @@ const ScholarshipDetailPage: React.FC = () => {
         } catch (err) {
             setError("Error fetching scholarship details. Please try again later.");
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
 
@@ -161,7 +161,7 @@ const ScholarshipDetailPage: React.FC = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    // if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
     return (

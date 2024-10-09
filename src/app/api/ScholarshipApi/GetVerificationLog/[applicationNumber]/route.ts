@@ -1,4 +1,4 @@
-//api/ScholarshipApi/GetVerificationLog/[applicationNumber]/route.ts
+// api/ScholarshipApi/GetVerificationLog/[applicationNumber]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
@@ -29,16 +29,8 @@ export async function GET(
         eq(Verification_Table.applicationNumber, Number(applicationNumber))
       ); // Use the `eq` function to filter by application number
 
-    // If no logs are found, return a 404 response
-    if (verificationLogs.length === 0) {
-      return NextResponse.json(
-        { error: 'No verification logs found for this application number' },
-        { status: 404 }
-      );
-    }
-
-    // Return the verification logs in the response
-    return NextResponse.json(verificationLogs);
+    // Return an empty array if no logs are found
+    return NextResponse.json(verificationLogs); // This will be an empty array if no logs exist
   } catch (error) {
     console.error('Error fetching verification logs:', error);
     return NextResponse.json(

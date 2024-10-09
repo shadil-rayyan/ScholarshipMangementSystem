@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 
 interface VerificationLog {
     id: number;
@@ -16,7 +15,6 @@ const AdminLog: React.FC = () => {
     const [verificationLogs, setVerificationLogs] = useState<VerificationLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const router = useRouter();
 
     useEffect(() => {
         if (applicationNumber) {
@@ -25,6 +23,7 @@ const AdminLog: React.FC = () => {
     }, [applicationNumber]);
 
     const fetchVerificationLogs = async () => {
+        setError(null); // Reset error state before fetching
         try {
             const response = await fetch(`/api/ScholarshipApi/GetVerificationLog/${applicationNumber}`);
             if (!response.ok) {
@@ -51,21 +50,21 @@ const AdminLog: React.FC = () => {
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b">ID</th>
-                            <th className="py-2 px-4 border-b">Status</th>
                             <th className="py-2 px-4 border-b">Admin Name</th>
+                            <th className="py-2 px-4 border-b">Status</th>
                             <th className="py-2 px-4 border-b">Created At</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {verificationLogs.map((log) => (
-                            <tr key={log.id}>
-                                <td className="py-2 px-4 border-b">{log.id}</td>
-                                <td className="py-2 px-4 border-b">{log.status}</td>
-                                <td className="py-2 px-4 border-b">{log.adminName}</td>
-                                <td className="py-2 px-4 border-b">{new Date(log.createdAt).toLocaleString()}</td>
-                            </tr>
-                        ))}
+                        {verificationLogs
+                            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                            .map((log) => (
+                                <tr key={log.id}>
+                                    <td className="py-2 px-4 border-b">{log.adminName}</td>
+                                    <td className="py-2 px-4 border-b">{log.status}</td>
+                                    <td className="py-2 px-4 border-b">{new Date(log.createdAt).toLocaleString()}</td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             ) : (
