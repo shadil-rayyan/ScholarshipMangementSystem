@@ -46,8 +46,8 @@ export const EducationalDetails: React.FC<{
                 label="Name Of The College"
                 required
                 value={educationalDetails.college}
-                onChange={() => { }}
-                readOnly
+                onChange={(e) => handleChange('college', e.target.value)}
+
                 error={errors.college}
             />
             <DropdownField
