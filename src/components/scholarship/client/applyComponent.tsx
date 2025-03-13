@@ -221,7 +221,7 @@ const ApplyForm: React.FC = () => {
     });
 
     const [educationalDetails, setEducationalDetails] = useState<EducationalDetailsType>({
-        college: 'NSS College Of Engineering',
+        college: 'asaasasas',
         branch: '',
         semester: '',
         hostelResident: true,
@@ -454,7 +454,7 @@ const ApplyForm: React.FC = () => {
             console.log('Response from server:', response.data);
 
             if (response.status === 201) {
-                setSuccessMessage(`Data saved successfully for tab: ${activeTab}`);
+                setSuccessMessage(`Data saved successfully`);
             } else {
                 setErrorMessage(`Failed to save data for tab: ${activeTab}`);
             }

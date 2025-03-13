@@ -149,6 +149,35 @@ const DarsanaScholarshipPage: React.FC = () => {
       case 'faq':
         return (
           <div className="space-y-4">
+            <div className="mb-4">
+              <p className="text-lg font-semibold">How to apply for Darsana Scholarship
+                <a
+                  href="https://drive.google.com/uc?export=download&id=1ZoDwGBCxYyyyiCveL7q-DEkldZnJ5vIO"
+                  download
+                  className="text-blue-600 hover:text-blue-800 font-bold"
+                >
+                  Download PDF
+                </a>
+              </p>
+            </div>
+            {faqData.map((faq, index) => (
+              <div key={index} className="border rounded-md">
+                <button
+                  className="w-full text-left p-4 flex justify-between items-center focus:outline-none"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  {faq.question}
+                  {openFAQ === index ? <ChevronUp /> : <ChevronDown />}
+                </button>
+                {openFAQ === index && (
+                  <div className="p-4 bg-gray-50">{faq.answer}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+        return (
+          <div className="space-y-4">
             {faqData.map((faq, index) => (
               <div key={index} className="border rounded-md">
                 <button
@@ -196,7 +225,7 @@ const DarsanaScholarshipPage: React.FC = () => {
                   Visit our contact us page or click the button below to get in
                   touch with us.
                 </p>
-                <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300">
+                <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300" onClick={() => router.push(`https://darsana.in/contact_us`)}>
                   Contact Us
                 </button>
               </div>
@@ -212,7 +241,7 @@ const DarsanaScholarshipPage: React.FC = () => {
                   You need to log in to track your application
                 </h2>
                 <button
-                  onClick={() => router.push('/login')}
+                  onClick={() => router.push('/auth/Login')}
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
                 >
                   Login

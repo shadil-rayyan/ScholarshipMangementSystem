@@ -111,13 +111,20 @@ CREATE TABLE IF NOT EXISTS "savedata" (
 CREATE TABLE IF NOT EXISTS "categories" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	CONSTRAINT "categories_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "occupations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	CONSTRAINT "occupations_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "applyButton" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"case" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 DO $$ BEGIN

@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import "./globals.css";
 
 import { SESSION_COOKIE_NAME } from '@/lib/firebase/constants';
-import Loading from "./loading"; 
+import Loading from "./loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        
+
         <Suspense fallback={<Loading />}>
           {children}
         </Suspense>
