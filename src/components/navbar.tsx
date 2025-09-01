@@ -5,7 +5,7 @@ import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import darsanaLogo from "@/assets/darsanaLogo.png";
+import Logo from "@/assets/codecompass.png";
 import { useUserSession } from "@/hook/use_user_session";
 import { signInWithGoogle, signOutWithGoogle } from "@/lib/firebase/auth";
 import { removeSession } from "@/server-action/auth_action";
@@ -122,7 +122,7 @@ const handleSignOut = async () => {
           className="flex items-center space-x-3 rtl:space-x-reverse"
           onClick={() => handleLinkClick("/")}
         >
-          <Image src={darsanaLogo} height={32} alt="Darsana Logo" />
+          <Image src={Logo} height={32} alt=" Logo" />
         </NavLink>
 
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">

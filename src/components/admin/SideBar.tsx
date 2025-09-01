@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image'; // Import Image component
 import { signOutWithGoogle } from '@/lib/firebase/auth'; // Import signOut function
 import { removeSession } from '@/server-action/auth_action'; // Import removeSession function
-import logo from '@/assets/logo.png';
+import logo from '@/assets/codecompass.png';
 
 const Sidebar: React.FC = () => {
     const pathname = usePathname();

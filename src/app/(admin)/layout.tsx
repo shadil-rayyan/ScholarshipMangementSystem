@@ -17,34 +17,34 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const router = useRouter();
 
   // Check user authentication and admin role on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      const unsubscribe = onAuthStateChanged(async (authUser) => {
-        if (authUser) {
-          // Check if the authenticated user is an admin
-          const userDocRef = doc(firestore, 'adminemail', authUser.email as string);
-          const userDoc = await getDoc(userDocRef);
-          const isAdmin = userDoc.exists() && userDoc.data()?.role === 'admin';
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const unsubscribe = onAuthStateChanged(async (authUser) => {
+  //       if (authUser) {
+  //         // Check if the authenticated user is an admin
+  //         const userDocRef = doc(firestore, 'adminemail', authUser.email as string);
+  //         const userDoc = await getDoc(userDocRef);
+  //         const isAdmin = userDoc.exists() && userDoc.data()?.role === 'admin';
 
-          if (isAdmin) {
-            setIsAuthenticated(true); // Set the state to authenticated if user is admin
-          } else {
-            setIsAuthenticated(false);
-            router.push('/auth/Login'); // Redirect to login if not an admin
-          }
-        } else {
-          setIsAuthenticated(false); // If no authenticated user, redirect to login
-          router.push('/auth/Login');
-        }
-        // setLoading(false); // Stop loading after check
-      });
+  //         if (isAdmin) {
+  //           setIsAuthenticated(true); // Set the state to authenticated if user is admin
+  //         } else {
+  //           setIsAuthenticated(false);
+  //           router.push('/auth/Login'); // Redirect to login if not an admin
+  //         }
+  //       } else {
+  //         setIsAuthenticated(false); // If no authenticated user, redirect to login
+  //         router.push('/auth/Login');
+  //       }
+  //       // setLoading(false); // Stop loading after check
+  //     });
 
-      // Cleanup subscription on unmount
-      return () => unsubscribe();
-    };
+  //     // Cleanup subscription on unmount
+  //     return () => unsubscribe();
+  //   };
 
-    checkAuth();
-  }, [router]);
+  //   checkAuth();
+  // }, [router]);
 
   // Show a loading indicator while checking authentication
   // if (loading) {

@@ -65,13 +65,7 @@ const handleLoginWithGoogle = async () => {
             </p>
           </div>
           <div className="hidden lg:block lg:w-1/2 lg:pl-8">
-            <Image
-              src={darsanalogin}
-              alt="Loginimage"
-              width={900}
-              height={100}
-              className="w-full h-auto object-cover rounded-lg"
-            />
+            
           </div>
         </div>
       </div>

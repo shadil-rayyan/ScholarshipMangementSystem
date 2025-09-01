@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Mail, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import scholarship_hero from '@/assets/scholarship/scholarship_hero.jpeg';
+import Logo from '@/assets/codecompass.png';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth'; // Firebase Auth hook
 import { auth } from '@/lib/firebase/config';
@@ -263,7 +263,7 @@ const DarsanaScholarshipPage: React.FC = () => {
           <div className="relative h-auto w-full max-w-full mb-4 flex justify-center">
             <div className="w-[85%] h-[350px]">
               <Image
-                src={scholarship_hero}
+                src={Logo}
                 alt="Scholarship Banner"
                 className="w-full h-full"
                 style={{ objectFit: 'contain', objectPosition: 'center' }}
