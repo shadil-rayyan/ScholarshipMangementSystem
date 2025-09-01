@@ -1,0 +1,1 @@
+the documetion upload is acutaolly stored in firebase storege so when user upload hte data we gvie it to firbase adn in return we get a download url whihc url we choose such that we store in teh db and which we later use to see the image in admin dashboard and all 

@@ -1,0 +1,1 @@
+the email work by suing a dependies nodemailer whihc basically work using gmail dpeeinds called app somethhing feature whihc let node mailer to use our email crendential to send mail each time where is the code is acuatlly in the api of each when teh user status updates the api call contain the mail code as well to send as well 

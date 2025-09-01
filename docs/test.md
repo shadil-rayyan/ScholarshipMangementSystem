@@ -1,0 +1,1 @@
+we sue jest+playwright for unit testing and play wright for ui testing you can easily writeh teh ui testing uisng hte playwrigh rtcoddgen feauters 
