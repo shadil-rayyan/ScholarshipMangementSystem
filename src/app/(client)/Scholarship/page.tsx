@@ -68,27 +68,28 @@ const DarsanaScholarshipPage: React.FC = () => {
   };
 
   const faqData = [
-    {
-      question: 'What is the Biju Cheriyan Endowment?',
-      answer:
-        'The Biju Cheriyan Endowment is a scholarship program established by Darsana to support economically disadvantaged students at NSS College of Engineering. It was initiated in 2008 to honor Biju Cheriyan and his commitment to student rights and social causes.',
-    },
-    {
-      question: 'How much financial support does the Endowment provide?',
-      answer:
-        "The Endowment currently offers an annual stipend of Rs. 12,000 to selected students. This amount is linked to the students' academic performance, with graded incentives for higher CGPA.",
-    },
-    {
-      question: 'What additional programs and support are offered through the Endowment?',
-      answer:
-        'Beyond financial support, the Biju Cheriyan Endowment provides various programs such as communication skills workshops, career guidance sessions, and motivational talks.',
-    },
-    {
-      question: 'How is the Endowment funded and managed?',
-      answer:
-        'The Endowment is funded solely through contributions from Darsana members, who donate in units of Rs. 500. The entire scholarship process is managed by Darsana members with assistance from the college authorities.',
-    },
-  ];
+  {
+    question: 'What is the CodeCompass Student Scholarship?',
+    answer:
+      'The CodeCompass Student Scholarship is a program launched by CodeCompass Pvt. Ltd. in 2015 to support economically disadvantaged students in STEM fields. It reflects the company’s vision of making quality education accessible to all.',
+  },
+  {
+    question: 'How much financial support does the Scholarship provide?',
+    answer:
+      'The scholarship offers financial assistance of up to ₹50,000 per academic year. The amount varies depending on academic performance, with higher-performing students receiving additional incentives.',
+  },
+  {
+    question: 'What additional programs and support are offered through the Scholarship?',
+    answer:
+      'In addition to financial aid, CodeCompass provides mentorship opportunities, internship placements, coding bootcamps, and career guidance sessions to help students succeed academically and professionally.',
+  },
+  {
+    question: 'How is the Scholarship funded and managed?',
+    answer:
+      'The scholarship is funded through CodeCompass’s annual corporate social responsibility (CSR) initiative, with contributions from employees and industry partners. The program is managed by the CodeCompass Education Foundation in collaboration with university authorities.',
+  },
+];
+
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -115,11 +116,9 @@ const DarsanaScholarshipPage: React.FC = () => {
         return (
           <div className="prose max-w-none mx-auto p-6 rounded-lg leading-relaxed">
             <p>
-              Biju Cheriyan, an Instrumentation and Control Engineering graduate
-              from NSS College of Engineering, was deeply involved in student
-              rights advocacy. The Biju Cheriyan Endowment, a flagship program
-              of Darsana, began in 2008 to support economically disadvantaged
-              students.
+              CodeCompass, a pioneering technology solutions and education company, 
+              launched the CodeCompass Student Scholarship in 2015 to empower economically disadvantaged
+               students and foster equal opportunities in higher education.
             </p>
             <p>
               The Endowment offers financial support, mentoring, and academic
@@ -206,14 +205,14 @@ const DarsanaScholarshipPage: React.FC = () => {
                     <h3 className="text-xl font-semibold text-gray-800">
                       Email
                     </h3>
-                    <p className="text-gray-600">info@darsana.in</p>
+                    <p className="text-gray-600">info@scholarship.in</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <Phone size={30} className="text-blue-500" />
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800">Phone</h3>
-                    <p className="text-gray-600">+919495806844</p>
+                    <p className="text-gray-600">+91 999999999</p>
                   </div>
                 </div>
               </div>

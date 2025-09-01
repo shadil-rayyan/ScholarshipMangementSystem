@@ -1,15 +1,15 @@
 import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import darsanaLogo from '@/assets/darsanaLogo.png';
+import Logo from '@/assets/codecompass.png';
 
 const Footer = memo(() => {
     return (
         <footer className="w-full bg-white flex flex-col md:flex-row items-center justify-between py-6 px-6 box-border text-base text-gray-600 font-h3 border-t border-gray-200">
             <div className="flex items-center mb-4 md:mb-0">
                 <Image
-                    src={darsanaLogo}
-                    alt="Darsana Logo"
+                    src={Logo}
+                    alt=" Logo"
                     width={100}
                     height={40}
                     objectFit="contain"
