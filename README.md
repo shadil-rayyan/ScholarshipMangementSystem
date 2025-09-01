@@ -1,81 +1,109 @@
-Scholarship Management System
 
-Introduction
+# 🎓 Scholarship Management System
 
-The Scholarship Management System is a web application designed to streamline and automate the management of scholarships for both administrators and students. By digitizing and simplifying scholarship workflows, this system saves significant time and effort, reducing the manual processes by 30% to 50%.
+## 📖 Introduction
+The **Scholarship Management System** is a web application designed to streamline and automate the management of scholarships for both **administrators** and **students**.  
 
-The system allows administrators to manage scholarship records and applications easily, while students can apply for scholarships and track their application status. The automation of these processes helps eliminate manual errors and improves efficiency.
+By digitizing and simplifying scholarship workflows, this system saves **30%–50% of manual effort**, reduces errors, and improves efficiency.  
 
-Technologies Used
+- **Administrators** can manage scholarship records and applications.  
+- **Students** can apply for scholarships and track their status in real time.  
 
-This project is built with modern web technologies to ensure scalability, speed, and reliability:
+---
+---
 
-Next.js: React framework for building server-side rendering and static web applications.
+## 🎥 Demo
 
-TypeScript: Ensures type safety throughout the project.
+Check out the demo video (located in the `public` folder):
 
-Tailwind CSS: Utility-first CSS framework for creating custom designs quickly.
+👉 [Demo Video](./public/demo.gif)
 
-Firebase: Provides authentication and real-time database features.
+---
 
-Vercel: Hosting platform for instant, auto-scaled deployments.
 
-PostgreSQL: Relational database management for storing scholarship-related data.
+## ⚙️ Technologies Used
+This project leverages modern web technologies to ensure scalability, speed, and reliability:
 
-Drizzle ORM: Simplifies interaction with PostgreSQL by providing an abstraction layer.
+- **[Next.js](https://nextjs.org/):** React framework for SSR and static apps.  
+- **[TypeScript](https://www.typescriptlang.org/):** Type safety across the project.  
+- **[Tailwind CSS](https://tailwindcss.com/):** Utility-first styling framework.  
+- **[Firebase](https://firebase.google.com/):** Authentication + real-time database.  
+- **[Vercel](https://vercel.com/):** Hosting with auto-scaled deployments.  
+- **[PostgreSQL](https://www.postgresql.org/):** Relational database backend.  
+- **[Drizzle ORM](https://orm.drizzle.team/):** Type-safe DB queries.  
+- **[Vercel Postgres](https://vercel.com/postgres):** Managed PostgreSQL service.  
+- **PostgreSQL on VPS:** For custom self-hosted deployments.  
 
-Vercel Postgres: Managed PostgreSQL service (for production usage).
+---
 
-PostgreSQL on VPS: For custom deployment options where you host the database on your own virtual private server.
+## 🚀 Installation & Setup
 
-Installation and Setup
-
-To get started with the Scholarship Management System, follow these steps:
-
-1. Clone the Repository
-
+### 1️⃣ Clone the Repository
+```bash
 git clone https://github.com/your-repo-url/scholarship-management-system.git
 cd scholarship-management-system
+````
 
-2. Install Dependencies
+### 2️⃣ Install Dependencies
 
-Make sure you have Node.js installed. Then, install the necessary dependencies:
+Make sure [Node.js](https://nodejs.org/) is installed, then run:
 
+```bash
 npm install
+```
 
-3. Configure Environment Variables
+### 3️⃣ Configure Environment Variables
 
-Set up environment variables for Firebase, PostgreSQL (either Vercel Postgres or VPS-hosted PostgreSQL), and other required settings in a .env.local file.
+Create a `.env.local` file in the project root and add your credentials:
 
-Example .env.local:
-
+```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=your-firebase-api-key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-firebase-auth-domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-firebase-project-id
+
 POSTGRES_URL=your-postgres-url
 DRIZZLE_DATABASE_URL=your-database-url
+```
 
-4. Running the Application Locally
+### 4️⃣ Run the Application Locally
 
-To run the project locally:
-
+```bash
 npm run dev
+```
 
-This command will start the development server, and the application will be available at http://localhost:3000.
+The app will be available at **[http://localhost:3000](http://localhost:3000)**.
 
-5. Deployment
+### 5️⃣ Deployment
 
-The project is configured to be deployed easily on Vercel, but you can also deploy it on any hosting provider of your choice. When deploying on Vercel, it will automatically detect the Next.js framework and set up a proper environment.
+The project is optimized for deployment on **Vercel**.
 
-Vercel Postgres: By default, the project uses Vercel's managed PostgreSQL service. If you are using Vercel Postgres, ensure the connection string is set in your environment variables.
+* By default, it uses **Vercel Postgres** (ensure your connection string is set).
+* You can also deploy with your own PostgreSQL on a **VPS**.
 
-Features
+---
 
-Admin Dashboard: Manage scholarships, review student applications, and oversee the process.
+## ✨ Features
 
-Student Portal: Apply for scholarships, view application status, and receive updates.
+* **Admin Dashboard** → Manage scholarships, review applications, oversee the process.
+* **Student Portal** → Apply for scholarships, track status, receive updates.
+* **Firebase Authentication** → Secure login & signup.
+* **Real-time Notifications** → Instant updates for users.
 
-Firebase Authentication: Secure login and signup for both admins and students.
 
-Real-time Notifications: Keep users informed of updates in real-time.
-.
+## 📂 Documentation
+
+A `docs/` folder is available at the root of the project with detailed **developer documentation**.
+
+---
+
+## 🛠️ Contributing
+
+Contributions are welcome! Please fork the repo and create a pull request.
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
+
