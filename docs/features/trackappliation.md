@@ -1,0 +1,1 @@
+it use hte email of the db to check if sucha schoalrship is there on that basiss return how it work is very simple when you login we already get your google email that email is the same one you used for scholraship on that basis 

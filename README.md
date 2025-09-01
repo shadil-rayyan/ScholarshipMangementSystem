@@ -16,7 +16,7 @@ By digitizing and simplifying scholarship workflows, this system saves **30%–5
 
 Check out the demo video (located in the `public` folder):
 
- [](./public/demo.gif)
+ ![](./public/demo.gif)
 
 ---
 

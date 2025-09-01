@@ -1,0 +1,1 @@
+you can add admin remove admin list admin this work by using firbase storege which basically make a colleciton of addadmin with timestamp and all that stuff also keep a collection for removed admin for listing admin we basically disaply the admin in teh addadmin collection that is all 
