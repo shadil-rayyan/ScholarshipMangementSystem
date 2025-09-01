@@ -1,0 +1,12 @@
+// app/humans.txt/route.js
+export async function GET() {
+  return new Response(
+    `/* TEAM */
+Developer: Your Name
+Website: https://yourdomain.com
+Twitter: @yourhandle
+
+/* SITE */
+Last update: ${new Date().toISOString().split("T")[0]}
+Standards: Next.js 15, React, TypeScript
+Hosting: Vercel

@@ -1,0 +1,16 @@
+// app/robots.txt/route.js
+export async function GET() {
+  return new Response(
+    `User-agent: *
+Allow: /
+
+Sitemap: https://yourdomain.com/sitemap.xml
+Host: https://yourdomain.com
+`,
+    {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    }
+  );
+}
