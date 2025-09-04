@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Mail, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import Logo from '@/assets/codecompass.png';
+import Logo from '@/assets/codecompass.png'; // Fallback logo
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
@@ -15,6 +15,7 @@ import { aboutData } from '@/data/about';
 import { faqData as faqDataImport } from '@/data/faq';
 import { eligibilityData } from '@/data/eligibility';
 import { contactData } from '@/data/contact';
+import { heroImageData } from '@/data/hero'; // Import hero image data
 
 const DarsanaScholarshipPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('about');
@@ -24,6 +25,10 @@ const DarsanaScholarshipPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [showLoginMessage, setShowLoginMessage] = useState<boolean>(false);
   const [user] = useAuthState(auth);
+
+  // Hero image states
+  const [heroData, setHeroData] = useState(heroImageData);
+  const [heroImageError, setHeroImageError] = useState(false);
 
   const router = useRouter();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
@@ -46,6 +51,20 @@ const DarsanaScholarshipPage: React.FC = () => {
     };
 
     fetchApplyCondition();
+  }, []);
+
+  // Load hero image data
+  useEffect(() => {
+    const loadHeroData = async () => {
+      try {
+        const { heroImageData } = await import('@/data/hero');
+        setHeroData(heroImageData);
+      } catch (error) {
+        console.error('Error loading hero data:', error);
+        setHeroImageError(true);
+      }
+    };
+    loadHeroData();
   }, []);
 
   useEffect(() => {
@@ -90,6 +109,11 @@ const DarsanaScholarshipPage: React.FC = () => {
     } else {
       router.push('/Scholarship/apply');
     }
+  };
+
+  // Create cache-busting URL for hero image
+  const getHeroImageUrl = () => {
+    return `${heroData.imagePath}?t=${new Date(heroData.lastUpdated).getTime()}`;
   };
 
   const renderContent = () => {
@@ -329,26 +353,50 @@ const DarsanaScholarshipPage: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
         <div className="container mx-auto px-4">
+          {/* Dynamic Hero Image Section */}
           <div className="relative h-auto w-full max-w-full mb-4 flex justify-center">
-            <div className="w-[85%] h-[350px]">
-              <Image
-                src={Logo}
-                alt="Scholarship Banner"
-                className="w-full h-full"
-                style={{ objectFit: 'contain', objectPosition: 'center' }}
-                priority
-              />
+            <div className="w-[85%] h-[350px] relative rounded-lg overflow-hidden shadow-lg">
+              {!heroImageError ? (
+                <Image
+                  src={getHeroImageUrl()}
+                  alt="Scholarship Hero Banner"
+                  className="w-full h-full object-cover"
+                  fill
+                  priority
+                  key={heroData.lastUpdated} // Force re-render when image updates
+                  onError={() => setHeroImageError(true)} // Fallback to logo on error
+                />
+              ) : (
+                // Fallback to original logo if hero image fails
+                <Image
+                  src={Logo}
+                  alt="Scholarship Banner"
+                  className="w-full h-full"
+                  fill
+                  style={{ objectFit: 'contain', objectPosition: 'center' }}
+                  priority
+                />
+              )}
+              
+              
+
+              {/* Last updated indicator */}
+              <div className="absolute bottom-2 right-2">
+                <span className="text-xs text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+                  Updated: {new Date(heroData.lastUpdated).toLocaleDateString()}
+                </span>
+              </div>
             </div>
           </div>
 
-          <nav className="bg-blue-600 text-white mb-4">
+          <nav className="bg-blue-600 text-white mb-4 rounded-lg">
             <ul className="flex">
               {['about', 'eligibility', 'faq', 'contact', 'track'].map((tab) => (
                 <li
                   key={tab}
-                  className={`flex-1 text-center py-2 cursor-pointer ${
-                    activeTab === tab ? 'bg-blue-700' : ''
-                  }`}
+                  className={`flex-1 text-center py-3 cursor-pointer transition-all duration-200 ${
+                    activeTab === tab ? 'bg-blue-700' : 'hover:bg-blue-500'
+                  } ${tab === 'about' ? 'rounded-l-lg' : ''} ${tab === 'track' ? 'rounded-r-lg' : ''}`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -357,27 +405,32 @@ const DarsanaScholarshipPage: React.FC = () => {
             </ul>
           </nav>
 
-          <div className="my-4">{renderContent()}</div>
+          <div className="my-4 bg-white rounded-lg shadow-sm p-4">
+            {renderContent()}
+          </div>
 
           {activeTab !== 'track' && (
-            <div className="text-center my-8">
+            <div className="text-center my-8 bg-white rounded-lg p-6 shadow-sm">
               {isButtonVisible ? (
                 <>
-                  <p className="mb-2">Click here to apply for the scholarship</p>
+                  <p className="mb-4 text-lg text-gray-700">Ready to start your educational journey?</p>
                   {showLoginMessage && (
-                    <p className="text-red-500 text-center">
-                      You need to sign in to apply
+                    <p className="text-red-500 text-center mb-4 bg-red-50 p-3 rounded-md">
+                      You need to sign in to apply for the scholarship
                     </p>
                   )}
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition duration-300 shadow-md"
                     onClick={handleApplyClick}
                   >
-                    APPLY NOW
+                    🎓 APPLY NOW
                   </button>
                 </>
               ) : (
-                <p className="text-red-500">Application is currently closed</p>
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <p className="text-red-600 font-semibold">⚠️ Application is currently closed</p>
+                  <p className="text-red-500 text-sm mt-1">Please check back later for the next application period</p>
+                </div>
               )}
             </div>
           )}
