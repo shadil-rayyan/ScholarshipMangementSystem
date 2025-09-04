@@ -6,9 +6,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '@/assets/codecompass.png';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth'; // Firebase Auth hook
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import ScholarshipStatusPage from '@/components/status';
+
+// Import your local data
+import { aboutData } from '@/data/about';
+import { faqData as faqDataImport } from '@/data/faq';
+import { eligibilityData } from '@/data/eligibility';
+import { contactData } from '@/data/contact';
 
 const DarsanaScholarshipPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('about');
@@ -26,16 +32,16 @@ const DarsanaScholarshipPage: React.FC = () => {
   useEffect(() => {
     const fetchApplyCondition = async () => {
       try {
-        const response = await fetch('/api/admin/applyButton'); // Your API endpoint
+        const response = await fetch('/api/admin/applyButton');
         const data = await response.json();
 
         if (data.case === true) {
-          setIsButtonVisible(true); // Show button if case is true
+          setIsButtonVisible(true);
         }
       } catch (error) {
         console.error('Error fetching apply condition:', error);
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false);
       }
     };
 
@@ -67,30 +73,6 @@ const DarsanaScholarshipPage: React.FC = () => {
     }
   };
 
-  const faqData = [
-  {
-    question: 'What is the CodeCompass Student Scholarship?',
-    answer:
-      'The CodeCompass Student Scholarship is a program launched by CodeCompass Pvt. Ltd. in 2015 to support economically disadvantaged students in STEM fields. It reflects the company’s vision of making quality education accessible to all.',
-  },
-  {
-    question: 'How much financial support does the Scholarship provide?',
-    answer:
-      'The scholarship offers financial assistance of up to ₹50,000 per academic year. The amount varies depending on academic performance, with higher-performing students receiving additional incentives.',
-  },
-  {
-    question: 'What additional programs and support are offered through the Scholarship?',
-    answer:
-      'In addition to financial aid, CodeCompass provides mentorship opportunities, internship placements, coding bootcamps, and career guidance sessions to help students succeed academically and professionally.',
-  },
-  {
-    question: 'How is the Scholarship funded and managed?',
-    answer:
-      'The scholarship is funded through CodeCompass’s annual corporate social responsibility (CSR) initiative, with contributions from employees and industry partners. The program is managed by the CodeCompass Education Foundation in collaboration with university authorities.',
-  },
-];
-
-
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
@@ -115,122 +97,208 @@ const DarsanaScholarshipPage: React.FC = () => {
       case 'about':
         return (
           <div className="prose max-w-none mx-auto p-6 rounded-lg leading-relaxed">
-            <p>
-              CodeCompass, a pioneering technology solutions and education company, 
-              launched the CodeCompass Student Scholarship in 2015 to empower economically disadvantaged
-               students and foster equal opportunities in higher education.
-            </p>
-            <p>
-              The Endowment offers financial support, mentoring, and academic
-              programs for students, benefitting 40 students annually.
-            </p>
+            {aboutData.description.split('\n').map((paragraph, index) => (
+              paragraph.trim() && (
+                <p key={index} className="mb-4">
+                  {paragraph.trim()}
+                </p>
+              )
+            ))}
           </div>
         );
+
       case 'eligibility':
         return (
-          <div className="space-y-4">
-            <h3 className="font-bold text-lg">Eligibility Criteria:</h3>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Be a resident of India.</li>
-              <li>Be a school or college student.</li>
-              <li>Fall within the age range of 5 to 25 years.</li>
-            </ul>
-            <h3 className="font-bold text-lg mt-6">Documents Required:</h3>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Student ID proof (ID Card) issued by College.</li>
-              <li>Bank passbook</li>
-              <li>Passport size Photo.</li>
-              <li>Aadhaar Card.</li>
-              <li>Income certificate</li>
-            </ul>
+          <div className="space-y-6">
+            {/* Eligibility Criteria */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 text-blue-800">📋 Eligibility Criteria:</h3>
+              {eligibilityData.criteria.length === 0 ? (
+                <p className="text-gray-600">No criteria specified yet.</p>
+              ) : (
+                <ul className="list-disc pl-5 space-y-2">
+                  {eligibilityData.criteria.map((criterion) => (
+                    <li key={criterion.id} className="text-gray-700">
+                      {criterion.text}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Required Documents */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 text-green-800">📄 Documents Required:</h3>
+              {eligibilityData.documents.length === 0 ? (
+                <p className="text-gray-600">No documents specified yet.</p>
+              ) : (
+                <ul className="list-disc pl-5 space-y-2">
+                  {eligibilityData.documents.map((document) => (
+                    <li key={document.id} className="text-gray-700">
+                      {document.text}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         );
+
       case 'faq':
         return (
           <div className="space-y-4">
             <div className="mb-4">
-              <p className="text-lg font-semibold">How to apply for Darsana Scholarship
+              <p className="text-lg font-semibold">
+                How to apply for Darsana Scholarship{' '}
                 <a
                   href="https://drive.google.com/uc?export=download&id=1ZoDwGBCxYyyyiCveL7q-DEkldZnJ5vIO"
                   download
-                  className="text-blue-600 hover:text-blue-800 font-bold"
+                  className="text-blue-600 hover:text-blue-800 font-bold ml-2"
                 >
                   Download PDF
                 </a>
               </p>
             </div>
-            {faqData.map((faq, index) => (
-              <div key={index} className="border rounded-md">
-                <button
-                  className="w-full text-left p-4 flex justify-between items-center focus:outline-none"
-                  onClick={() => toggleFAQ(index)}
-                >
-                  {faq.question}
-                  {openFAQ === index ? <ChevronUp /> : <ChevronDown />}
-                </button>
-                {openFAQ === index && (
-                  <div className="p-4 bg-gray-50">{faq.answer}</div>
-                )}
+
+            {faqDataImport.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No FAQs available yet.
               </div>
-            ))}
+            ) : (
+              faqDataImport.map((faq, index) => (
+                <div key={faq.id} className="border rounded-md shadow-sm">
+                  <button
+                    className="w-full text-left p-4 flex justify-between items-center focus:outline-none hover:bg-gray-50"
+                    onClick={() => toggleFAQ(index)}
+                  >
+                    <span className="font-medium">{faq.question}</span>
+                    {openFAQ === index ? <ChevronUp /> : <ChevronDown />}
+                  </button>
+                  {openFAQ === index && (
+                    <div className="p-4 bg-gray-50 border-t">
+                      <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         );
-        return (
-          <div className="space-y-4">
-            {faqData.map((faq, index) => (
-              <div key={index} className="border rounded-md">
-                <button
-                  className="w-full text-left p-4 flex justify-between items-center focus:outline-none"
-                  onClick={() => toggleFAQ(index)}
-                >
-                  {faq.question}
-                  {openFAQ === index ? <ChevronUp /> : <ChevronDown />}
-                </button>
-                {openFAQ === index && (
-                  <div className="p-4 bg-gray-50">{faq.answer}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        );
+
       case 'contact':
         return (
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-center">Contact Us</h2>
-            <div className="space-y-8">
-              <div className="flex justify-around items-center space-x-8">
-                <div className="flex items-center space-x-4">
-                  <Mail size={30} className="text-blue-500" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      Email
-                    </h3>
-                    <p className="text-gray-600">info@scholarship.in</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Phone size={30} className="text-blue-500" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">Phone</h3>
-                    <p className="text-gray-600">+91 999999999</p>
-                  </div>
-                </div>
+            
+            {contactData.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No contact information available yet.
               </div>
-              {/* <div className="p-6 rounded-lg">
-                <h3 className="text-xl font-semibold mb-3">
-                  Still have a question?
-                </h3>
-                <p className="mb-4 text-gray-600">
-                  Visit our contact us page or click the button below to get in
-                  touch with us.
-                </p>
-                <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300" onClick={() => router.push(`https://darsana.in/contact_us`)}>
-                  Contact Us
-                </button>
-              </div> */}
-            </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Email contacts */}
+                {contactData.filter(contact => contact.type === 'email').length > 0 && (
+                  <div className="bg-blue-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-semibold text-blue-900 mb-4 flex items-center">
+                      <Mail size={24} className="mr-2" />
+                      Email Addresses
+                    </h3>
+                    <div className="space-y-2">
+                      {contactData
+                        .filter(contact => contact.type === 'email')
+                        .map((contact) => (
+                          <div key={contact.id}>
+                            {contact.label && (
+                              <p className="text-sm text-blue-700 font-medium">{contact.label}:</p>
+                            )}
+                            <a 
+                              href={`mailto:${contact.value}`}
+                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                              {contact.value}
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Phone contacts */}
+                {contactData.filter(contact => contact.type === 'phone').length > 0 && (
+                  <div className="bg-green-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-semibold text-green-900 mb-4 flex items-center">
+                      <Phone size={24} className="mr-2" />
+                      Phone Numbers
+                    </h3>
+                    <div className="space-y-2">
+                      {contactData
+                        .filter(contact => contact.type === 'phone')
+                        .map((contact) => (
+                          <div key={contact.id}>
+                            {contact.label && (
+                              <p className="text-sm text-green-700 font-medium">{contact.label}:</p>
+                            )}
+                            <a 
+                              href={`tel:${contact.value}`}
+                              className="text-green-600 hover:text-green-800 hover:underline"
+                            >
+                              {contact.value}
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Address contacts */}
+                {contactData.filter(contact => contact.type === 'address').length > 0 && (
+                  <div className="bg-purple-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-semibold text-purple-900 mb-4">📍 Addresses</h3>
+                    <div className="space-y-2">
+                      {contactData
+                        .filter(contact => contact.type === 'address')
+                        .map((contact) => (
+                          <div key={contact.id}>
+                            {contact.label && (
+                              <p className="text-sm text-purple-700 font-medium">{contact.label}:</p>
+                            )}
+                            <p className="text-purple-800">{contact.value}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Social media contacts */}
+                {contactData.filter(contact => contact.type === 'social').length > 0 && (
+                  <div className="bg-indigo-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-semibold text-indigo-900 mb-4">🌐 Social Media</h3>
+                    <div className="space-y-2">
+                      {contactData
+                        .filter(contact => contact.type === 'social')
+                        .map((contact) => (
+                          <div key={contact.id}>
+                            {contact.label && (
+                              <p className="text-sm text-indigo-700 font-medium">{contact.label}:</p>
+                            )}
+                            <a 
+                              href={contact.value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-600 hover:text-indigo-800 hover:underline"
+                            >
+                              {contact.value}
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
+
       case 'track':
         return (
           <div className="max-w-7xl mx-auto p-4">
@@ -251,6 +319,7 @@ const DarsanaScholarshipPage: React.FC = () => {
             )}
           </div>
         );
+
       default:
         return null;
     }
@@ -277,8 +346,9 @@ const DarsanaScholarshipPage: React.FC = () => {
               {['about', 'eligibility', 'faq', 'contact', 'track'].map((tab) => (
                 <li
                   key={tab}
-                  className={`flex-1 text-center py-2 cursor-pointer ${activeTab === tab ? 'bg-blue-700' : ''
-                    }`}
+                  className={`flex-1 text-center py-2 cursor-pointer ${
+                    activeTab === tab ? 'bg-blue-700' : ''
+                  }`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -312,7 +382,6 @@ const DarsanaScholarshipPage: React.FC = () => {
             </div>
           )}
         </div>
-
       </main>
     </div>
   );
