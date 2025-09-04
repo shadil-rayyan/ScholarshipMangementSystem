@@ -1,134 +1,144 @@
+// src/app/(admin)/hero-image/page.tsx
 'use client';
 
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { storage, firestore } from '@/lib/firebase/config'; // Your Firebase config
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const HeroImagePage = () => {
-    const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
-    const [newImageFile, setNewImageFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    
-    const [isLoading, setIsLoading] = useState(true);
+    const [heroData, setHeroData] = useState<any>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [message, setMessage] = useState('');
 
-    const heroDocRef = doc(firestore, 'siteContent', 'hero');
-
-    // Fetch the current hero image URL on page load
+    // Load hero data
     useEffect(() => {
-        const fetchCurrentImage = async () => {
+        const loadHeroData = async () => {
             try {
-                const docSnap = await getDoc(heroDocRef);
-                if (docSnap.exists() && docSnap.data().imageUrl) {
-                    setCurrentImageUrl(docSnap.data().imageUrl);
-                }
-            } catch (err) {
-                setError('Failed to load current hero image.');
-            } finally {
-                setIsLoading(false);
+                const { heroImageData } = await import('@/data/hero');
+                setHeroData(heroImageData);
+            } catch (error) {
+                console.error('Error loading hero data:', error);
             }
         };
-        fetchCurrentImage();
+        loadHeroData();
     }, []);
 
-    // Handle file selection and create a preview
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setNewImageFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
-            setSuccessMessage(null);
-            setError(null);
+    // Reload hero data after upload
+    const reloadHeroData = async () => {
+        try {
+            // Force reload the module
+            delete require.cache[require.resolve('@/data/hero')];
+            const { heroImageData } = await import('@/data/hero');
+            setHeroData(heroImageData);
+        } catch (error) {
+            console.error('Error reloading hero data:', error);
         }
     };
 
-    // Handle the upload process
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            setMessage('');
+        }
+    };
+
     const handleUpload = async () => {
-        if (!newImageFile) {
-            setError('Please select an image file first.');
+        if (!selectedFile) {
+            setMessage('Please select a file first');
             return;
         }
 
         setIsUploading(true);
-        setError(null);
-        setSuccessMessage(null);
-
-        // Use a consistent name for the hero image to overwrite it
-        const storageRef = ref(storage, 'hero/hero-image.jpg');
+        const formData = new FormData();
+        formData.append('file', selectedFile);
 
         try {
-            // 1. Upload the file to Firebase Storage
-            const snapshot = await uploadBytes(storageRef, newImageFile);
-            
-            // 2. Get the public URL of the uploaded file
-            const downloadURL = await getDownloadURL(snapshot.ref);
+            const response = await fetch('/api/admin/save-hero', {
+                method: 'POST',
+                body: formData,
+            });
 
-            // 3. Save the new URL to Firestore
-            await setDoc(heroDocRef, { imageUrl: downloadURL });
+            const result = await response.json();
             
-            // 4. Update the UI
-            setCurrentImageUrl(downloadURL);
-            setSuccessMessage('Hero image updated successfully!');
-            setNewImageFile(null);
-            setPreviewUrl(null);
-
-        } catch (err) {
-            console.error("Upload failed:", err);
-            setError('Failed to upload image. Please check the console for details.');
+            if (result.success) {
+                setMessage('✅ Hero image updated successfully!');
+                setSelectedFile(null);
+                
+                // Clear file input
+                const fileInput = document.getElementById('heroFile') as HTMLInputElement;
+                if (fileInput) fileInput.value = '';
+                
+                // Reload hero data to get new timestamp
+                await reloadHeroData();
+                
+            } else {
+                setMessage('❌ ' + result.message);
+            }
+        } catch (error) {
+            setMessage('❌ Failed to upload image');
         } finally {
             setIsUploading(false);
         }
     };
 
-    return (
-        <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage Hero Image</h1>
+    if (!heroData) return <div>Loading...</div>;
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Current Image Display */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Current Hero Image</h2>
-                    {isLoading ? (
-                        <p>Loading...</p>
-                    ) : currentImageUrl ? (
-                        <Image src={currentImageUrl} alt="Current Hero" width={500} height={300} className="rounded-md object-cover" />
-                    ) : (
-                        <p className="text-gray-500">No hero image is currently set.</p>
-                    )}
+    // Create cache-busting URL
+    const imageUrl = `${heroData.imagePath}?t=${new Date(heroData.lastUpdated).getTime()}`;
+
+    return (
+        <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
+            <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Hero Image</h1>
+            
+            <div className="space-y-6">
+                {/* Current Image with Cache Busting */}
+                <div className="p-4 bg-gray-50 rounded-lg">
+                    <h3 className="font-semibold mb-3">Current Hero Image:</h3>
+                    <div className="w-full h-64 relative rounded-md overflow-hidden">
+                        <Image 
+                            src={imageUrl}
+                            alt="Hero" 
+                            fill 
+                            className="object-cover"
+                            key={heroData.lastUpdated} // Force re-render when timestamp changes
+                        />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                        Last updated: {new Date(heroData.lastUpdated).toLocaleString()}
+                    </p>
                 </div>
 
                 {/* Upload New Image */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Upload New Image</h2>
-                    
-                    <input 
-                        type="file" 
-                        accept="image/jpeg, image/png, image/webp"
-                        onChange={handleFileChange}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                    />
+                <div className="p-4 bg-gray-50 rounded-lg">
+                    <h3 className="font-semibold mb-3">Upload New Hero Image:</h3>
+                    <div className="space-y-4">
+                        <input
+                            id="heroFile"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-purple-50 file:text-purple-700"
+                        />
+                        
+                        <button
+                            onClick={handleUpload}
+                            disabled={isUploading || !selectedFile}
+                            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-300"
+                        >
+                            {isUploading ? 'Uploading...' : 'Save Hero Image'}
+                        </button>
 
-                    {previewUrl && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-medium text-gray-600 mb-2">New Image Preview:</h3>
-                            <Image src={previewUrl} alt="New hero preview" width={500} height={300} className="rounded-md object-cover" />
-                        </div>
-                    )}
-                    
-                    <button 
-                        onClick={handleUpload} 
-                        disabled={isUploading || !newImageFile}
-                        className="mt-6 w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed transition"
-                    >
-                        {isUploading ? 'Uploading...' : 'Upload and Set as Hero'}
-                    </button>
-                    
-                    {error && <p className="mt-4 text-red-600">{error}</p>}
-                    {successMessage && <p className="mt-4 text-green-600">{successMessage}</p>}
+                        {message && (
+                            <p className={`text-sm ${message.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
+                                {message}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="p-3 bg-blue-50 rounded text-sm text-blue-800">
+                    💡 Image will be saved to: <code>public/data/hero/hero-image.jpg</code>
                 </div>
             </div>
         </div>
