@@ -36,7 +36,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         pathname === '/eligibility' ||
         pathname === '/contactus' ||
         pathname === '/adminsetting' ||
-        pathname === '/apply-settings';
+        pathname === '/apply-settings' ||
+        pathname === '/hero-image';
 
     const isAdminManagementActive =
         pathname === '/addadmin' ||
@@ -108,6 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                                         <Link href="/contactus" className={`${subLinkBase} ${pathname === '/contactus' ? subLinkActive : subLinkInactive}`}>› Contact</Link>
                                         <Link href="/adminsetting" className={`${subLinkBase} ${pathname === '/adminsetting' ? subLinkActive : subLinkInactive}`}>› Dropdown Items</Link>
                                         <Link href="/apply-settings" className={`${subLinkBase} ${pathname === '/apply-settings' ? subLinkActive : subLinkInactive}`}>› Apply Button</Link>
+                                        <Link href="/hero-image" className={`${subLinkBase} ${pathname === '/hero-image' ? subLinkActive : subLinkInactive}`}>› Hero Image</Link>
                                     </div>
                                 )}
                             </div>
