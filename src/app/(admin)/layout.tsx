@@ -7,12 +7,15 @@ import Sidebar from "@/components/admin/SideBar";
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '@/lib/firebase/config'
 import TopBar from '@/components/admin/TopBar';
+
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  // const [loading, setLoading] = useState(true); // State to track loading
+  // State to control sidebar visibility on mobile screens
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
   const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication
   const router = useRouter();
 
@@ -51,27 +54,24 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   //   return <div>Loading...</div>;
   // }
 
-  // Only render the layout if authenticated as admin
   return (
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      {/* Sidebar now receives props to control its state */}
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-    <div className="flex flex-col h-screen">
-      <div className="flex">
-        <Sidebar />
-        
-        <div className="flex flex-1">
-        
-          <main className="flex-1 overflow-auto">
-          <TopBar />
-          <div className="flex-1 p-4 overflow-auto">
-          {children}
-        </div>
-            
-          </main>
-        </div>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        {/* TopBar receives a function to open the sidebar */}
+        <TopBar setIsOpen={setIsSidebarOpen} />
+
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+          <div className="container mx-auto px-6 py-8">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
 };
-
 
 export default AdminLayout;

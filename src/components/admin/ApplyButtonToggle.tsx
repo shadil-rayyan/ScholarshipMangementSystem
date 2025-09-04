@@ -53,14 +53,14 @@ const ApplyButtonToggle = () => {
 
     return (
         <div className="flex items-center">
-            <span className="mr-2">Toggle Apply Button</span>
+            <span className="mr-4 text-lg font-medium text-gray-700">Toggle Apply Button</span>
             <button
-                className={`w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${isToggled ? 'bg-green-400' : 'bg-gray-400'}`}
+                className={`w-16 h-8 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${isToggled ? 'bg-green-400' : 'bg-gray-400'}`}
                 onClick={handleToggle}
                 disabled={loading}
             >
                 <div
-                    className={`h-4 w-4 bg-white rounded-full shadow-md transform ${isToggled ? 'translate-x-6' : 'translate-x-0'}`}
+                    className={`h-6 w-6 bg-white rounded-full shadow-md transform ${isToggled ? 'translate-x-8' : 'translate-x-0'}`}
                 ></div>
             </button>
             {loading && <p className="ml-2 text-blue-500">Updating...</p>}
