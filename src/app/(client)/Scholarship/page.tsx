@@ -216,7 +216,7 @@ const DarsanaScholarshipPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-6 rounded-lg">
+              {/* <div className="p-6 rounded-lg">
                 <h3 className="text-xl font-semibold mb-3">
                   Still have a question?
                 </h3>
@@ -227,7 +227,7 @@ const DarsanaScholarshipPage: React.FC = () => {
                 <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300" onClick={() => router.push(`https://darsana.in/contact_us`)}>
                   Contact Us
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         );
