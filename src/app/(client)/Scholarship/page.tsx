@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Mail, Phone } from 'lucide-react';
+import { ChevronDown, ChevronUp, Mail, Phone,MapPin, CircleFadingPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -210,118 +210,107 @@ const DarsanaScholarshipPage: React.FC = () => {
         );
 
       case 'contact':
-        return (
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-8 text-center">Contact Us</h2>
+    // --- Refactored Contact Page UI ---
+
+    // Pre-sort the data to ensure perfect order and efficiency
+    const emails = contactData.filter(contact => contact.type === 'email');
+    const phones = contactData.filter(contact => contact.type === 'phone');
+    const addresses = contactData.filter(contact => contact.type === 'address');
+    const socials = contactData.filter(contact => contact.type === 'social');
+
+    return (
+        <div className="max-w-4xl mx-auto p-4 md:p-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">Contact Us</h2>
             
             {contactData.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No contact information available yet.
-              </div>
+                <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
+                    No contact information is available yet.
+                </div>
             ) : (
-              <div className="space-y-6">
-                {/* Email contacts */}
-                {contactData.filter(contact => contact.type === 'email').length > 0 && (
-                  <div className="bg-blue-50 p-6 rounded-lg">
-                    <h3 className="text-xl font-semibold text-blue-900 mb-4 flex items-center">
-                      <Mail size={24} className="mr-2" />
-                      Email Addresses
-                    </h3>
-                    <div className="space-y-2">
-                      {contactData
-                        .filter(contact => contact.type === 'email')
-                        .map((contact) => (
-                          <div key={contact.id}>
-                            {contact.label && (
-                              <p className="text-sm text-blue-700 font-medium">{contact.label}:</p>
-                            )}
-                            <a 
-                              href={`mailto:${contact.value}`}
-                              className="text-blue-600 hover:text-blue-800 hover:underline"
-                            >
-                              {contact.value}
-                            </a>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                // A responsive grid for the contact cards
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                {/* Phone contacts */}
-                {contactData.filter(contact => contact.type === 'phone').length > 0 && (
-                  <div className="bg-green-50 p-6 rounded-lg">
-                    <h3 className="text-xl font-semibold text-green-900 mb-4 flex items-center">
-                      <Phone size={24} className="mr-2" />
-                      Phone Numbers
-                    </h3>
-                    <div className="space-y-2">
-                      {contactData
-                        .filter(contact => contact.type === 'phone')
-                        .map((contact) => (
-                          <div key={contact.id}>
-                            {contact.label && (
-                              <p className="text-sm text-green-700 font-medium">{contact.label}:</p>
-                            )}
-                            <a 
-                              href={`tel:${contact.value}`}
-                              className="text-green-600 hover:text-green-800 hover:underline"
-                            >
-                              {contact.value}
-                            </a>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                    {/* Email Card */}
+                    {emails.length > 0 && (
+                        <div className="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <Mail size={22} className="mr-3 text-purple-600" />
+                                Email
+                            </h3>
+                            <div className="space-y-3">
+                                {emails.map(contact => (
+                                    <div key={contact.id}>
+                                        {contact.label && <p className="text-sm text-gray-500 font-medium">{contact.label}:</p>}
+                                        <a href={`mailto:${contact.value}`} className="text-purple-600 hover:text-purple-800 hover:underline break-words">
+                                            {contact.value}
+                                        </a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                {/* Address contacts */}
-                {contactData.filter(contact => contact.type === 'address').length > 0 && (
-                  <div className="bg-purple-50 p-6 rounded-lg">
-                    <h3 className="text-xl font-semibold text-purple-900 mb-4">📍 Addresses</h3>
-                    <div className="space-y-2">
-                      {contactData
-                        .filter(contact => contact.type === 'address')
-                        .map((contact) => (
-                          <div key={contact.id}>
-                            {contact.label && (
-                              <p className="text-sm text-purple-700 font-medium">{contact.label}:</p>
-                            )}
-                            <p className="text-purple-800">{contact.value}</p>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                    {/* Phone Card */}
+                    {phones.length > 0 && (
+                        <div className="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <Phone size={22} className="mr-3 text-purple-600" />
+                                Phone
+                            </h3>
+                            <div className="space-y-3">
+                                {phones.map(contact => (
+                                    <div key={contact.id}>
+                                        {contact.label && <p className="text-sm text-gray-500 font-medium">{contact.label}:</p>}
+                                        <a href={`tel:${contact.value}`} className="text-purple-600 hover:text-purple-800 hover:underline">
+                                            {contact.value}
+                                        </a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                {/* Social media contacts */}
-                {contactData.filter(contact => contact.type === 'social').length > 0 && (
-                  <div className="bg-indigo-50 p-6 rounded-lg">
-                    <h3 className="text-xl font-semibold text-indigo-900 mb-4">🌐 Social Media</h3>
-                    <div className="space-y-2">
-                      {contactData
-                        .filter(contact => contact.type === 'social')
-                        .map((contact) => (
-                          <div key={contact.id}>
-                            {contact.label && (
-                              <p className="text-sm text-indigo-700 font-medium">{contact.label}:</p>
-                            )}
-                            <a 
-                              href={contact.value}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-indigo-600 hover:text-indigo-800 hover:underline"
-                            >
-                              {contact.value}
-                            </a>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                    {/* Address Card */}
+                    {addresses.length > 0 && (
+                        <div className="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <MapPin size={22} className="mr-3 text-purple-600" />
+                                Address
+                            </h3>
+                            <div className="space-y-3">
+                                {addresses.map(contact => (
+                                    <div key={contact.id}>
+                                        {contact.label && <p className="text-sm text-gray-500 font-medium">{contact.label}:</p>}
+                                        <p className="text-gray-700 whitespace-pre-line">{contact.value}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Social Media Card */}
+                    {socials.length > 0 && (
+                        <div className="bg-white p-6 rounded-lg shadow-sm border">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <CircleFadingPlus size={22} className="mr-3 text-purple-600" />
+                                Social Media
+                            </h3>
+                            <div className="space-y-3">
+                                {socials.map(contact => (
+                                    <div key={contact.id}>
+                                        {contact.label && <p className="text-sm text-gray-500 font-medium">{contact.label}:</p>}
+                                        <a href={contact.value} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 hover:underline break-words">
+                                            {contact.value}
+                                        </a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
-          </div>
-        );
+        </div>
+    );
 
       case 'track':
         return (

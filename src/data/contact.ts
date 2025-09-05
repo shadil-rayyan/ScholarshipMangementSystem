@@ -1,4 +1,4 @@
-// Contact data - Updated 9/5/2025, 8:35:29 AM
+// Contact data - Updated 9/5/2025, 10:07:55 AM
 export interface ContactDetail {
   id: string;
   type: 'email' | 'phone' | 'address' | 'social';
@@ -7,12 +7,6 @@ export interface ContactDetail {
 }
 
 export const contactData: ContactDetail[] = [
-  {
-    "id": "1",
-    "type": "email",
-    "value": "infooo@company.com",
-    "label": "General Inquiries"
-  },
   {
     "id": "2",
     "type": "phone",
@@ -30,13 +24,25 @@ export const contactData: ContactDetail[] = [
     "type": "email",
     "value": "123@gmail.com",
     "label": "office"
+  },
+  {
+    "id": "1757046751996",
+    "type": "address",
+    "value": "GEC PKD",
+    "label": "OFFICE"
+  },
+  {
+    "id": "1757046765740",
+    "type": "social",
+    "value": "www.instagram.com",
+    "label": "INSTAGRAM"
   }
 ];
 
 export const contactMetadata = {
-  lastUpdated: '2025-09-05T03:05:29.502Z',
-  totalContacts: 4,
-  emails: 3,
+  lastUpdated: '2025-09-05T04:37:55.018Z',
+  totalContacts: 5,
+  emails: 2,
   phones: 1
 };
 
