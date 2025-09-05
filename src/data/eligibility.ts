@@ -1,4 +1,4 @@
-// Eligibility data - Updated 9/4/2025, 6:04:26 PM
+// Eligibility data - Updated 9/5/2025, 7:40:05 AM
 export interface ListItem {
   id: string;
   text: string;
@@ -36,7 +36,7 @@ export const eligibilityData = {
 };
 
 export const eligibilityMetadata = {
-  lastUpdated: '2025-09-04T12:34:26.527Z',
+  lastUpdated: '2025-09-05T02:10:05.781Z',
   totalCriteria: 3,
   totalDocuments: 3
 };

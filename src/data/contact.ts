@@ -1,4 +1,4 @@
-// Contact data - Updated 9/4/2025, 6:08:41 PM
+// Contact data - Updated 9/5/2025, 8:35:29 AM
 export interface ContactDetail {
   id: string;
   type: 'email' | 'phone' | 'address' | 'social';
@@ -10,7 +10,7 @@ export const contactData: ContactDetail[] = [
   {
     "id": "1",
     "type": "email",
-    "value": "info@company.com",
+    "value": "infooo@company.com",
     "label": "General Inquiries"
   },
   {
@@ -24,13 +24,19 @@ export const contactData: ContactDetail[] = [
     "type": "email",
     "value": "support@company.com",
     "label": "Support"
+  },
+  {
+    "id": "1757041396908",
+    "type": "email",
+    "value": "123@gmail.com",
+    "label": "office"
   }
 ];
 
 export const contactMetadata = {
-  lastUpdated: '2025-09-04T12:38:41.491Z',
-  totalContacts: 3,
-  emails: 2,
+  lastUpdated: '2025-09-05T03:05:29.502Z',
+  totalContacts: 4,
+  emails: 3,
   phones: 1
 };
 

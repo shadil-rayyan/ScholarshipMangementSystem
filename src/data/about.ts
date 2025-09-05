@@ -1,7 +1,7 @@
-// About page content - Updated 9/4/2025, 5:47:23 PM
+// About page content - Updated 9/5/2025, 9:51:01 AM
 export const aboutData = {
-  description: `chumma`,
-  lastUpdated: '2025-09-04T12:17:23.079Z'
+  description: `Hi hello how are you`,
+  lastUpdated: '2025-09-05T04:21:01.016Z'
 };
 
 export default aboutData;

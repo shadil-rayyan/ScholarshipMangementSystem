@@ -1,4 +1,3 @@
-// src/app/(admin)/contact/page.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -12,21 +11,28 @@ interface ContactDetail {
 
 const ContactPage = () => {
     const [details, setDetails] = useState<ContactDetail[]>([]);
+    const [originalDetails, setOriginalDetails] = useState<ContactDetail[]>([]); // For cancellation
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    
+    // State to track which item is being edited
+    const [editingId, setEditingId] = useState<string | null>(null);
+
+    // State for the "Add New" form
     const [newType, setNewType] = useState<'email' | 'phone' | 'address' | 'social'>('email');
     const [newValue, setNewValue] = useState('');
     const [newLabel, setNewLabel] = useState('');
-    const [editingId, setEditingId] = useState<string | null>(null);
 
-    // Load existing data from the TypeScript file
     useEffect(() => {
         const loadExistingData = async () => {
             try {
+                // In a real app, this would be a fetch call to your API/database
                 const { contactData } = await import('@/data/contact');
                 setDetails(contactData || []);
+                setOriginalDetails(contactData || []); // Keep a backup for the cancel feature
             } catch (error) {
-                console.error("Could not load existing contact data:", error);
+                console.error("Could not load contact data:", error);
                 setDetails([]);
             } finally {
                 setLoading(false);
@@ -35,66 +41,66 @@ const ContactPage = () => {
         loadExistingData();
     }, []);
 
-    const handleSave = async (updatedDetails: ContactDetail[]) => {
+    const handleSaveAll = async () => {
         setIsSaving(true);
         try {
             const response = await fetch('/api/admin/save-contact', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ details: updatedDetails }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ details }),
             });
-
             const result = await response.json();
-            
             if (result.success) {
-                setDetails(updatedDetails);
-                alert('✅ Contact data saved successfully!');
+                setOriginalDetails(details); // Update the backup with the new saved state
+                setHasUnsavedChanges(false);
+                alert('Contact data saved successfully!');
             } else {
-                alert('❌ ' + result.message);
+                alert('Error: ' + result.message);
             }
         } catch (error) {
-            console.error('Error saving contact details:', error);
-            alert('❌ Failed to save contact data. Please try again.');
+            alert('Failed to save contact data.');
         } finally {
             setIsSaving(false);
         }
     };
-
+    
     const handleAdd = () => {
         if (!newValue.trim()) {
-            alert('Please enter a contact value');
+            alert('Please enter a contact value.');
             return;
         }
-        
         const newDetail: ContactDetail = { 
             id: Date.now().toString(), 
             type: newType, 
             value: newValue.trim(),
             label: newLabel.trim() || undefined
         };
-        
-        handleSave([...details, newDetail]);
+        setDetails([...details, newDetail]);
+        setHasUnsavedChanges(true);
         setNewValue('');
         setNewLabel('');
     };
 
     const handleDelete = (id: string) => {
         if (window.confirm('Are you sure you want to delete this contact?')) {
-            handleSave(details.filter(d => d.id !== id));
+            setDetails(details.filter(d => d.id !== id));
+            setHasUnsavedChanges(true);
         }
     };
-
+    
     const handleUpdate = (id: string, field: keyof ContactDetail, value: string) => {
-        const updatedDetails = details.map(d => 
-            d.id === id ? { ...d, [field]: value } : d
-        );
-        setDetails(updatedDetails); // Optimistic update
+        setDetails(details.map(d => d.id === id ? { ...d, [field]: value } : d));
+        setHasUnsavedChanges(true);
     };
 
-    const handleBlurSave = () => {
-        handleSave(details);
+    const handleCancelEdit = (id: string) => {
+        const originalItem = originalDetails.find(d => d.id === id);
+        if (originalItem) {
+            setDetails(details.map(d => d.id === id ? originalItem : d));
+        } else {
+             setDetails(details.filter(d => d.id !== id));
+        }
+        setEditingId(null);
     };
 
     const getPlaceholder = (type: string) => {
@@ -117,130 +123,103 @@ const ContactPage = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-            </div>
-        );
+        return <div className="text-center p-12">Loading...</div>;
     }
 
-    const emailCount = details.filter(d => d.type === 'email').length;
-    const phoneCount = details.filter(d => d.type === 'phone').length;
-    const addressCount = details.filter(d => d.type === 'address').length;
-    const socialCount = details.filter(d => d.type === 'social').length;
-
     return (
-        <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Contact Information</h1>
-
-            {/* Stats */}
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-blue-800">
-                    📊 Total: <strong>{details.length}</strong> | 
-                    📧 Emails: <strong>{emailCount}</strong> | 
-                    📞 Phones: <strong>{phoneCount}</strong> | 
-                    📍 Addresses: <strong>{addressCount}</strong> | 
-                    🌐 Social: <strong>{socialCount}</strong>
-                </p>
-                <p className="text-blue-700 mt-1">
-                    📁 Saved to: <code className="bg-blue-100 px-1 rounded">src/data/contact.ts</code>
-                </p>
+        <div className="container mx-auto p-4 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+                <h1 className="text-3xl font-bold text-gray-800">Manage Contact Information</h1>
+                <button 
+                    onClick={handleSaveAll}
+                    disabled={isSaving || !hasUnsavedChanges || editingId !== null}
+                    className="px-6 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+                >
+                    {isSaving ? 'Saving...' : 'Save All Changes'}
+                    {hasUnsavedChanges && !isSaving && <span className="ml-2 w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>}
+                </button>
             </div>
 
-            {/* Add New Contact Form */}
-            <div className="p-6 mb-6 bg-gray-50 rounded-lg shadow border border-gray-200">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">➕ Add New Contact</h2>
-                <div className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <select 
-                            value={newType} 
-                            onChange={e => setNewType(e.target.value as any)} 
-                            className="p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                        >
-                            <option value="email">📧 Email</option>
-                            <option value="phone">📞 Phone</option>
-                            <option value="address">📍 Address</option>
-                            <option value="social">🌐 Social Media</option>
-                        </select>
-                        <input
-                            type="text"
-                            value={newLabel}
-                            onChange={e => setNewLabel(e.target.value)}
-                            placeholder="Label (optional)"
-                            className="p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                        />
-                        <button 
-                            onClick={handleAdd} 
-                            disabled={isSaving}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-purple-300"
-                        >
-                            {isSaving ? '💾 Adding...' : '➕ Add'}
-                        </button>
-                    </div>
+            <div className="p-6 mb-8 bg-white rounded-lg shadow-md border">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Add New Contact</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <select 
+                        value={newType} 
+                        onChange={e => setNewType(e.target.value as any)} 
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="address">Address</option>
+                        <option value="social">Social Media</option>
+                    </select>
                     <input
+                        type="text"
+                        value={newLabel}
+                        onChange={e => setNewLabel(e.target.value)}
+                        placeholder="Label (e.g., 'Main Office')"
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500"
+                    />
+                </div>
+                <div className="mt-4">
+                     <input
                         type={getInputType(newType)}
                         value={newValue}
                         onChange={e => setNewValue(e.target.value)}
                         placeholder={getPlaceholder(newType)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                        onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500"
                     />
+                </div>
+                <div className="mt-4 text-right">
+                    <button onClick={handleAdd} className="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-black font-semibold">
+                        Add to List
+                    </button>
                 </div>
             </div>
 
-            {/* Existing Contacts List */}
-            <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800">📋 Contact Details</h2>
-                
-                {details.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                        📞 No contact information added yet. Add your first contact above!
-                    </div>
-                ) : (
-                    details.map((detail, index) => (
-                        <div key={detail.id} className="p-4 bg-white rounded-lg shadow border border-gray-200">
-                            <div className="flex items-center gap-4">
-                                {/* Type indicator */}
-                                <div className="flex-shrink-0">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 capitalize">
-                                        {detail.type === 'email' && '📧'}
-                                        {detail.type === 'phone' && '📞'}
-                                        {detail.type === 'address' && '📍'}
-                                        {detail.type === 'social' && '🌐'}
-                                        {' '}{detail.type}
-                                    </span>
+            <div className="space-y-3">
+                {details.map((detail) => (
+                    <div key={detail.id} className="p-4 bg-white rounded-lg shadow-md border">
+                        {editingId === detail.id ? (
+                            // --- EDIT VIEW ---
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-4">
+                                     <span className="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 capitalize">{detail.type}</span>
+                                     <input
+                                        type="text"
+                                        value={detail.label || ''}
+                                        onChange={(e) => handleUpdate(detail.id, 'label', e.target.value)}
+                                        placeholder="Label"
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                    />
                                 </div>
-
-                                {/* Label input */}
                                 <input
                                     type="text"
-                                    value={detail.label || ''}
-                                    onChange={(e) => handleUpdate(detail.id, 'label', e.target.value)}
-                                    onBlur={handleBlurSave}
-                                    placeholder="Label (optional)"
-                                    className="w-32 p-2 text-sm border border-gray-200 rounded focus:ring-purple-500 focus:border-purple-500"
-                                />
-
-                                {/* Value input */}
-                                <input
-                                    type={getInputType(detail.type)}
                                     value={detail.value}
                                     onChange={(e) => handleUpdate(detail.id, 'value', e.target.value)}
-                                    onBlur={handleBlurSave}
-                                    className="flex-grow p-2 border border-gray-200 rounded focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full p-2 border border-gray-300 rounded-md"
                                 />
-
-                                {/* Actions */}
-                                <button 
-                                    onClick={() => handleDelete(detail.id)}
-                                    className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                                >
-                                    🗑️ Delete
-                                </button>
+                                <div className="flex justify-end gap-3 mt-2">
+                                    <button onClick={() => handleCancelEdit(detail.id)} className="px-4 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-semibold">Cancel</button>
+                                    <button onClick={() => setEditingId(null)} className="px-4 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm font-semibold">Save</button>
+                                </div>
                             </div>
-                        </div>
-                    ))
-                )}
+                        ) : (
+                            // --- DISPLAY VIEW ---
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                                <span className="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 capitalize">{detail.type}</span>
+                                <div className="flex-grow min-w-0">
+                                    {detail.label && <p className="font-bold text-gray-800">{detail.label}</p>}
+                                    <p className="text-gray-600 truncate">{detail.value}</p>
+                                </div>
+                                <div className="flex-shrink-0 flex items-center gap-3 w-full md:w-auto">
+                                    <button onClick={() => setEditingId(detail.id)} className="w-1/2 md:w-auto px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 font-semibold text-sm">Edit</button>
+                                    <button onClick={() => handleDelete(detail.id)} className="w-1/2 md:w-auto px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 font-semibold text-sm">Remove</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );
