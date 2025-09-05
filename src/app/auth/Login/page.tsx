@@ -34,7 +34,7 @@ const handleLoginWithGoogle = async () => {
   return (
     <>
       <Head>
-        <title>Login to Darsana | Enjoy Your Scrolling Experience</title>
+        <title>Login to  Scholarship Management System | Enjoy Your Scrolling Experience</title>
         <meta name="description" content="Log in to Darsana and enjoy a unique scrolling experience." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="keywords" content="Darsana, login, social media" />
@@ -48,7 +48,7 @@ const handleLoginWithGoogle = async () => {
       <div className="w-full min-h-screen bg-white p-4 sm:p-8 lg:p-16 font-sans flex items-center justify-center">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center lg:justify-between">
           <div className="w-full lg:w-1/2 mb-8 lg:mb-0 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl font-semibold mb-4 text-gray-900">Welcome to Darsana</h1>
+            <h1 className="text-4xl sm:text-5xl font-semibold mb-4 text-gray-900">Welcome to Scholarship Management System</h1>
             <p className="text-xl sm:text-2xl text-gray-600 mb-8">We hope you will enjoy your scrolling with us</p>
             {error && <p className="text-red-500">{error}</p>}
             <div className="space-y-4 max-w-md mx-auto lg:mx-0">

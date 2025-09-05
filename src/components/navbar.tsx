@@ -2,149 +2,145 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 import Logo from "@/assets/codecompass.png";
-import { useUserSession } from "@/hook/use_user_session";
-import { signInWithGoogle, signOutWithGoogle } from "@/lib/firebase/auth";
+import { signOutWithGoogle } from "@/lib/firebase/auth";
+import { auth, firestore } from '@/lib/firebase/config';
 import { removeSession } from "@/server-action/auth_action";
-import { useRouter } from "next/navigation";
-
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-  isActive?: boolean;
-  onClick: () => void;
-}
-
-const NavLink = ({
-  href,
-  children,
-  className,
-  isActive,
-  onClick,
-}: NavLinkProps) => (
-  <Link
-    href={href}
-    className={`navbar__link ${className} ${isActive ? "text-blue-700 dark:text-blue-500" : "text-gray-900 dark:text-white"
-      }`}
-    onClick={onClick}
-  >
-    {children}
-  </Link>
-);
-
-interface DropdownProps {
-  items: string[];
-  handleLinkClick: (href: string) => void;
-}
-
-const Dropdown = ({ items, handleLinkClick }: DropdownProps) => (
-  <ul className="absolute left-0 mt-2 z-50 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-700 dark:divide-gray-600">
-    {items.map((item, index) => (
-      <li key={index}>
-        <NavLink
-          href={`/${item.replace(/\s+/g, "").toLowerCase()}`}
-          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-          onClick={() =>
-            handleLinkClick(`/${item.replace(/\s+/g, "").toLowerCase()}`)
-          }
-        >
-          {item}
-        </NavLink>
-      </li>
-    ))}
-  </ul>
-);
+import { useUserSession } from "@/hook/use_user_session";
 
 const Navbar = () => {
-  const [activeLink, setActiveLink] = useState("/");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const keyInitiativesRef = useRef<HTMLLIElement>(null);
-  const initiativesRef = useRef<HTMLLIElement>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const userSessionId = useUserSession(null);
+    const router = useRouter();
+    const profileMenuRef = useRef<HTMLDivElement>(null);
 
-  const userSessionId = useUserSession(null);
-  const router = useRouter();
+    // Effect to get the current Firebase user
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
 
-  const handleLinkClick = (href: string) => {
-    setActiveLink(href);
-    setIsMobileMenuOpen(false);
-    setOpenDropdown(null);
-  };
+    // Effect to check for admin status
+    useEffect(() => {
+        const checkAdminStatus = async () => {
+            if (user && user.email) {
+                try {
+                    const docRef = doc(firestore, "adminemail", user.email);
+                    const docSnap = await getDoc(docRef);
+                    setIsAdmin(docSnap.exists() && docSnap.data().role === 'admin');
+                } catch (error) {
+                    console.error("Failed to check admin status:", error);
+                    setIsAdmin(false);
+                }
+            } else {
+                setIsAdmin(false);
+            }
+        };
+        checkAdminStatus();
+    }, [user]);
 
-  const toggleDropdown = (dropdown: string) => {
-    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
-  };
+    // Effect to close the dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+                setIsProfileMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        (keyInitiativesRef.current &&
-          !keyInitiativesRef.current.contains(event.target as Node)) &&
-        (initiativesRef.current &&
-          !initiativesRef.current.contains(event.target as Node))
-      ) {
-        setOpenDropdown(null);
-      }
+    const handleSignOut = async () => {
+        await signOutWithGoogle();
+        await removeSession();
+        setIsProfileMenuOpen(false);
+        router.push('/');
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const handleSignIn = () => {
+        router.push("/auth/Login");
     };
-  }, []);
 
+    const profileImage = user?.photoURL || '';
 
+    return (
+        <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-50 shadow-md">
+            <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+                {/* Logo and Site Title */}
+                <Link href="/" className="flex items-center space-x-3">
+                    <Image src={Logo} height={32} alt="Logo" />
+                    {/* TITLE ADDED HERE */}
+                    <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white hidden sm:block">
+                        Scholarship Management System
+                    </span>
+                </Link>
 
-const handleSignOut = async () => {
-  try {
-    await signOutWithGoogle(); // First, sign out of Google.
-    await removeSession(); // Then, remove the session cookie.
-    router.push('/'); // Finally, redirect to the home page after sign-out is complete.
-  } catch (err) {
-    console.error('Failed to sign out:', err);
-  }
-};
+                {/* Action Buttons */}
+                <div className="relative">
+                    {userSessionId ? (
+                        <div className="flex items-center gap-4">
+                            <span className="hidden md:block text-gray-700 dark:text-gray-300 font-medium">
+                                Hi, {user?.displayName?.split(' ')[0] || 'User'}
+                            </span>
 
+                            <div ref={profileMenuRef}>
+                                {/* Profile Picture Button */}
+                                <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+                                    <span className="sr-only">Open user menu</span>
+                                    {profileImage ? (
+                                        <img src={profileImage} alt="Profile" className="w-10 h-10 rounded-full object-cover" />
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
+                                            {user?.email?.[0].toUpperCase()}
+                                        </div>
+                                    )}
+                                </button>
 
-  const handleSignIn = () => {
-    router.push("/auth/Login");
-  };
-
-  return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900 relative z-50">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <NavLink
-          href="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-          onClick={() => handleLinkClick("/")}
-        >
-          <Image src={Logo} height={32} alt=" Logo" />
-        </NavLink>
-
-        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          {userSessionId ? (
-            <button
-              onClick={handleSignOut}
-              className="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800"
-            >
-              Sign Out
-            </button>
-          ) : (
-            <button
-              onClick={handleSignIn}
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Sign In
-            </button>
-          )} 
-        </div> 
-      </div>
-    </nav>
-  );
+                                {/* Dropdown Menu */}
+                                {isProfileMenuOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 dark:bg-gray-700">
+                                        <div className="px-4 py-3 border-b dark:border-gray-600">
+                                            <span className="block text-sm text-gray-900 dark:text-white">{user?.displayName || 'User'}</span>
+                                            <span className="block text-sm text-gray-500 truncate dark:text-gray-400">{user?.email}</span>
+                                        </div>
+                                        <ul className="py-1">
+                                            {isAdmin && (
+                                                <li>
+                                                    <Link href="/admin" onClick={() => setIsProfileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                                                        Admin Dashboard
+                                                    </Link>
+                                                </li>
+                                            )}
+                                            <li>
+                                                <button onClick={handleSignOut} className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-400 dark:hover:text-white">
+                                                    Sign Out
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleSignIn}
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                        >
+                            Sign In
+                        </button>
+                    )}
+                </div>
+            </div>
+        </nav>
+    );
 };
 
 export default Navbar;
