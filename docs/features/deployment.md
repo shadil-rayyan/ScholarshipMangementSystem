@@ -1,1 +1,0 @@
-howt o deply in vercel other service as well 
