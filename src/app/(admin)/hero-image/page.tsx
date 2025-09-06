@@ -31,7 +31,7 @@ export default async function HeroImagePage() {
             <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Hero Image</h1>
             <HeroImageUploader 
                 initialImageUrl={heroData.imageUrl}
-                initialLastUpdated={heroData.lastUpdated}
+                // initialLastUpdated={heroData.lastUpdated}
             />
         </div>
     );
