@@ -53,6 +53,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.46.1",
+    "@swc/core": "^1.13.5",
+    "@swc/jest": "^0.2.39",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@types/axios": "^0.14.0",
