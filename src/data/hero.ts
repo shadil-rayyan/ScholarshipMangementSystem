@@ -1,7 +1,7 @@
-// Hero image data - Updated 9/5/2025, 8:27:49 AM
+// Hero image data - Updated 9/6/2025, 7:15:11 PM
 export const heroImageData = {
   imagePath: '/data/hero/hero-image.jpg',
-  lastUpdated: '2025-09-05T02:57:49.105Z'
+  lastUpdated: '2025-09-06T13:45:11.050Z'
 };
 
 export default heroImageData;
